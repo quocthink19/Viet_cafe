@@ -1,0 +1,39 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# VS Code directory
+.vscode/
+
+# Visual Studio
+.vs/
+
+# ASP.NET Core environment config
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+# Entity Framework Core migration snapshots (optional)
+**/Migrations/*Designer.cs
+**/Migrations/*.resx
+
+# ASP.NET publish
+*.pubxml
+*.publishproj
+Properties/PublishProfiles/
+
+# Logs
+*.log
+
+# Node
+node_modules/
+
+# Others
+wwwroot/lib/
