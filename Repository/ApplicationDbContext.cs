@@ -20,8 +20,12 @@ namespace Repository
         {
         }
         public DbSet<User> Users { get; set; }
-
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Topping> Toppings { get; set; }
+        
+        public DbSet<Size> Sizes { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
