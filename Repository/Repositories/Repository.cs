@@ -41,6 +41,27 @@ namespace Repository.Repositories
            
         }
 
+        public async Task Add(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task Update(T entity)
+        {
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+        public async Task Delete(Guid id)
+        {
+            var entity = await GetByIdAsync(id);
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+        }
         public async Task DeleteAsync(Guid id)
         {
             var entity = await GetByIdAsync(id);

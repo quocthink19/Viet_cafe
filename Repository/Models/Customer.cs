@@ -16,7 +16,6 @@ namespace Repository.Models
         public DateTime BirthDate { get; set; }
         public Gender gender { get; set; }
         public decimal Wallet { get; set; }
-        public int Point {  get; set; }
         public DateTime CreatedDate { get; set; }
 
         [JsonIgnore]

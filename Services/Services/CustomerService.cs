@@ -5,8 +5,6 @@ using Repository.UnitOfWork;
 using Services.IServices;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Services.Services
@@ -15,18 +13,21 @@ namespace Services.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
+
         public CustomerService(IUnitOfWork unitOfWork, IUserService userService)
         {
-            _unitOfWork = unitOfWork;
-            _userService = userService;
-
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
+
         public async Task<Customer> AddCustomer(AddCustomerRequest customerData)
         {
+            if (customerData == null)
+                throw new ArgumentNullException(nameof(customerData));
+
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-               
                 var userData = new RegisterUserRequest
                 {
                     Username = customerData.Username,
@@ -34,6 +35,7 @@ namespace Services.Services
                     Password = customerData.Password,
                     role = Repository.Models.Enum.UserRole.CUSTOMER
                 };
+
                 var newUser = await _userService.RegisterAsync(userData);
 
                 var newCustomer = new Customer
@@ -51,14 +53,14 @@ namespace Services.Services
 
                 await _unitOfWork.CommitAsync();
                 return newCustomer;
-            }catch (Exception)
+            }
+            catch (Exception)
             {
                 await _unitOfWork.RollbackAsync();
                 throw;
             }
         }
 
-        // chưa xong 
         public async Task DeleteCustomer(Guid Id)
         {
             await _unitOfWork.BeginTransactionAsync();
@@ -66,9 +68,10 @@ namespace Services.Services
             try
             {
                 var customer = await GetCustomerById(Id);
+                if (customer == null)
+                    throw new Exception("Không tìm thấy customer để xóa");
 
                 await _unitOfWork.CustomerRepo.DeleteAsync(Id);
-
                 await _unitOfWork.SaveAsync();
 
                 await _unitOfWork.CommitAsync();
@@ -80,13 +83,12 @@ namespace Services.Services
             }
         }
 
-        public async  Task<Customer> GetCustomerById(Guid Id)
+        public async Task<Customer> GetCustomerById(Guid Id)
         {
             var customer = await _unitOfWork.CustomerRepo.GetByIdAsync(Id);
-            if(customer != null)
-            {
-                throw new Exception("Không tim thấy customer này");
-            }
+            if (customer == null)
+                throw new Exception("Không tìm thấy customer này");
+
             return customer;
         }
 
@@ -96,8 +98,11 @@ namespace Services.Services
             return customers;
         }
 
-        public async  Task<Customer> UpdateCustomer(Guid Id, UpdateCustomerRequest newCustomer)
+        public async Task<Customer> UpdateCustomer(Guid Id, UpdateCustomerRequest newCustomer)
         {
+            if (newCustomer == null)
+                throw new ArgumentNullException(nameof(newCustomer));
+
             await _unitOfWork.BeginTransactionAsync();
             try
             {
@@ -109,19 +114,18 @@ namespace Services.Services
                 await _unitOfWork.CustomerRepo.UpdateAsync(customer);
 
                 var user = await _unitOfWork.CustomerRepo.GetUserByCustomerId(Id);
-                if(user == null)
-                {
-                    throw new Exception("không tìm thấy user");
-                }
-                user.Email = newCustomer.Email;
+                if (user == null)
+                    throw new Exception("Không tìm thấy user");
 
+                user.Email = newCustomer.Email;
                 await _unitOfWork.UserRepo.UpdateAsync(user);
+
                 await _unitOfWork.SaveAsync();
-                await _unitOfWork. RollbackAsync();
+                await _unitOfWork.CommitAsync();
 
                 return customer;
-
-            } catch(Exception)
+            }
+            catch (Exception)
             {
                 await _unitOfWork.RollbackAsync();
                 throw;

@@ -12,6 +12,9 @@ namespace Repository.IRepository
         Task<T> GetByIdAsync(Guid id);
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
+        Task Add(T entity);
+        Task Update(T entity);
+        Task Delete(Guid id);
         Task DeleteAsync(Guid id);
     }
 }

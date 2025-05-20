@@ -6,6 +6,7 @@ using Repository;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Cafe_Web_App.Extensions;
+using Cafe_Web_App.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,10 +24,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     )
 );
 
-
+builder.Services.AddRepoBase();
 builder.Services.ConfigureRepositories();
 builder.Services.ConfigureServices();
 builder.Services.ConfigureUtilities();
+
 
 
 builder.Services.AddControllers();
@@ -83,7 +85,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-
+app.UseMiddleware<Cafe_Web_App.Middleware.ExceptionHandlingMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

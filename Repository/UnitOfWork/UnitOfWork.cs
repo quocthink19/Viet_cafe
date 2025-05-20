@@ -14,6 +14,9 @@ namespace Repository.UnitOfWork
 
         public ICustomerRepo CustomerRepo { get; }
         public IUserRepo UserRepo { get; }
+        public IToppingRepo ToppingRepo { get; }
+
+
         private IDbContextTransaction _transaction;
         public UnitOfWork(ApplicationDbContext context, ICustomerRepo customerRepo, IUserRepo userRepo)
         {
