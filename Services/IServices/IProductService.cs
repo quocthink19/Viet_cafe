@@ -1,5 +1,6 @@
 ﻿using Repository.Models;
 using Repository.Models.DTOs.Request;
+using Repository.Models.DTOs.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Services.IServices
 {
     public interface IProductService 
     {
-        Task<Product> AddProduct(ProductRequest newProduct);
+        Task<ProductResponse> AddProduct(ProductRequest newProduct);
         Task DeleteProduct(Guid Id);
         Task<Product> UpdateProduct(Guid Id, ProductRequest updateProduct);
         Task<IEnumerable<Product>> GetProduct();

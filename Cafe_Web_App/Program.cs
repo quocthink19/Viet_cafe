@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Cafe_Web_App.Extensions;
 using Cafe_Web_App.Middleware;
+using Repository.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,7 @@ builder.Services.ConfigureRepositories();
 builder.Services.ConfigureServices();
 builder.Services.ConfigureUtilities();
 
+builder.Services.AddAutoMapper(typeof(MapperConfigurationsProfile));
 
 
 builder.Services.AddControllers();
