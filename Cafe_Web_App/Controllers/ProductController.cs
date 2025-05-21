@@ -34,10 +34,10 @@ namespace Cafe_Web_App.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TResponse<Product>>> CreateProduct([FromBody] ProductRequest Product)
+        public async Task<ActionResult<TResponse<ProductResponse>>> CreateProduct([FromBody] ProductRequest Product)
         {
             var newProduct = await _productService.AddProduct(Product);
-            var response = new TResponse<Product>("Tạo Product thành công", newProduct);
+            var response = new TResponse<ProductResponse>("Tạo Product thành công", newProduct);
             return Ok(response);
         }
 

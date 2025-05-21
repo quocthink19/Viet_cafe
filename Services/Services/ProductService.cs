@@ -1,6 +1,8 @@
-﻿using Azure.Core;
+﻿using AutoMapper;
+using Azure.Core;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
+using Repository.Models.DTOs.Response;
 using Repository.UnitOfWork;
 using Services.IServices;
 using System;
@@ -15,11 +17,13 @@ namespace Services.Services
     public class ProductService : IProductService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public ProductService(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
-        public async Task<Product> AddProduct(ProductRequest newProduct)
+        public async Task<ProductResponse> AddProduct(ProductRequest newProduct)
         {
             await _unitOfWork.BeginTransactionAsync();
             try
@@ -36,8 +40,9 @@ namespace Services.Services
                 await _unitOfWork.ProductRepo.AddAsync(product);
                 await _unitOfWork.SaveAsync();
                 await _unitOfWork.CommitAsync();
+                var productRes  = _mapper.Map<ProductResponse>(product);
 
-                return product;
+                return productRes;
             } catch (Exception) {
                 await _unitOfWork.RollbackAsync();
                 throw;
