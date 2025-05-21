@@ -68,8 +68,6 @@ namespace Services.Services
             try
             {
                 var customer = await GetCustomerById(Id);
-                if (customer == null)
-                    throw new Exception("Không tìm thấy customer để xóa");
 
                 await _unitOfWork.CustomerRepo.DeleteAsync(Id);
                 await _unitOfWork.SaveAsync();

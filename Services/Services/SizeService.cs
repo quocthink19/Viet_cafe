@@ -19,7 +19,7 @@ namespace Services.Services
         }
         public async Task<Size> AddSize(SizeRequest size)
         {
-            if (string.IsNullOrWhiteSpace(size.Name) || !size.Volume.HasValue)
+            if (string.IsNullOrWhiteSpace(size.Name) || !size.Value.HasValue)
             {
                 throw new ArgumentException("Tên và thể tích là bắt buộc.");
             }
@@ -27,7 +27,7 @@ namespace Services.Services
             var newSize = new Size
             {
                 Name = size.Name,
-                Volume = size.Volume.Value,
+                Value = size.Value.Value,
             };
 
             await _sizeRepo.Add(newSize);
@@ -62,9 +62,9 @@ namespace Services.Services
                 existingSize.Name = size.Name;
             }
 
-            if (size.Volume.HasValue)
+            if (size.Value.HasValue)
             {
-                existingSize.Volume = size.Volume.Value;
+                existingSize.Value = size.Value.Value;
             }
 
             await _sizeRepo.Update(existingSize);

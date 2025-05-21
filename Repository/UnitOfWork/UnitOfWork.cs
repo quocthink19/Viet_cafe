@@ -15,14 +15,21 @@ namespace Repository.UnitOfWork
         public ICustomerRepo CustomerRepo { get; }
         public IUserRepo UserRepo { get; }
         public IToppingRepo ToppingRepo { get; }
+        public IProductRepo ProductRepo { get; }
+
+        public ICustomizeRepo CustomizeRepo { get; }
+        public ICustomizeToppingRepo CustomizeToppingRepo { get; }
 
 
         private IDbContextTransaction _transaction;
-        public UnitOfWork(ApplicationDbContext context, ICustomerRepo customerRepo, IUserRepo userRepo)
+        public UnitOfWork(ApplicationDbContext context, ICustomerRepo customerRepo, IUserRepo userRepo, IProductRepo productRepo, ICustomizeRepo customizeRepo, ICustomizeToppingRepo customizeToppingRepo)
         {
             _context = context;
             CustomerRepo = customerRepo;
             UserRepo = userRepo;
+            CustomizeRepo = customizeRepo;
+            CustomizeToppingRepo = customizeToppingRepo;
+            ProductRepo = productRepo;
         }
 
         public async Task<int> SaveAsync()

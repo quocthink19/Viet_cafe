@@ -70,16 +70,113 @@ namespace Cafe_Web_App.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("Repository.Models.Customize", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double?>("Extra")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Ice")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Milk")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SizeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Sugar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Temperature")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SizeId");
+
+                    b.ToTable("Customizes");
+                });
+
+            modelBuilder.Entity("Repository.Models.CustomizeTopping", b =>
+                {
+                    b.Property<Guid>("CustomizeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ToppingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("CustomizeId", "ToppingId");
+
+                    b.HasIndex("ToppingId");
+
+                    b.ToTable("CustomizeToppings");
+                });
+
+            modelBuilder.Entity("Repository.Models.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAvaillable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("PurchaseCount")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Rating")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Products");
+                });
+
             modelBuilder.Entity("Repository.Models.Size", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<double?>("ExtraPrice")
+                        .HasColumnType("float");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("Volume")
+                    b.Property<double?>("Value")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
@@ -97,9 +194,8 @@ namespace Cafe_Web_App.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Price")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double?>("Price")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -148,6 +244,80 @@ namespace Cafe_Web_App.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Repository.Models.Customize", b =>
+                {
+                    b.HasOne("Repository.Models.Product", "Product")
+                        .WithMany("Customizes")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Repository.Models.Size", "Size")
+                        .WithMany("Customizes")
+                        .HasForeignKey("SizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Size");
+                });
+
+            modelBuilder.Entity("Repository.Models.CustomizeTopping", b =>
+                {
+                    b.HasOne("Repository.Models.Customize", "Customize")
+                        .WithMany("CustomizeToppings")
+                        .HasForeignKey("CustomizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Repository.Models.Topping", "Topping")
+                        .WithMany("CustomizeToppings")
+                        .HasForeignKey("ToppingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customize");
+
+                    b.Navigation("Topping");
+                });
+
+            modelBuilder.Entity("Repository.Models.Product", b =>
+                {
+                    b.HasOne("Repository.Models.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Repository.Models.Category", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Repository.Models.Customize", b =>
+                {
+                    b.Navigation("CustomizeToppings");
+                });
+
+            modelBuilder.Entity("Repository.Models.Product", b =>
+                {
+                    b.Navigation("Customizes");
+                });
+
+            modelBuilder.Entity("Repository.Models.Size", b =>
+                {
+                    b.Navigation("Customizes");
+                });
+
+            modelBuilder.Entity("Repository.Models.Topping", b =>
+                {
+                    b.Navigation("CustomizeToppings");
                 });
 
             modelBuilder.Entity("Repository.Models.User", b =>

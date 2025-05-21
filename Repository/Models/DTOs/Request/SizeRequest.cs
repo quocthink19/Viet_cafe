@@ -10,6 +10,6 @@ namespace Repository.Models.DTOs.Request
     {
         public string? Name { get; set; }
 
-        public double? Volume { get; set; }
+        public double? Value { get; set; }
     }
 }
