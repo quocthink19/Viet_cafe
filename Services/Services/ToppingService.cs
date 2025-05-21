@@ -24,10 +24,7 @@ namespace Services.Services
                 throw new ArgumentException("Tên topping không được để trống hoặc null.");
             }
 
-            if (string.IsNullOrWhiteSpace(topping.Price))
-            {
-                throw new ArgumentException("Giá topping không được để trống hoặc null.");
-            }
+         
 
             var newTopping = new Topping
             {
@@ -70,11 +67,6 @@ namespace Services.Services
             if (string.IsNullOrWhiteSpace(topping.Name))
             {
                 throw new ArgumentException("Tên topping không được để trống hoặc null.");
-            }
-
-            if (string.IsNullOrWhiteSpace(topping.Price))
-            {
-                throw new ArgumentException("Giá topping không được để trống hoặc null.");
             }
 
             var updateTopping = await GetToppingById(id);

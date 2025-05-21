@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Repository.Models
@@ -10,6 +11,9 @@ namespace Repository.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public string Price { get; set; }
+        public double? Price { get; set; }
+
+        [JsonIgnore]
+        public List<CustomizeTopping> CustomizeToppings { get; set; } = new List<CustomizeTopping>();
     }
 }

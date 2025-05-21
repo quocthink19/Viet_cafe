@@ -9,6 +9,6 @@ namespace Repository.Models.DTOs.Request
     public class ToppingRequest
     {
         public string? Name { get; set; }
-        public string? Price { get; set; }
+        public double? Price { get; set; }
     }
 }

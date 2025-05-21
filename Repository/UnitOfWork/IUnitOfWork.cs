@@ -12,6 +12,9 @@ namespace Repository.UnitOfWork
         ICustomerRepo CustomerRepo { get; }
         IUserRepo UserRepo { get; }
         IToppingRepo ToppingRepo { get; }
+        IProductRepo ProductRepo { get; }
+        ICustomizeToppingRepo CustomizeToppingRepo { get; }
+        ICustomizeRepo CustomizeRepo { get; }
         Task<int> SaveAsync();
         Task BeginTransactionAsync();
         Task CommitAsync();

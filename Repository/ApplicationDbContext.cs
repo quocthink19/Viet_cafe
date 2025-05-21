@@ -23,7 +23,9 @@ namespace Repository
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Topping> Toppings { get; set; }
-        
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Customize> Customizes { get; set; }
+        public DbSet<CustomizeTopping> CustomizeToppings { get; set; }
         public DbSet<Size> Sizes { get; set; }
 
 
@@ -39,6 +41,37 @@ namespace Repository
             modelBuilder.Entity<Customer>()
             .Property(c => c.Wallet)
             .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany(C => C.Products)
+                .HasForeignKey(p => p.CategoryId);
+
+            modelBuilder.Entity<CustomizeTopping>()
+       .HasKey(ct => new { ct.CustomizeId, ct.ToppingId });
+
+            modelBuilder.Entity<CustomizeTopping>()
+                .HasOne(ct => ct.Customize)
+                .WithMany(c => c.CustomizeToppings)
+                .HasForeignKey(ct => ct.CustomizeId);
+
+            modelBuilder.Entity<CustomizeTopping>()
+                .HasOne(ct => ct.Topping)
+                .WithMany(t => t.CustomizeToppings)
+                .HasForeignKey(ct => ct.ToppingId);
+
+            
+            modelBuilder.Entity<Customize>()
+                .Property(c => c.Ice)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Customize>()
+                .Property(c => c.Sugar)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Customize>()
+                .Property(c => c.Temperature)
+                .HasConversion<string>();
         }
     }
 }
