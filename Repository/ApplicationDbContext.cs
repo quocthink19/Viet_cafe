@@ -28,6 +28,10 @@ namespace Repository
         public DbSet<CustomizeTopping> CustomizeToppings { get; set; }
         public DbSet<Size> Sizes { get; set; }
 
+        public DbSet<Cart> Carts { get; set; }
+
+        public DbSet<CartItem> CartItems { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -72,6 +76,16 @@ namespace Repository
             modelBuilder.Entity<Customize>()
                 .Property(c => c.Temperature)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<Customer>()
+                .HasOne(c => c.Cart)
+                .WithOne(c => c.Customer)
+                .HasForeignKey<Cart>(c => c.CustomerId);
+
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Cart)
+                .WithMany(c => c.CartItems)
+                .HasForeignKey(ci => ci.CartId);
         }
     }
 }

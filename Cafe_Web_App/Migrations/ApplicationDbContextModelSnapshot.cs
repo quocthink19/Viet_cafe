@@ -22,6 +22,54 @@ namespace Cafe_Web_App.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Repository.Models.Cart", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("TotalAmount")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("Repository.Models.CartItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CustomizeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("UnitPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("CustomizeId")
+                        .IsUnique();
+
+                    b.ToTable("CartItems");
+                });
+
             modelBuilder.Entity("Repository.Models.Category", b =>
                 {
                     b.Property<Guid>("Id")
@@ -235,6 +283,36 @@ namespace Cafe_Web_App.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Repository.Models.Cart", b =>
+                {
+                    b.HasOne("Repository.Models.Customer", "Customer")
+                        .WithOne("Cart")
+                        .HasForeignKey("Repository.Models.Cart", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Repository.Models.CartItem", b =>
+                {
+                    b.HasOne("Repository.Models.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Repository.Models.Customize", "Customize")
+                        .WithOne("CartItem")
+                        .HasForeignKey("Repository.Models.CartItem", "CustomizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Customize");
+                });
+
             modelBuilder.Entity("Repository.Models.Customer", b =>
                 {
                     b.HasOne("Repository.Models.User", "User")
@@ -295,13 +373,27 @@ namespace Cafe_Web_App.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Repository.Models.Cart", b =>
+                {
+                    b.Navigation("CartItems");
+                });
+
             modelBuilder.Entity("Repository.Models.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("Repository.Models.Customer", b =>
+                {
+                    b.Navigation("Cart")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Repository.Models.Customize", b =>
                 {
+                    b.Navigation("CartItem")
+                        .IsRequired();
+
                     b.Navigation("CustomizeToppings");
                 });
 

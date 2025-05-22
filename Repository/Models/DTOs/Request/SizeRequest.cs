@@ -11,5 +11,7 @@ namespace Repository.Models.DTOs.Request
         public string? Name { get; set; }
 
         public double? Value { get; set; }
+
+        public double? ExtraPrice { get; set; }
     }
 }
