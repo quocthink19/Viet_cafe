@@ -2,7 +2,7 @@
 {
     public class CustomizeToppingResponse
     {
-        public string Topping { get; set; }
-        public int Quantity { get; set; }
+        public string? Topping { get; set; }
+        public int? Quantity { get; set; }
     }
 }

@@ -10,10 +10,10 @@ namespace Repository.Models
     public class Topping
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public double? Price { get; set; }
 
         [JsonIgnore]
-        public List<CustomizeTopping> CustomizeToppings { get; set; } = new List<CustomizeTopping>();
+        public List<CustomizeTopping>? CustomizeToppings { get; set; } = new List<CustomizeTopping>();
     }
 }

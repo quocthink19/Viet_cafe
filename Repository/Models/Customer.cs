@@ -13,12 +13,12 @@ namespace Repository.Models
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public string? FullName { get; set; }
-        public DateTime BirthDate { get; set; }
-        public Gender gender { get; set; }
-        public decimal Wallet { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime? BirthDate { get; set; }
+        public Gender? gender { get; set; }
+        public decimal? Wallet { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
-        public Cart Cart { get; set; }
+        public Cart? Cart { get; set; }
 
         [JsonIgnore]
         public virtual User? User { get; set; }

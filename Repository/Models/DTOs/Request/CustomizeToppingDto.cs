@@ -3,6 +3,6 @@
     public class CustomizeToppingDto
     {
         public Guid ToppingId { get; set; }
-        public int Quantity { get; set; }
+        public int? Quantity { get; set; }
     }
 }

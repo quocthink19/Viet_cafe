@@ -13,13 +13,13 @@ namespace Repository.Models
         public string? Username { get; set; }
         public string? PasswordHash { get; set; }
         public string? Email { get; set; }
-        public UserRole role { get; set; }
+        public UserRole? role { get; set; }
 
-        public bool isActive { get; set; }
+        public bool? isActive { get; set; }
 
 
-        public string RefreshToken { get; set; }
-        public DateTime RefreshTokenExpiryTime { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
 
         public virtual Customer? Customer { get; set; }
     }

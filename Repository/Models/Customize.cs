@@ -11,15 +11,15 @@ namespace Repository.Models
     public class Customize
     {
         public Guid Id { get; set; }
-        public Level Milk { get; set; }
-        public Level Ice { get; set; }
-        public Level Sugar { get; set; }
-        public Temperature Temperature { get; set; }
+        public Level? Milk { get; set; }
+        public Level? Ice { get; set; }
+        public Level? Sugar { get; set; }
+        public Temperature? Temperature { get; set; }
 
         public double? Extra { get; set; }
 
         public Guid SizeId { get; set; }
-        public Size Size { get; set; } = default!;
+        public Size? Size { get; set; } = default!;
 
         public Guid ProductId { get; set; }
         public Product Product { get; set; } = default!;
@@ -27,8 +27,8 @@ namespace Repository.Models
         public double? Price { get; set; }
 
         [JsonIgnore]
-        public CartItem CartItem { get; set; }
-        public List<CustomizeTopping> CustomizeToppings { get; set; } = new List<CustomizeTopping>();
+        public CartItem? CartItem { get; set; }
+        public List<CustomizeTopping>? CustomizeToppings { get; set; } = new List<CustomizeTopping>();
 
     }
 }

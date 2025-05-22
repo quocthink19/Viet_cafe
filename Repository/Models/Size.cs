@@ -17,6 +17,6 @@ namespace Repository.Models
         public double? ExtraPrice { get; set; }
 
         [JsonIgnore]
-        public List<Customize> Customizes { get; set; } = [];
+        public List<Customize>? Customizes { get; set; } = [];
     }
 }

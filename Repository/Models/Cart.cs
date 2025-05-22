@@ -10,11 +10,11 @@ namespace Repository.Models
     {
         public Guid Id { get; set; }
 
-        public double TotalAmount { get; set; }
+        public double? TotalAmount { get; set; }
 
         public Guid CustomerId { get; set; }
-        public Customer Customer { get; set; }
-        public List<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public Customer? Customer { get; set; }
+        public List<CartItem>? CartItems { get; set; } = new List<CartItem>();
 
     }
 }
