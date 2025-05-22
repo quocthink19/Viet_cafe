@@ -7,12 +7,12 @@ namespace Repository.Models
         public Guid Id { get; set; }
         public Guid CartId { get; set; }
         [JsonIgnore]
-        public Cart Cart { get; set; }
+        public Cart? Cart { get; set; }
 
         public Guid CustomizeId { get; set; }
-        public Customize Customize { get; set; }
+        public Customize? Customize { get; set; }
 
-        public int Quantity { get; set; }
+        public int? Quantity { get; set; }
         public double? UnitPrice { get; set; }
     }
 }

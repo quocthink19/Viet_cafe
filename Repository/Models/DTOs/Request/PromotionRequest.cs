@@ -12,7 +12,7 @@ namespace Repository.Models.DTOs.Request
         public double? Condition { get; set; }
         public string? Description { get; set; }
         public double? DiscountPercent { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

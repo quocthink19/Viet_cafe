@@ -13,10 +13,10 @@ namespace Repository.Models
         public double? Condition { get; set; }
         public string? Description { get; set; }
         public double? DiscountPercent { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime CreateDate {  get; set; } = DateTime.Now;
-        public DateTime UpdateDate { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public DateTime? CreateDate {  get; set; } = DateTime.Now;
+        public DateTime? UpdateDate { get; set; }
     }
 }
 
