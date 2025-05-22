@@ -15,6 +15,7 @@ namespace Repository.UnitOfWork
         IProductRepo ProductRepo { get; }
         ICustomizeToppingRepo CustomizeToppingRepo { get; }
         ICustomizeRepo CustomizeRepo { get; }
+        ICartRepo CartRepo { get; }
         Task<int> SaveAsync();
         Task BeginTransactionAsync();
         Task CommitAsync();

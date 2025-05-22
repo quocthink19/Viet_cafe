@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Repository.Models
@@ -25,6 +26,8 @@ namespace Repository.Models
 
         public double? Price { get; set; }
 
+        [JsonIgnore]
+        public CartItem CartItem { get; set; }
         public List<CustomizeTopping> CustomizeToppings { get; set; } = new List<CustomizeTopping>();
 
     }

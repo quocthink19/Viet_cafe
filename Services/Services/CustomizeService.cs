@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿using AutoMapper;
+using Azure.Core;
 using Microsoft.IdentityModel.Tokens;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
@@ -19,12 +20,14 @@ namespace Services.Services
         private readonly ISizeService _sizeService;
         private readonly IProductService _productService;
         private readonly IToppingService _ToppingService;
-        public CustomizeService(IUnitOfWork unitOfWork, ISizeService sizeService, IProductService productService, IToppingService toppingService)
+        private readonly IMapper _mapper;
+        public CustomizeService(IUnitOfWork unitOfWork, ISizeService sizeService, IProductService productService, IToppingService toppingService, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _sizeService = sizeService;
             _productService = productService;
             _ToppingService = toppingService;
+            _mapper = mapper;
         }
         public async Task<CustomizeResponse> AddCustomize(CustomizeRequest customize)
         {
@@ -87,19 +90,7 @@ namespace Services.Services
 
                 await _unitOfWork.CommitAsync();
 
-                var customizeRes = new CustomizeResponse
-                {
-                    Milk = newCustomize.Milk,
-                    Ice = newCustomize.Ice,
-                    Temperature = newCustomize.Temperature,
-                    Sugar = newCustomize.Sugar,
-                    Product = newCustomize.Product.Name,
-                    Size = newCustomize.Size.Name,
-                    Price = newCustomize.Price,
-                    Extra = newCustomize.Extra,
-                    CustomizeToppings = toppings
-
-                };
+                var customizeRes = _mapper.Map<CustomizeResponse>(newCustomize);
 
                 return customizeRes;
             }
@@ -132,9 +123,79 @@ namespace Services.Services
             return customize;
         }
 
-        public Task<Customize> UpdateCustomize(Guid Id, CustomizeRequest CustomizeName)
+        public async Task<CustomizeResponse> UpdateCustomize(Guid Id, CustomizeRequest customizeRequest)
         {
-            throw new NotImplementedException();
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var customize = await GetCustomizeById(Id);
+
+                
+                customize.Milk = customizeRequest.Milk;
+                customize.Ice = customizeRequest.Ice;
+                customize.Sugar = customizeRequest.Sugar;
+                customize.Temperature = customizeRequest.Temperature;
+                customize.SizeId = customizeRequest.SizeId;
+                customize.ProductId = customizeRequest.ProductId;
+
+                
+                var size = await _sizeService.GetSizeById(customizeRequest.SizeId);
+                var product = await _productService.GetProductById(customizeRequest.ProductId);
+                var extra = size.ExtraPrice;
+
+                var toppingList = new List<CustomizeTopping>();
+                var toppings = new List<CustomizeToppingResponse>();
+
+               
+                customize.CustomizeToppings?.Clear();
+
+                if (customizeRequest.CustomizeToppings?.Any() == true)
+                {
+                    foreach (var topping in customizeRequest.CustomizeToppings)
+                    {
+                        if (topping == null || topping.ToppingId == Guid.Empty)
+                            continue;
+
+                        var toppingEntity = await _ToppingService.GetToppingById(topping.ToppingId);
+                        if (toppingEntity == null)
+                            continue;
+
+                        extra += toppingEntity.Price * topping.Quantity;
+
+                        toppingList.Add(new CustomizeTopping
+                        {
+                            CustomizeId = customize.Id,
+                            ToppingId = topping.ToppingId,
+                            Quantity = topping.Quantity
+                        });
+                        toppings.Add(new CustomizeToppingResponse
+                        {
+                            Topping = toppingEntity.Name,
+                            Quantity = topping.Quantity
+                        });
+                    }
+                }
+
+                // Update price and extra
+                customize.Extra = extra;
+                customize.Price = product.Price + extra;
+                customize.CustomizeToppings = toppingList;
+
+                // Update in repository
+                await _unitOfWork.CustomizeRepo.UpdateAsync(customize);
+                await _unitOfWork.SaveAsync();
+
+                await _unitOfWork.CommitAsync();
+
+                var customizeRes = _mapper.Map<CustomizeResponse>(customize);
+
+                return customizeRes;
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
         }
     }
 }

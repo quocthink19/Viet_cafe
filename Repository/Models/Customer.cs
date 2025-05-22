@@ -18,6 +18,8 @@ namespace Repository.Models
         public decimal Wallet { get; set; }
         public DateTime CreatedDate { get; set; }
 
+        public Cart Cart { get; set; }
+
         [JsonIgnore]
         public virtual User? User { get; set; }
     }

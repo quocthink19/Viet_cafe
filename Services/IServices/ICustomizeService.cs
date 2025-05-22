@@ -13,7 +13,7 @@ namespace Services.IServices
     {
         Task<CustomizeResponse> AddCustomize(CustomizeRequest customize);
         Task DeleteCustomize(Guid Id);
-        Task<Customize> UpdateCustomize(Guid Id, CustomizeRequest CustomizeName);
+        Task<CustomizeResponse> UpdateCustomize(Guid Id, CustomizeRequest CustomizeName);
         Task<IEnumerable<Customize>> GetCustomize();
         Task<Customize> GetCustomizeById(Guid Id);
     }

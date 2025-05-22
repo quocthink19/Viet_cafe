@@ -28,6 +28,7 @@ namespace Services.Services
             {
                 Name = size.Name,
                 Value = size.Value.Value,
+                ExtraPrice = size.ExtraPrice,
             };
 
             await _sizeRepo.Add(newSize);
@@ -66,6 +67,8 @@ namespace Services.Services
             {
                 existingSize.Value = size.Value.Value;
             }
+
+            existingSize.ExtraPrice = size.ExtraPrice;
 
             await _sizeRepo.Update(existingSize);
             return existingSize;
