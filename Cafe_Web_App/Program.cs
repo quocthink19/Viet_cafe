@@ -11,7 +11,6 @@ using Repository.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -32,10 +31,8 @@ builder.Services.ConfigureUtilities();
 
 builder.Services.AddAutoMapper(typeof(MapperConfigurationsProfile));
 
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -58,8 +55,8 @@ builder.Services.AddSwaggerGen(c =>
                         Enter **only** your token below",
         Name = "Authorization",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http, 
-        Scheme = "bearer",             
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
         BearerFormat = "JWT"
     });
 
@@ -82,21 +79,23 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-app.UseMiddleware<Cafe_Web_App.Middleware.ExceptionHandlingMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
-app.UseAuthentication();  
-app.UseAuthorization();   
+
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
