@@ -31,7 +31,7 @@ namespace Cafe_Web_App.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("TotalAmount")
+                    b.Property<double?>("TotalAmount")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
@@ -54,7 +54,7 @@ namespace Cafe_Web_App.Migrations
                     b.Property<Guid>("CustomizeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int?>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<double?>("UnitPrice")
@@ -77,7 +77,6 @@ namespace Cafe_Web_App.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -91,10 +90,10 @@ namespace Cafe_Web_App.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("BirthDate")
+                    b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FullName")
@@ -103,11 +102,11 @@ namespace Cafe_Web_App.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("Wallet")
+                    b.Property<decimal?>("Wallet")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("gender")
+                    b.Property<int?>("gender")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -128,10 +127,9 @@ namespace Cafe_Web_App.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("Ice")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Milk")
+                    b.Property<int?>("Milk")
                         .HasColumnType("int");
 
                     b.Property<double?>("Price")
@@ -144,11 +142,9 @@ namespace Cafe_Web_App.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Sugar")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Temperature")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -165,10 +161,10 @@ namespace Cafe_Web_App.Migrations
                     b.Property<Guid>("CustomizeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ToppingId")
+                    b.Property<Guid?>("ToppingId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int?>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("CustomizeId", "ToppingId");
@@ -190,7 +186,10 @@ namespace Cafe_Web_App.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsAvaillable")
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsAvaillable")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -239,7 +238,6 @@ namespace Cafe_Web_App.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("Price")
@@ -263,19 +261,18 @@ namespace Cafe_Web_App.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RefreshToken")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("isActive")
+                    b.Property<bool?>("isActive")
                         .HasColumnType("bit");
 
-                    b.Property<int>("role")
+                    b.Property<int?>("role")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -317,9 +314,7 @@ namespace Cafe_Web_App.Migrations
                 {
                     b.HasOne("Repository.Models.User", "User")
                         .WithOne("Customer")
-                        .HasForeignKey("Repository.Models.Customer", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Repository.Models.Customer", "UserId");
 
                     b.Navigation("User");
                 });
@@ -385,14 +380,12 @@ namespace Cafe_Web_App.Migrations
 
             modelBuilder.Entity("Repository.Models.Customer", b =>
                 {
-                    b.Navigation("Cart")
-                        .IsRequired();
+                    b.Navigation("Cart");
                 });
 
             modelBuilder.Entity("Repository.Models.Customize", b =>
                 {
-                    b.Navigation("CartItem")
-                        .IsRequired();
+                    b.Navigation("CartItem");
 
                     b.Navigation("CustomizeToppings");
                 });

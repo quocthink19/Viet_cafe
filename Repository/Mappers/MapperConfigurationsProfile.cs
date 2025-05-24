@@ -24,6 +24,8 @@ namespace Repository.Mappers
                 .ForMember(dest => dest.Topping, opt => opt.MapFrom(src => src.Topping.Name));
 
             CreateMap<PromotionRequest, Promotion>();
+
+            CreateMap<Customer, CustomerResponse>();
         }
     }
 }

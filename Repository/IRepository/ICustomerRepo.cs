@@ -10,5 +10,6 @@ namespace Repository.IRepository
     public interface ICustomerRepo : IRepository<Customer>
     {
         Task<User> GetUserByCustomerId(Guid customerId);
+        Task<Customer?> GetCustomerByUsernameAsync(string username);
     }
 }

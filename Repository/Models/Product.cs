@@ -14,6 +14,7 @@ namespace Repository.Models
         public string? Description { get; set; }
         public double? Price { get; set; }
         public double? Rating { get; set; }
+        public string? Image {  get; set; }
         public double? PurchaseCount { get; set; }
         public bool? IsAvaillable { get; set; }
 

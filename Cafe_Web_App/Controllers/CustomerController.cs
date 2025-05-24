@@ -58,14 +58,14 @@ namespace Cafe_Web_App.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult<Customer>> CreateCustomer([FromBody ] AddCustomerRequest customer)
+        public async Task<ActionResult<CustomerResponse>> CreateCustomer([FromBody ] AddCustomerRequest customer)
         {
             try
             {
                 var newCustomer = await _customerService.AddCustomer(customer);
                 if(customer != null)
                 {
-                    var response = new TResponse<Customer>(
+                    var response = new TResponse<CustomerResponse>(
                         "khách hàng đã được tạo thành công",
                         newCustomer
                         );

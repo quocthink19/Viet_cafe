@@ -16,6 +16,9 @@ namespace Repository.Models.DTOs.Request
         [Required(ErrorMessage = "Giá sản phẩm là bắt buộc")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Giá phải lớn hơn 0")]
         public double? Price { get; set; }
+        [Required(ErrorMessage = "Hình ảnh sản phẩm là bắt buộc")]
+        public string? Image { get; set; }
+
         [Required(ErrorMessage = "Danh mục là bắt buộc")]
         public Guid CategoryId { get; set; }
     }

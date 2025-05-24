@@ -3,12 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Repository.Models
+namespace Repository.Models.DTOs.Response
 {
-    public class Customer
+    public class CustomerResponse
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
@@ -16,12 +15,5 @@ namespace Repository.Models
         public DateTime? BirthDate { get; set; }
         public Gender? gender { get; set; }
         public decimal? Wallet { get; set; }
-        public DateTime? CreatedDate { get; set; }
-
-        [JsonIgnore]
-        public Cart? Cart { get; set; }
-
-        [JsonIgnore]
-        public virtual User? User { get; set; }
     }
 }

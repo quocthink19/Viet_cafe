@@ -34,6 +34,7 @@ namespace Services.Services
                     Price = newProduct.Price,
                     Rating = 0,
                     PurchaseCount = 0,
+                    Image = newProduct.Image,
                     CategoryId = newProduct.CategoryId,
                     IsAvaillable = true
                 };
@@ -115,6 +116,7 @@ namespace Services.Services
                 var existingProduct = await GetProductById(Id);
                existingProduct.Name = updateProduct.Name;
                existingProduct.Description = updateProduct.Description;
+               existingProduct.Image = updateProduct.Image;
                existingProduct.Price = updateProduct.Price;
                existingProduct.CategoryId = updateProduct.CategoryId;
 

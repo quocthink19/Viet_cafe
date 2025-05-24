@@ -38,10 +38,10 @@ namespace Repository
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>()
-                .HasOne(u => u.Customer)
-                .WithOne(c => c.User)
-                .HasForeignKey<Customer>(c => c.UserId);
-
+             .HasOne(u => u.Customer)
+             .WithOne(c => c.User)
+             .HasForeignKey<Customer>(c => c.UserId)
+             .IsRequired(false);
             modelBuilder.Entity<Customer>()
             .Property(c => c.Wallet)
             .HasPrecision(18, 2);
