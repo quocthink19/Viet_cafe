@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Cafe_Web_App.Extensions;
 using Cafe_Web_App.Middleware;
 using Repository.Mappers;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,11 @@ builder.Services.ConfigureRepositories();
 builder.Services.ConfigureServices();
 builder.Services.ConfigureUtilities();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
 
 builder.Services.AddAutoMapper(typeof(MapperConfigurationsProfile));
 
@@ -49,6 +55,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
+
+
 
 builder.Services.AddSwaggerGen(c =>
 {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Repository.IRepository;
@@ -77,11 +78,23 @@ namespace Services.Services
                 Username = newUser.Username,
                 PasswordHash = _passwordHasher.HashPassword(null, newUser.Password),
                 Email = newUser.Email,
-                role = newUser.role
+                RefreshToken = string.Empty,
+                RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
+                role = newUser.role,
+                isActive = true
             };
 
-            await _unitOfWork.UserRepo.AddUserAsync(user);
-            await _unitOfWork.SaveAsync();
+            try
+            {
+                await _unitOfWork.UserRepo.AddUserAsync(user);
+                await _unitOfWork.SaveAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                var errorMessage = ex.InnerException?.Message ?? ex.Message;   
+                throw new Exception("Lỗi khi lưu User vào CSDL: " + errorMessage, ex);
+            }
+
             return user;
         }
 

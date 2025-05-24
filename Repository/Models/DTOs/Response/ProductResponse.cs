@@ -14,6 +14,7 @@ namespace Repository.Models.DTOs.Response
         public double? Price { get; set; }
         public double? Rating { get; set; }
         public double? PurchaseCount { get; set; }
+        public string? Image { get; set; }
         public bool IsAvaillable { get; set; }
 
         public Guid CategoryId { get; set; }
