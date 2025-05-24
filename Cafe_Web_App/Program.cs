@@ -32,16 +32,27 @@ builder.Services.ConfigureRepositories();
 builder.Services.ConfigureServices();
 builder.Services.ConfigureUtilities();
 
-builder.Services.AddControllers()
+/*builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
     });
+*/
 
 builder.Services.AddAutoMapper(typeof(MapperConfigurationsProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+        policy.WithOrigins("http://localhost:8081")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+    );
+});
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -103,6 +114,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowLocalhost");
 
 app.UseAuthentication();
 app.UseAuthorization();
