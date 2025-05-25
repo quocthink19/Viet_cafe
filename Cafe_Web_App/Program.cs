@@ -25,7 +25,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         sqlOptions => sqlOptions.MigrationsAssembly("Cafe_Web_App")
     )
 );
-
+ 
 
 builder.Services.AddRepoBase();
 builder.Services.ConfigureRepositories();

@@ -1,4 +1,5 @@
 ﻿using Repository.Models;
+using Repository.Models.DTOs.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Services.IServices
         Task<Cart> GetCartByCustomerId(Guid CustomerId);
         Task<Cart> GetCartById(Guid Id);
         Task<Cart> ClearCart(Guid Id);
-        Task<Cart> AddtoCart(Guid customerId,Guid CustomizeId);
+        Task<CartResponse> AddtoCart(Guid customerId,Guid CustomizeId);
         Task<Cart> UpdateCart(Guid customerId);
         Task<Cart> DeleteCartItem(Guid customerId, Guid CartItemId);
     }

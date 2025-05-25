@@ -22,6 +22,8 @@ namespace Repository.Repositories
             return await _context.Carts
                 .Include(c => c.CartItems )
                 .ThenInclude(ci => ci.Customize)
+                .ThenInclude(cz => cz.CustomizeToppings)
+                    .ThenInclude(ct => ct.Topping)
                 .FirstOrDefaultAsync(c  => c.CustomerId == customerId);    
         }
         public async Task<Cart?> GetCartById(Guid Id)

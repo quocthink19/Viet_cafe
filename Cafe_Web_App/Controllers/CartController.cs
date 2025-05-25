@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
@@ -13,28 +14,31 @@ namespace Cafe_Web_App.Controllers
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
+        private readonly IMapper _mapper;
         private readonly ICustomerService _customerService;
-        public CartController(ICartService cartService, ICustomerService customerService)
+        public CartController(ICartService cartService, ICustomerService customerService, IMapper mapper)
         {
             _cartService = cartService;
             _customerService = customerService;
+            _mapper = mapper;   
         }
      [Authorize]
      [HttpPost("add-to-cart")]
-    public async Task<ActionResult<Cart>> AddToCart([FromBody] AddToCartRequest customize)
+    public async Task<ActionResult<CartResponse>> AddToCart([FromBody] AddToCartRequest customize)
         {
             var customer = await GetCurrentCustomer();
             var cart = await _cartService.AddtoCart(customer.Id, customize.CustomizeId);
-            var response = new TResponse<Cart>("thêm sản phẩm vào giỏ hàng thành công", cart);
+            var response = new TResponse<CartResponse>("thêm sản phẩm vào giỏ hàng thành công", cart);
             return Ok(response);
         }
         [Authorize]
         [HttpGet("get-cart-by-customer")]
-        public async Task<ActionResult<Cart>> GetCartByCustomer()
+        public async Task<ActionResult<CartResponse>> GetCartByCustomer()
             {
             var customer = await GetCurrentCustomer();
             var cart = await _cartService.GetCartByCustomerId(customer.Id);
-               var response = new TResponse<Cart>("lấy giỏ hàng thành công", cart);
+            var res = _mapper.Map<CartResponse>(cart);
+               var response = new TResponse<CartResponse>("lấy giỏ hàng thành công", res);
                 return Ok(response);
             }
 
@@ -49,13 +53,15 @@ namespace Cafe_Web_App.Controllers
         }
         [Authorize]
         [HttpPut("delete-cart-item")]
-        public async Task<ActionResult<Cart>> DeleteCartItem([FromBody] Guid CartItemId)
+        public async Task<ActionResult<CartResponse>> DeleteCartItem([FromBody] AddToCartRequest customize)
         {
             var customer = await GetCurrentCustomer();
-            var cart = await _cartService.DeleteCartItem(customer.Id,CartItemId);
-            var response = new TResponse<Cart>("xóa cart item thành công", cart);
+            var cart = await _cartService.DeleteCartItem(customer.Id,customize.CustomizeId);
+            var res = _mapper.Map<CartResponse>(cart);
+            var response = new TResponse<CartResponse>("xóa cart item thành công", res);
             return Ok(response);
         }
+       
         private async Task<Customer?> GetCurrentCustomer()
         {
             var username = User.FindFirst(ClaimTypes.Name)?.Value;
