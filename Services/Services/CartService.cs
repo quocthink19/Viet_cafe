@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Repository.Models;
+using Repository.Models.DTOs.Response;
 using Repository.UnitOfWork;
 using Services.IServices;
 using System;
@@ -12,19 +14,21 @@ namespace Services.Services
     public class CartService : ICartService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public CartService(IUnitOfWork unitOfWork)
+        public CartService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<Cart> AddtoCart(Guid customerId, Guid customizeId)
+        public async Task<CartResponse> AddtoCart(Guid customerId, Guid customizeId)
         {
             await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var cart = await GetCartByCustomerId(customerId);
-                var customize = await _unitOfWork.CustomizeRepo.GetByIdAsync(customizeId);
+                var customize = await _unitOfWork.CustomizeRepo.GetById(customizeId);
                 if (customize == null)
                 {
                     throw new Exception("Không tìm thấy sản phẩm tuỳ chỉnh");
@@ -57,8 +61,9 @@ namespace Services.Services
 
                 await _unitOfWork.SaveAsync();
                 await _unitOfWork.CommitAsync();
+                var res = _mapper.Map<CartResponse>(cart);
 
-                return cart;
+                return res;
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -107,17 +112,20 @@ namespace Services.Services
                 {
                     throw new Exception("Không tìm thấy sản phẩm để xóa");
                 }
-
+                double? minus = 0;
                 if (item.Quantity == 1)
                 {
                     await _unitOfWork.CartRepo.DeleteCartItem(item);
+                    minus = item.Customize.Price;
                 }
                 else
                 {
                     item.Quantity -= 1;
+                    minus = item.Customize.Price;
                 }
 
                 cart.TotalAmount = await _unitOfWork.CartRepo.CalculateTotalAmount(cart.Id);
+                cart.TotalAmount -= minus;
                 await _unitOfWork.CartRepo.UpdateAsync(cart);
 
                 await _unitOfWork.SaveAsync();
@@ -149,8 +157,9 @@ namespace Services.Services
                 await _unitOfWork.CartRepo.AddAsync(cart);
                 await _unitOfWork.SaveAsync();
             }
+            var res = _mapper.Map<Cart>(cart);
 
-            return cart;
+            return res;
         }
 
         public async Task<Cart> GetCartById(Guid id)

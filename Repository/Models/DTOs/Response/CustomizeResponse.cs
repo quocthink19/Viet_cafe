@@ -10,10 +10,12 @@ namespace Repository.Models.DTOs.Response
 {
     public class CustomizeResponse
     {
-        public Level Milk { get; set; }
-        public Level Ice { get; set; }
-        public Level Sugar { get; set; }
-        public Temperature Temperature { get; set; }
+        public Guid Id { get; set; }
+        public string? Milk { get; set; }
+        public string? Ice { get; set; }
+        public string? Sugar { get; set; }
+        public string? Temperature { get; set; }
+
 
         public string Size { get; set; }
         public string Product { get; set; }
