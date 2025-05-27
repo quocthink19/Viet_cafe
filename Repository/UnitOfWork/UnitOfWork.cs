@@ -16,6 +16,7 @@ namespace Repository.UnitOfWork
         public IUserRepo UserRepo { get; }
         public IToppingRepo ToppingRepo { get; }
         public IProductRepo ProductRepo { get; }
+        public IOrderRepo OrderRepo { get; }
         public ICartRepo CartRepo { get; }
         public ICustomizeRepo CustomizeRepo { get; }
         public ICustomizeToppingRepo CustomizeToppingRepo { get; }

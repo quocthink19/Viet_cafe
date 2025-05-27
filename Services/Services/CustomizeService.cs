@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
@@ -44,7 +45,7 @@ namespace Services.Services
                     Milk = customize.Milk,
                     Ice = customize.Ice,
                     Sugar = customize.Sugar,
-                    Temperature = customize.Temperature,
+                //  Temperature = customize.Temperature,
                     SizeId = customize.SizeId,
                     ProductId = customize.ProductId,
                     Extra = 0, 
@@ -123,6 +124,49 @@ namespace Services.Services
             return customize;
         }
 
+        public async Task<Customize?> GetExistingCustomizeAsync(CustomizeRequest customize)
+        {
+            var existingCustomizes = await _unitOfWork.CustomizeRepo.GetQueryable()
+                .Where(c =>
+            c.ProductId == customize.ProductId &&
+            c.SizeId == customize.SizeId &&
+            c.Milk == customize.Milk &&
+            c.Ice == customize.Ice &&
+            c.Sugar == customize.Sugar
+            ).Include(c => c.CustomizeToppings)
+            .ToListAsync();
+            foreach (var cus in existingCustomizes)
+            {
+                var toppingsEqual = true;
+               
+                if (cus.CustomizeToppings.Count != customize.CustomizeToppings?.Count)
+                {
+                    toppingsEqual = false;
+                }
+                else
+                {
+                    
+                    foreach (var topping in customize.CustomizeToppings)
+                    {
+                        if (!cus.CustomizeToppings.Any(t =>
+                            t.ToppingId == topping.ToppingId &&
+                            t.Quantity == topping.Quantity))
+                        {
+                            toppingsEqual = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (toppingsEqual)
+                {
+                    return cus;
+                }
+            }
+
+            return null;
+        }
+
         public async Task<CustomizeResponse> UpdateCustomize(Guid Id, CustomizeRequest customizeRequest)
         {
             await _unitOfWork.BeginTransactionAsync();
@@ -134,7 +178,7 @@ namespace Services.Services
                 customize.Milk = customizeRequest.Milk;
                 customize.Ice = customizeRequest.Ice;
                 customize.Sugar = customizeRequest.Sugar;
-                customize.Temperature = customizeRequest.Temperature;
+        //      customize.Temperature = customizeRequest.Temperature;
                 customize.SizeId = customizeRequest.SizeId;
                 customize.ProductId = customizeRequest.ProductId;
 

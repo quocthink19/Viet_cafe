@@ -10,6 +10,7 @@ namespace Repository.Models
     {
         public Guid Id { get; set; }
         public string? Name { get; set; }
+        public string? Code {  get; set; }
         public double? Condition { get; set; }
         public string? Description { get; set; }
         public double? DiscountPercent { get; set; }

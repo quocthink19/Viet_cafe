@@ -14,7 +14,8 @@ namespace Repository.Models
         public Level? Milk { get; set; }
         public Level? Ice { get; set; }
         public Level? Sugar { get; set; }
-        public Temperature? Temperature { get; set; }
+
+        /*public Temperature? Temperature { get; set; }*/
 
         public double? Extra { get; set; }
 
@@ -28,6 +29,8 @@ namespace Repository.Models
 
         [JsonIgnore]
         public CartItem? CartItem { get; set; }
+        [JsonIgnore]
+        public OrderItem? OrderItem { get; set; }
         public List<CustomizeTopping>? CustomizeToppings { get; set; } = new List<CustomizeTopping>();
 
     }
