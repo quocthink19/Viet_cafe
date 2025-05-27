@@ -132,6 +132,9 @@ namespace Cafe_Web_App.Migrations
                     b.Property<int?>("Milk")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("OrderItemId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double?>("Price")
                         .HasColumnType("float");
 
@@ -144,10 +147,9 @@ namespace Cafe_Web_App.Migrations
                     b.Property<string>("Sugar")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Temperature")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("OrderItemId");
 
                     b.HasIndex("ProductId");
 
@@ -172,6 +174,27 @@ namespace Cafe_Web_App.Migrations
                     b.HasIndex("ToppingId");
 
                     b.ToTable("CustomizeToppings");
+                });
+
+            modelBuilder.Entity("Repository.Models.OrderItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("UnitPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrderItem");
                 });
 
             modelBuilder.Entity("Repository.Models.Product", b =>
@@ -321,6 +344,10 @@ namespace Cafe_Web_App.Migrations
 
             modelBuilder.Entity("Repository.Models.Customize", b =>
                 {
+                    b.HasOne("Repository.Models.OrderItem", "OrderItem")
+                        .WithMany()
+                        .HasForeignKey("OrderItemId");
+
                     b.HasOne("Repository.Models.Product", "Product")
                         .WithMany("Customizes")
                         .HasForeignKey("ProductId")
@@ -332,6 +359,8 @@ namespace Cafe_Web_App.Migrations
                         .HasForeignKey("SizeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("OrderItem");
 
                     b.Navigation("Product");
 

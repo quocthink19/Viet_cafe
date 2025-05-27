@@ -16,5 +16,6 @@ namespace Services.IServices
         Task<CustomizeResponse> UpdateCustomize(Guid Id, CustomizeRequest CustomizeName);
         Task<IEnumerable<Customize>> GetCustomize();
         Task<Customize> GetCustomizeById(Guid Id);
+        Task<Customize?> GetExistingCustomizeAsync(CustomizeRequest customize);
     }
 }

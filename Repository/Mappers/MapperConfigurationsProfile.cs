@@ -19,7 +19,7 @@ namespace Repository.Mappers
             .ForMember(dest => dest.Milk, opt => opt.MapFrom(src => src.Milk.ToString()))
             .ForMember(dest => dest.Ice, opt => opt.MapFrom(src => src.Ice.ToString()))
             .ForMember(dest => dest.Sugar, opt => opt.MapFrom(src => src.Sugar.ToString()))
-            .ForMember(dest => dest.Temperature, opt => opt.MapFrom(src => src.Temperature.ToString()))
+      //    .ForMember(dest => dest.Temperature, opt => opt.MapFrom(src => src.Temperature.ToString()))
             .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.Size.Name))
             .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product.Name))
             .ForMember(dest => dest.CustomizeToppings, opt => opt.MapFrom(src => src.CustomizeToppings));

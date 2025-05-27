@@ -1,4 +1,5 @@
 ﻿using Repository.Models;
+using Repository.Models.DTOs.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace Repository.IRepository
     {
         Task<Customize?> GetById(Guid id);
         Task<IEnumerable<Customize>> GetAll();
+        IQueryable<Customize> GetQueryable(); 
     }
 }

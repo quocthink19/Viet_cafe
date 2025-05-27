@@ -73,9 +73,9 @@ namespace Repository
                 .Property(c => c.Sugar)
                 .HasConversion<string>();
 
-            modelBuilder.Entity<Customize>()
+           /* modelBuilder.Entity<Customize>()
                 .Property(c => c.Temperature)
-                .HasConversion<string>();
+                .HasConversion<string>();*/
 
             modelBuilder.Entity<Customer>()
                 .HasOne(c => c.Cart)

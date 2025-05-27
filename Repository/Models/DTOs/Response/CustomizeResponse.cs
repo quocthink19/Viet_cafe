@@ -14,7 +14,7 @@ namespace Repository.Models.DTOs.Response
         public string? Milk { get; set; }
         public string? Ice { get; set; }
         public string? Sugar { get; set; }
-        public string? Temperature { get; set; }
+        //public string? Temperature { get; set; }
 
 
         public string Size { get; set; }

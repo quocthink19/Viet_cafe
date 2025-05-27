@@ -22,7 +22,17 @@ namespace Cafe_Web_App.Controllers
             _customerService = customerService;
             _mapper = mapper;   
         }
-     [Authorize]
+        [Authorize]
+        [HttpPost("add-customize-to-cart")]
+        public async Task<ActionResult<CartResponse>> AddCustomizeToCart([FromBody] CustomizeRequest customize)
+        {
+            var customer = await GetCurrentCustomer();
+            var cart = await _cartService.AddCustomizeToCart(customer.Id, customize);
+            var response = new TResponse<CartResponse>("thêm sản phẩm vào giỏ hàng thành công", cart);
+            return Ok(response);
+        }
+
+        [Authorize]
      [HttpPost("add-to-cart")]
     public async Task<ActionResult<CartResponse>> AddToCart([FromBody] AddToCartRequest customize)
         {
