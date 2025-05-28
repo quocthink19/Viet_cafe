@@ -37,7 +37,7 @@ namespace Cafe_Web_App.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("{id}")]
+        [HttpGet("{Id}")]
         public async Task<ActionResult<Customer>> GetCustomerById(Guid Id)
         {
             try { 
@@ -77,7 +77,7 @@ namespace Cafe_Web_App.Controllers
                 return BadRequest(ex);
             }
         }
-        [HttpPut("{id}")]
+        [HttpPut("{Id}")]
         public async Task<ActionResult<Customer>> UpdateCustomer(Guid Id,[FromBody] UpdateCustomerRequest customer)
         {
             try

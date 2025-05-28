@@ -91,7 +91,7 @@ namespace Services.Services
         {
             var customer = await _unitOfWork.CustomerRepo.GetByIdAsync(Id);
             if (customer == null)
-                throw new Exception("Không tìm thấy customer này");
+                throw new Exception("Không tìm thấy khách hàng này");
 
             return customer;
         }
@@ -101,7 +101,7 @@ namespace Services.Services
             var customer = await _unitOfWork.CustomerRepo.GetCustomerByUsernameAsync(username);
             if (customer == null)
             {
-                throw new Exception("Không tìm thấy customer này");
+                throw new Exception("Không tìm thấy khách hàng này");
             }
             return customer;
         }
@@ -129,7 +129,7 @@ namespace Services.Services
 
                 var user = await _unitOfWork.CustomerRepo.GetUserByCustomerId(Id);
                 if (user == null)
-                    throw new Exception("Không tìm thấy user");
+                    throw new Exception("Không tìm thấy người dùng");
 
                 user.Email = newCustomer.Email;
                 await _unitOfWork.UserRepo.UpdateAsync(user);
