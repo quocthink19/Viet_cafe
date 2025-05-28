@@ -28,9 +28,9 @@ namespace Cafe_Web_App.Controllers
             {
                 return BadRequest("Username và password không được để trống");
             }
-
             var token = await _userService.LoginAsync(loginRequest.Username, loginRequest.Password);
-            return Ok(token);
+            var response = new TResponse<AuthResponse>("Đăng nhập thành công",token);
+            return Ok(response);
         }
 
         [HttpPost("register")]
