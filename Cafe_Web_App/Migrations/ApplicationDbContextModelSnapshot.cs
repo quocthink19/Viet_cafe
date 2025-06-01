@@ -54,6 +54,9 @@ namespace Cafe_Web_App.Migrations
                     b.Property<Guid>("CustomizeId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
 
@@ -101,6 +104,9 @@ namespace Cafe_Web_App.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Verify")
+                        .HasColumnType("bit");
 
                     b.Property<decimal?>("Wallet")
                         .HasPrecision(18, 2)
@@ -176,6 +182,71 @@ namespace Cafe_Web_App.Migrations
                     b.ToTable("CustomizeToppings");
                 });
 
+            modelBuilder.Entity("Repository.Models.OTPCode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OTPCodes");
+                });
+
+            modelBuilder.Entity("Repository.Models.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double?>("DiscountPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("FinalPrice")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("Payment")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("PickUpTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("QRcode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("TotalAmount")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Orders");
+                });
+
             modelBuilder.Entity("Repository.Models.OrderItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -186,6 +257,9 @@ namespace Cafe_Web_App.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
 
@@ -194,7 +268,9 @@ namespace Cafe_Web_App.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrderItem");
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("Repository.Models.Product", b =>
@@ -232,6 +308,44 @@ namespace Cafe_Web_App.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Repository.Models.Promotion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Condition")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("DiscountPercent")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Promotions");
                 });
 
             modelBuilder.Entity("Repository.Models.Size", b =>
@@ -386,6 +500,28 @@ namespace Cafe_Web_App.Migrations
                     b.Navigation("Topping");
                 });
 
+            modelBuilder.Entity("Repository.Models.Order", b =>
+                {
+                    b.HasOne("Repository.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Repository.Models.OrderItem", b =>
+                {
+                    b.HasOne("Repository.Models.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("Repository.Models.Product", b =>
                 {
                     b.HasOne("Repository.Models.Category", "Category")
@@ -417,6 +553,11 @@ namespace Cafe_Web_App.Migrations
                     b.Navigation("CartItem");
 
                     b.Navigation("CustomizeToppings");
+                });
+
+            modelBuilder.Entity("Repository.Models.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("Repository.Models.Product", b =>

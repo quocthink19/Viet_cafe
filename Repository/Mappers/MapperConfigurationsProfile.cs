@@ -24,16 +24,21 @@ namespace Repository.Mappers
             .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product.Name))
             .ForMember(dest => dest.CustomizeToppings, opt => opt.MapFrom(src => src.CustomizeToppings));
 
-            CreateMap<CustomizeTopping, CustomizeToppingResponse>()
-                .ForMember(dest => dest.Topping, opt => opt.MapFrom(src => src.Topping.Name));
             CreateMap<Cart, CartResponse>();
             CreateMap<CartItem, CartItemResponse>();
 
             CreateMap<PromotionRequest, Promotion>();
 
+            CreateMap<CartItem, OrderItem>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Description));
+
             CreateMap<Customer, CustomerResponse>();
             CreateMap<CustomizeTopping, CustomizeToppingResponse>()
           .ForMember(dest => dest.Topping, opt => opt.MapFrom(src => src.Topping.Name));
+
+            CreateMap<Order, OrderResponse>()
+                .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.FullName ))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
         }
     }
     }

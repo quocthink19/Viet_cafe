@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Repository.Models.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,14 @@ namespace Repository.Models.DTOs.Response
 {
     public  class OrderResponse
     {
+        public Guid Id { get; set; }
         public double? TotalAmount { get; set; }
         public double? DiscountPrice { get; set; }
         public double? FinalPrice { get; set; }
+        public string CustomerName { get; set; }
 
-        public string QRcode;
-
-
-
+        public string QRcode { get; set; }
+        public OrderStatus Status { get; set; }
+        public List<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();
     }
 }

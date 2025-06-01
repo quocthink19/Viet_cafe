@@ -9,5 +9,6 @@ namespace Repository.IRepository
 {
     public interface IPromotionRepo : IRepository<Promotion>
     {
+        Task<Promotion> GetPromotionByCode(string code);
     }
 }

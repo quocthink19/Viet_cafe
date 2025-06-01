@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Repository.Helper;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
@@ -109,6 +110,7 @@ namespace Services.Services
                         Quantity = 1,
                         UnitPrice = customizeToUse.Price,
                         CartId = cart.Id,
+                        Description = CustomizeHelper.BuildDescription(customizeToUse)
                     };
                     cart.TotalAmount += customizeToUse.Price;
                     await _unitOfWork.CartRepo.InsertCartItemAsync(newItem);

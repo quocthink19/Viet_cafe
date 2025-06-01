@@ -1,11 +1,12 @@
-﻿using Repository.Models.Enum;
+﻿using Repository.Models;
+using Repository.Models.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.Models.DTOs
+namespace Repository.Helper
 {
     public class CustomizeHelper
     {
@@ -19,7 +20,16 @@ namespace Repository.Models.DTOs
             var milk = FormatLevel(customize.Milk, "sữa");
             var sugar = FormatLevel(customize.Sugar, "ngọt");
 
-            return $"{productName} size {size} {ice} {milk} {sugar}";
+            var toppingList = customize.CustomizeToppings?
+                .Select(ct => ct.Topping?.Name)
+                .Where(name => !string.IsNullOrEmpty(name))
+                .ToList();
+
+            var toppings = toppingList != null && toppingList.Any()
+                ? $"thêm: {string.Join(", ", toppingList)}"
+                : "không topping";
+
+            return $"{productName} size {size} {ice} {milk} {sugar} ,{toppings}";
         }
         private static string FormatLevel(Level? level, string label)
         {

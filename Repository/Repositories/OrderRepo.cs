@@ -1,4 +1,5 @@
-﻿using Repository.IRepository;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.IRepository;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,14 @@ namespace Repository.Repositories
         public OrderRepo(ApplicationDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<IEnumerable<Order>> GetAll()
+        {
+            return await _context.Orders
+                .Include(c => c.Customer)
+                .Include(o => o.OrderItems)
+                .ToListAsync();
         }
     }
 }

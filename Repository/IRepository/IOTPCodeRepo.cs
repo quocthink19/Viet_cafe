@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Repository.IRepository
 {
-    public interface IOrderRepo : IRepository<Order>
+    public interface IOTPCodeRepo : IRepository<OTPCode> 
     {
-        Task<IEnumerable<Order>> GetAll();
+        Task<OTPCode> GetValidCodeAsync(User user, string code);
     }
 }

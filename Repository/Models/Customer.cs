@@ -17,6 +17,7 @@ namespace Repository.Models
         public Gender? gender { get; set; }
         public decimal? Wallet { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public bool Verify { get; set; }
 
         [JsonIgnore]
         public Cart? Cart { get; set; }

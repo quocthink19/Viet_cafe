@@ -1,4 +1,5 @@
-﻿using Repository.IRepository;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.IRepository;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,13 @@ namespace Repository.Repositories
         public PromotionRepo(ApplicationDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<Promotion> GetPromotionByCode(string code)
+        {
+            return await _context.Promotions
+                .Where(p => p.Code == code)
+                .FirstOrDefaultAsync();
         }
     }
 }

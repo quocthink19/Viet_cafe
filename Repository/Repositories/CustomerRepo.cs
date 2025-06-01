@@ -16,6 +16,13 @@ namespace Repository.Repositories
             _context = context;
         }
 
+        public async Task<Customer> GetCustomerByUserId(Guid userId)
+        {
+            return await _context.Customers
+                 .Where(x => x.UserId == userId)
+                 .FirstOrDefaultAsync();
+        }
+
         public async  Task<Customer?> GetCustomerByUsernameAsync(string username)
         {
          return await _context.Customers

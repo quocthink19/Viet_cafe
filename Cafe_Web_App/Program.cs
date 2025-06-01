@@ -9,6 +9,9 @@ using Cafe_Web_App.Extensions;
 using Cafe_Web_App.Middleware;
 using Repository.Mappers;
 using System.Text.Json.Serialization;
+using Repository.Models;
+using Repository.Helper;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +28,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         sqlOptions => sqlOptions.MigrationsAssembly("Cafe_Web_App")
     )
 );
- 
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddRepoBase();
 builder.Services.ConfigureRepositories();
@@ -52,6 +56,10 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
     );
 });
+
+builder.Services.Configure<VnPayConfiguration>(builder.Configuration.GetSection("VnPayConfiguration"));
+builder.Services.AddScoped<VnPayConfiguration>(sp =>
+    sp.GetRequiredService<IOptions<VnPayConfiguration>>().Value);
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

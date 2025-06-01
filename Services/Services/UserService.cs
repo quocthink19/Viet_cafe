@@ -39,6 +39,15 @@ namespace Services.Services
             {
                 throw new UnauthorizedAccessException("Tên đăng nhập hoặc mật khẩu không đúng.");
             }
+            
+            var customer = await _unitOfWork.CustomerRepo.GetCustomerByUsernameAsync(username);
+            if(customer != null)
+            {
+                if (!customer.Verify)
+                {
+                    throw new UnauthorizedAccessException("vui lòng nhập mã OTP để xác nhận tài khoản");
+                }
+            }
 
             var accessToken = GenerateJwtToken(user);
             var refreshToken = GenerateRefreshToken();
