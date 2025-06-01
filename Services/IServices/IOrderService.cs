@@ -1,4 +1,5 @@
-﻿using Repository.Models.DTOs.Request;
+﻿using Repository.Models;
+using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,8 @@ namespace Services.IServices
         Task<OrderResponse> CreateOrder(Guid customerId,OrderRequest order);
         Task DeleteOrder(Guid Id);
         Task<OrderResponse> UpdateOrder(Guid Id, OrderRequest Order);
-        Task<IEnumerable<OrderResponse>> GetOrder();
+        Task<OrderResponse> UpdateOrderByQR(Guid Id);
+        Task<IEnumerable<Order>> GetOrder();
         Task<OrderResponse> GetOrderById(Guid Id);
     }
 }

@@ -27,7 +27,11 @@ namespace Repository
         public DbSet<Customize> Customizes { get; set; }
         public DbSet<CustomizeTopping> CustomizeToppings { get; set; }
         public DbSet<Size> Sizes { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Promotion> Promotions { get; set; }
 
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<OTPCode> OTPCodes { get; set; }
         public DbSet<Cart> Carts { get; set; }
 
         public DbSet<CartItem> CartItems { get; set; }
@@ -86,6 +90,12 @@ namespace Repository
                 .HasOne(ci => ci.Cart)
                 .WithMany(c => c.CartItems)
                 .HasForeignKey(ci => ci.CartId);
+
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.OrderItems)
+                .WithOne(oi => oi.Order)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

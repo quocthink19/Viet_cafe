@@ -17,5 +17,8 @@ namespace Services.IServices
         Task<IEnumerable<Customer>> GetCustomers();
         Task<Customer> GetCustomerById(Guid Id);
         Task<Customer?> GetCustomerByUsername(string username);
+        Task<bool> VerifyOTP(string username, string code);
+
+        Task SendOTP(Guid userId, string email);
     }
 }

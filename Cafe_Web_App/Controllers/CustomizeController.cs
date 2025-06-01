@@ -38,5 +38,6 @@ namespace Cafe_Web_App.Controllers
             var response = new TResponse<Customize>("lấy customize thành công", customize);
             return Ok(response);
         }
+       
     }
 }

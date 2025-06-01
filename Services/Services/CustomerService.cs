@@ -16,12 +16,14 @@ namespace Services.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
-        public CustomerService(IUnitOfWork unitOfWork, IUserService userService, IMapper mapper)
+        public CustomerService(IUnitOfWork unitOfWork, IUserService userService, IMapper mapper, IEmailService emailService)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _emailService = emailService;
         }
 
         public async Task<CustomerResponse> AddCustomer(AddCustomerRequest customerData)
@@ -48,14 +50,16 @@ namespace Services.Services
                     BirthDate = customerData.BirthDate,
                     FullName = customerData.FullName,
                     gender = customerData.gender,
+                    Verify = false,
                     Wallet = 0,
                     CreatedDate = DateTime.Now
                 };
 
-                var customerResponse = _mapper.Map<CustomerResponse>(newCustomer);
-
                 await _unitOfWork.CustomerRepo.AddAsync(newCustomer);
                 await _unitOfWork.SaveAsync();
+                var customerResponse = _mapper.Map<CustomerResponse>(newCustomer);
+
+                await SendOTP(newUser.Id, newUser.Email);
 
                 await _unitOfWork.CommitAsync();
                 return customerResponse;
@@ -144,6 +148,43 @@ namespace Services.Services
                 await _unitOfWork.RollbackAsync();
                 throw;
             }
+        }
+
+        public async Task<bool> VerifyOTP(string username, string code)
+        {
+            var user = await _userService.GetUserByUsername(username);
+            var otp = await _unitOfWork.OTPCodeRepo.GetValidCodeAsync(user, code);
+            if(otp == null || otp.IsUsed || otp.ExpiresAt < DateTime.UtcNow)
+            {
+                return false;
+            }
+            otp.IsUsed = true;
+            var customer = await _unitOfWork.CustomerRepo.GetCustomerByUserId(user.Id);
+            if (customer != null)
+            {
+                customer.Verify = true;
+            }
+            await _unitOfWork.SaveAsync();
+            return true;
+        }
+        public async Task SendOTP(Guid userId, string email)
+        {
+            var otp = new Random().Next(100000, 999999).ToString();
+
+            var OtpCode = new OTPCode
+            {
+                UserId = userId,
+                Code = otp,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(5),
+                IsUsed = false,
+            };
+           
+            await _unitOfWork.OTPCodeRepo.AddAsync(OtpCode);
+            await _unitOfWork.SaveAsync();
+
+            var body = $"Xin chào, mã OTP của bạn là: <b>{otp}</b>. Mã có hiệu lực trong 5 phút.";
+            await _emailService.SendEmail(email, "Xác minh tài khoản", body);
         }
     }
 }

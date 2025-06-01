@@ -16,6 +16,7 @@ namespace Cafe_Web_App.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+
         public UserController(IUserService serService)
         {
              _userService = serService;
@@ -24,10 +25,7 @@ namespace Cafe_Web_App.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequestt loginRequest)
         {
-            if (loginRequest == null || string.IsNullOrEmpty(loginRequest.Username) || string.IsNullOrEmpty(loginRequest.Password))
-            {
-                return BadRequest("Username và password không được để trống");
-            }
+              
             var token = await _userService.LoginAsync(loginRequest.Username, loginRequest.Password);
             var response = new TResponse<AuthResponse>("Đăng nhập thành công",token);
             return Ok(response);
