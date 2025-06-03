@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
+using Repository.Models.DTOs.Response;
 using Services.IServices;
 using Services.Services;
 using System.Security.Claims;
@@ -26,13 +27,21 @@ namespace Cafe_Web_App.Controllers
 
         [Authorize]
         [HttpPost("create")]
-        public ActionResult CreatePaymentUrl([FromBody] VnPayRequest dto)
+        public async  Task<ActionResult> CreatePaymentUrl([FromBody] OrderRequest dto)
         {
             try
             {
-
-                var paymentUrl = _vnPayService.CreatePaymentUrl(HttpContext, dto);
-                return Ok(paymentUrl);
+                var customer = await GetCurrentCustomer();
+                var order = await _orderService.CreateOrder(customer.Id, dto);
+                VnPayRequest vnPay = new VnPayRequest
+                {
+                    Amount = (double)order.TotalAmount,
+                    CreatedDate = DateTime.UtcNow,
+                    OrderId = order.Id
+                };
+                var paymentUrl = await  _vnPayService.CreatePaymentUrlAsync(HttpContext, vnPay);
+                var respone = new TResponse<string>("link thanh toán", paymentUrl);
+                return Ok(respone);
             }
             catch (Exception ex)
             {

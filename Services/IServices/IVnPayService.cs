@@ -8,6 +8,7 @@ namespace Services.IServices
     public interface IVnPayService
     {
         string CreatePaymentUrl(HttpContext context, VnPayRequest vnPayRequest);
+        Task<string> CreatePaymentUrlAsync(HttpContext context, VnPayRequest vnPayRequest);
         VnPayResponseDTO PaymentExcute(IQueryCollection collection);
     }
 }
