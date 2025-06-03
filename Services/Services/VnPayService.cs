@@ -44,13 +44,19 @@ namespace Services.Services
             vnpay.AddRequestData("vnp_Locale", _vnPayConfig.Locale);
 
             vnpay.AddRequestData("vnp_OrderInfo", "Thanh toán cho đơn hàng: " + vnPayRequest.OrderId);
-            vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
+            vnpay.AddRequestData("vnp_OrderType", "other"); 
             vnpay.AddRequestData("vnp_ReturnUrl", _vnPayConfig.ReturnUrl);
             vnpay.AddRequestData("vnp_TxnRef", vnPayRequest.OrderId.ToString());
 
             var paymentUrl = vnpay.CreateRequestUrl(_vnPayConfig.PaymentUrl, _vnPayConfig.HashSecret);
 
             return paymentUrl;
+        }
+
+        public Task<string> CreatePaymentUrlAsync(HttpContext context, VnPayRequest vnPayRequest)
+        {
+            var result = CreatePaymentUrl(context, vnPayRequest);
+            return Task.FromResult(result);
         }
 
         public VnPayResponseDTO PaymentExcute(IQueryCollection collection)
@@ -65,8 +71,8 @@ namespace Services.Services
                     vnpay.AddResponseData(key, value.ToString());
                 }
             }
-
-            var vnp_orderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
+            var vnp_orderId = vnpay.GetResponseData("vnp_TxnRef");
+           /* var vnp_orderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));*/
             var vnp_TransactionId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
             var vnp_SecureHash = collection.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
             var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
