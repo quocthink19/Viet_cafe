@@ -132,11 +132,9 @@ namespace Cafe_Web_App.Migrations
                     b.Property<double?>("Extra")
                         .HasColumnType("float");
 
-                    b.Property<string>("Ice")
+                    b.Property<string>("Note")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Milk")
-                        .HasColumnType("int");
 
                     b.Property<Guid?>("OrderItemId")
                         .HasColumnType("uniqueidentifier");
@@ -149,9 +147,6 @@ namespace Cafe_Web_App.Migrations
 
                     b.Property<Guid>("SizeId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Sugar")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -271,6 +266,33 @@ namespace Cafe_Web_App.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("Repository.Models.OrderSlotLimit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MaxCups")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxOrders")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SlotName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrderSlotLimits");
                 });
 
             modelBuilder.Entity("Repository.Models.Product", b =>

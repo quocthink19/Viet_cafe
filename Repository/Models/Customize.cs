@@ -11,12 +11,13 @@ namespace Repository.Models
     public class Customize
     {
         public Guid Id { get; set; }
-        public Level? Milk { get; set; }
+      /*public Level? Milk { get; set; }
         public Level? Ice { get; set; }
-        public Level? Sugar { get; set; }
+        public Level? Sugar { get; set; }*/
 
         /*public Temperature? Temperature { get; set; }*/
 
+        public string Note {  get; set; }
         public double? Extra { get; set; }
 
         public Guid SizeId { get; set; }

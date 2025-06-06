@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Cafe_Web_App.Migrations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Models;
@@ -17,12 +18,14 @@ namespace Cafe_Web_App.Controllers
         private readonly IVnPayService _vnPayService;
         private readonly IOrderService _orderService;
         private readonly ICustomerService _customerService;
+        private readonly ICartService _cartService;
 
-        public PaymentController(IVnPayService vnPayService, IOrderService orderService, ICustomerService customerService)
+        public PaymentController(IVnPayService vnPayService, IOrderService orderService, ICustomerService customerService, ICartService cartService)
         {
             _vnPayService = vnPayService;
             _orderService = orderService;
             _customerService = customerService;
+            _cartService = cartService;
         }
 
         [Authorize]
@@ -57,9 +60,17 @@ namespace Cafe_Web_App.Controllers
             {
                 try
                 {
-                    var vnpayRes = _vnPayService.PaymentExcute(Request.Query);
-
-                    if (!vnpayRes.IsSuccess)
+                 var vnpayRes = _vnPayService.PaymentExcute(Request.Query);
+                string orderIdStr = Request.Query["vnp_TxnRef"];
+                
+                if (!string.IsNullOrEmpty(orderIdStr) && Guid.TryParse(orderIdStr, out Guid orderId))
+                {
+                    Console.WriteLine($"Order ID nhận từ VNPAY: {orderId}");
+                    var customer = await _orderService.GetCustomerByOrderId(orderId);
+                    Console.WriteLine($"CustomerID: {customer.Id}");
+                    await _cartService.ClearCart(customer.Id);
+                }
+                if (!vnpayRes.IsSuccess)
                     {
                         return Ok("giao dịch thành công");
                     }

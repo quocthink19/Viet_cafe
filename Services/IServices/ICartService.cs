@@ -13,7 +13,7 @@ namespace Services.IServices
     {
         Task<Cart> GetCartByCustomerId(Guid CustomerId);
         Task<Cart> GetCartById(Guid Id);
-        Task<Cart> ClearCart(Guid Id);
+        Task<Cart> ClearCart(Guid customerId);
         Task<CartResponse> AddCustomizeToCart(Guid customerId,CustomizeRequest customizeRequest);
         Task<CartResponse> AddtoCart(Guid customerId,Guid CustomizeId);
         Task<Cart> UpdateCart(Guid customerId);

@@ -16,9 +16,7 @@ namespace Repository.Helper
 
             var productName = customize.Product?.Name ?? "Tên SP";
             var size = customize.Size?.Name ?? "Size?";
-            var ice = FormatLevel(customize.Ice, "đá");
-            var milk = FormatLevel(customize.Milk, "sữa");
-            var sugar = FormatLevel(customize.Sugar, "ngọt");
+            var note = customize.Note ?? "Note";
 
             var toppingList = customize.CustomizeToppings?
                 .Select(ct => ct.Topping?.Name)
@@ -29,18 +27,9 @@ namespace Repository.Helper
                 ? $"thêm: {string.Join(", ", toppingList)}"
                 : "không topping";
 
-            return $"{productName} size {size} {ice} {milk} {sugar} ,{toppings}";
+            return $"{productName} size {size} {note} ,{toppings}";
         }
-        private static string FormatLevel(Level? level, string label)
-        {
-            return level switch
-            {
-                Level.LESS => $"ít {label}",
-                Level.NORMAL => $"vừa {label}",
-                Level.MORE => $"nhiều {label}",
-                _ => $"mặc định {label}"
-            };
         }
     }
-}
+
 

@@ -15,6 +15,7 @@ namespace Repository.UnitOfWork
         IProductRepo ProductRepo { get; }
         ICustomizeToppingRepo CustomizeToppingRepo { get; }
         ICustomizeRepo CustomizeRepo { get; }
+        IOrderSlotLimitRepo OrderSlotLimitRepo { get; }
         ICartRepo CartRepo { get; }
         IOrderRepo OrderRepo { get; }
         IOTPCodeRepo OTPCodeRepo { get; }

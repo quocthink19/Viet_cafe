@@ -25,10 +25,10 @@ namespace Cafe_Web_App.Controllers
             return Ok(response);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TResponse<Product>>> GetProductById(Guid id)
+        [HttpGet("{Id}")]
+        public async Task<ActionResult<TResponse<Product>>> GetProductById(Guid Id)
         {
-            var Product = await _productService.GetProductById(id);
+            var Product = await _productService.GetProductById(Id);
             var response = new TResponse<Product>("Lấy Product thành công", Product);
             return Ok(response);
         }
@@ -41,25 +41,25 @@ namespace Cafe_Web_App.Controllers
             return Ok(response);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<TResponse<Product>>> UpdateProduct(Guid id, [FromBody] ProductRequest Product)
+        [HttpPut("{Id}")]
+        public async Task<ActionResult<TResponse<Product>>> UpdateProduct(Guid Id, [FromBody] ProductRequest Product)
         {
-            var updateProduct = await _productService.UpdateProduct(id, Product);
+            var updateProduct = await _productService.UpdateProduct(Id, Product);
             var response = new TResponse<Product>("Cập nhật Product thành công", updateProduct);
             return Ok(response);
         }
-        [HttpPut("Availlable/{id}")]
-        public async Task<ActionResult<TResponse<Product>>> UpdateAvaillableProduct(Guid id)
+        [HttpPut("Availlable/{Id}")]
+        public async Task<ActionResult<TResponse<Product>>> UpdateAvaillableProduct(Guid Id)
         {
-            var updateProduct = await _productService.UpdateAvaillableProduct(id);
+            var updateProduct = await _productService.UpdateAvaillableProduct(Id);
             var response = new TResponse<Product>("Cập nhật Product thành công", updateProduct);
             return Ok(response);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(Guid id)
+        [HttpDelete("{Id}")]
+        public async Task<IActionResult> DeleteProduct(Guid Id)
         {
-            await _productService.DeleteProduct(id);
+            await _productService.DeleteProduct(Id);
             return Ok(new { message = "Xóa Product thành công" });
         }
     }

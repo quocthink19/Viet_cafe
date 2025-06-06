@@ -13,9 +13,12 @@ namespace Services.IServices
     {
         Task<OrderResponse> CreateOrder(Guid customerId,OrderRequest order);
         Task DeleteOrder(Guid Id);
+        Task<Customer> GetCustomerByOrderId(Guid orderId);
         Task<OrderResponse> UpdateOrder(Guid Id, OrderRequest Order);
         Task<OrderResponse> UpdateOrderByQR(Guid Id);
         Task<IEnumerable<Order>> GetOrder();
+        Task<OrderResponse> updateStatusOrder(Guid Id, StatusOrderRequest status);
         Task<OrderResponse> GetOrderById(Guid Id);
+
     }
 }
