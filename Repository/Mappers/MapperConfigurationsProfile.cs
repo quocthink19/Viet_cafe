@@ -16,9 +16,9 @@ namespace Repository.Mappers
         {
             CreateMap<Product, ProductResponse>();
             CreateMap<Customize, CustomizeResponse>()
-            .ForMember(dest => dest.Milk, opt => opt.MapFrom(src => src.Milk.ToString()))
+        /*  .ForMember(dest => dest.Milk, opt => opt.MapFrom(src => src.Milk.ToString()))
             .ForMember(dest => dest.Ice, opt => opt.MapFrom(src => src.Ice.ToString()))
-            .ForMember(dest => dest.Sugar, opt => opt.MapFrom(src => src.Sugar.ToString()))
+            .ForMember(dest => dest.Sugar, opt => opt.MapFrom(src => src.Sugar.ToString()))*/
       //    .ForMember(dest => dest.Temperature, opt => opt.MapFrom(src => src.Temperature.ToString()))
             .ForMember(dest => dest.Size, opt => opt.MapFrom(src => src.Size.Name))
             .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product.Name))
@@ -39,6 +39,8 @@ namespace Repository.Mappers
             CreateMap<Order, OrderResponse>()
                 .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.FullName ))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+            CreateMap<OrderSlotLimitRequest,OrderSlotLimit>();
         }
     }
     }

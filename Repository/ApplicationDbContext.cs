@@ -29,12 +29,11 @@ namespace Repository
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Promotion> Promotions { get; set; }
-
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<OTPCode> OTPCodes { get; set; }
         public DbSet<Cart> Carts { get; set; }
-
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<OrderSlotLimit> OrderSlotLimits { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -69,14 +68,14 @@ namespace Repository
                 .HasForeignKey(ct => ct.ToppingId);
 
             
-            modelBuilder.Entity<Customize>()
+           /* modelBuilder.Entity<Customize>()
                 .Property(c => c.Ice)
                 .HasConversion<string>();
 
             modelBuilder.Entity<Customize>()
                 .Property(c => c.Sugar)
                 .HasConversion<string>();
-
+*/
            /* modelBuilder.Entity<Customize>()
                 .Property(c => c.Temperature)
                 .HasConversion<string>();*/

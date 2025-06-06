@@ -24,5 +24,30 @@ namespace Repository.Repositories
                 .Include(o => o.OrderItems)
                 .ToListAsync();
         }
+        public async Task<Customer> GetCustomerByOrderId(Guid orderId)
+        {
+            var order =  await _context.Orders
+                .Include(c => c.Customer)
+                .Where(o => o.Id == orderId)
+                .FirstOrDefaultAsync();
+
+            return order.Customer;
+        }
+
+        public async Task<int> GetOrdersCountAsync(DateTime start, DateTime end)
+        {
+               int totalOrders = await _context.Orders
+               .Where(o => o.PickUpTime >= start && o.PickUpTime <= end)
+               .CountAsync();
+            return totalOrders;
+        }
+        public async Task<int> GetTotalCupsByPickUpTimeAsync(DateTime start, DateTime end)
+        {
+            int totalCups = await _context.OrderItems
+                .Where(oi => oi.Order.PickUpTime >= start && oi.Order.PickUpTime <= end)
+                .SumAsync(oi => oi.Quantity ?? 0);
+
+            return totalCups;
+        }
     }
 }

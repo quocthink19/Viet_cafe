@@ -54,9 +54,7 @@ namespace Services.Services
                     var newCustomize = new Customize
                     {
                         Id = Guid.NewGuid(),
-                        Milk = customizeRequest.Milk,
-                        Ice = customizeRequest.Ice,
-                        Sugar = customizeRequest.Sugar,
+                        Note  = customizeRequest.Note,
                         SizeId = customizeRequest.SizeId,
                         ProductId = customizeRequest.ProductId,
                         Extra = 0,

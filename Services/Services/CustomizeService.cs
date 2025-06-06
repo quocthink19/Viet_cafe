@@ -42,10 +42,7 @@ namespace Services.Services
                 var newCustomize = new Customize
                 {
                     Id = Guid.NewGuid(), 
-                    Milk = customize.Milk,
-                    Ice = customize.Ice,
-                    Sugar = customize.Sugar,
-                //  Temperature = customize.Temperature,
+                    Note = customize.Note,
                     SizeId = customize.SizeId,
                     ProductId = customize.ProductId,
                     Extra = 0, 
@@ -130,9 +127,7 @@ namespace Services.Services
                 .Where(c =>
             c.ProductId == customize.ProductId &&
             c.SizeId == customize.SizeId &&
-            c.Milk == customize.Milk &&
-            c.Ice == customize.Ice &&
-            c.Sugar == customize.Sugar
+            c.Note == customize.Note 
             ).Include(c => c.CustomizeToppings)
             .ToListAsync();
             foreach (var cus in existingCustomizes)
@@ -173,12 +168,7 @@ namespace Services.Services
             try
             {
                 var customize = await GetCustomizeById(Id);
-
-                
-                customize.Milk = customizeRequest.Milk;
-                customize.Ice = customizeRequest.Ice;
-                customize.Sugar = customizeRequest.Sugar;
-        //      customize.Temperature = customizeRequest.Temperature;
+                customize.Note = customizeRequest.Note ;
                 customize.SizeId = customizeRequest.SizeId;
                 customize.ProductId = customizeRequest.ProductId;
 

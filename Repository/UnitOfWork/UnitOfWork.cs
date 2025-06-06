@@ -17,6 +17,7 @@ namespace Repository.UnitOfWork
         public IToppingRepo ToppingRepo { get; }
         public IProductRepo ProductRepo { get; }
         public IOrderRepo OrderRepo { get; }
+        public IOrderSlotLimitRepo OrderSlotLimitRepo { get; }
         public ICartRepo CartRepo { get; }
         public ICustomizeRepo CustomizeRepo { get; }
         public ICustomizeToppingRepo CustomizeToppingRepo { get; }
@@ -26,7 +27,7 @@ namespace Repository.UnitOfWork
         private IDbContextTransaction _transaction;
         public UnitOfWork(ApplicationDbContext context, ICustomerRepo customerRepo, IUserRepo userRepo,
             ICartRepo cartRepo, IProductRepo productRepo, ICustomizeRepo customizeRepo, ICustomizeToppingRepo customizeToppingRepo,
-            IOTPCodeRepo oTPCodeRepo, IOrderRepo orderRepo)
+            IOTPCodeRepo oTPCodeRepo, IOrderRepo orderRepo, IOrderSlotLimitRepo orderSlotLimitRepo)
         {
             _context = context;
             CustomerRepo = customerRepo;
@@ -37,6 +38,7 @@ namespace Repository.UnitOfWork
             CartRepo = cartRepo;
             OTPCodeRepo = oTPCodeRepo;
             OrderRepo = orderRepo;
+            OrderSlotLimitRepo = orderSlotLimitRepo;
         }
 
         public async Task<int> SaveAsync()

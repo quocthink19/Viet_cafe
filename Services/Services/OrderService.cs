@@ -7,6 +7,7 @@ using Repository.Models.DTOs.Response;
 using Repository.UnitOfWork;
 using Services.IServices;
 using QRCoder;
+using Repository.Models.Enum;
 
 namespace Services.Services
 {
@@ -28,6 +29,9 @@ namespace Services.Services
 
             var cart = await _unitOfWork.CartRepo.GetCartByCustomerId(customerId);
             Promotion promotion = null;
+
+            int totalProductQuantity = cart.CartItems?.Sum(item => item.Quantity ?? 0) ?? 0;
+
 
             if (!string.IsNullOrEmpty(order.Code))
             {
@@ -68,14 +72,27 @@ namespace Services.Services
                 DiscountPrice = discountPrice,
             };
 
+            var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(newOrder.PickUpTime);
+            var orderCount = await _unitOfWork.OrderRepo.GetOrdersCountAsync(orderLimit.StartedAt, orderLimit.EndTime);
+            var cupCount = await _unitOfWork.OrderRepo.GetTotalCupsByPickUpTimeAsync(orderLimit.StartedAt, orderLimit.EndTime);
 
-            string qrContent = $"https://localhost:7207/Orders/update-by-qr/{newOrder.Id}";
+            if (orderLimit.MaxOrders <= orderCount || orderLimit.MaxCups <= cupCount)
+            {
+                throw new Exception("hiện tại đã đơn hàng đã quá tải vui lòng đặt lại sau");
+            }
+            
+           
+            string qrContent = $"https://localhost:7207/Order/update-by-qr/{newOrder.Id}";
             newOrder.QRcode = GenerateQrCodeBase64(qrContent);
+
+            
 
             try
             {
                 await _unitOfWork.OrderRepo.AddAsync(newOrder);
+           
                 await _unitOfWork.SaveAsync();
+               
             }
             catch (Exception ex)
             {
@@ -94,6 +111,13 @@ namespace Services.Services
             var order = await GetOrderById(Id);
             await _unitOfWork.OrderRepo.DeleteAsync(Id);
             await _unitOfWork.SaveAsync();
+            
+        }
+
+        public async Task<Customer> GetCustomerByOrderId(Guid orderId)
+        {
+            var customer = await _unitOfWork.OrderRepo.GetCustomerByOrderId(orderId);
+            return customer;
         }
 
         public async Task<IEnumerable<Order>> GetOrder()
@@ -130,6 +154,56 @@ namespace Services.Services
             var res = _mapper.Map<OrderResponse>(order);
             return res;
         }
+
+        public async Task<OrderResponse> updateStatusOrder(Guid id, StatusOrderRequest status)
+        {
+            var order = await _unitOfWork.OrderRepo.GetByIdAsync(id);
+            if (order == null)
+            {
+                throw new Exception("Không tìm thấy đơn hàng");
+            }
+
+            var newStatus = status.Status;
+            var currentStatus = order.Status;
+
+            if (currentStatus == OrderStatus.CANCELLED)
+            {
+                throw new Exception("Đơn hàng đã bị hủy, không thể cập nhật trạng thái");
+            }
+
+            if (newStatus == OrderStatus.COMPLETED)
+            {
+                if (currentStatus == OrderStatus.NEW)
+                {
+                    throw new Exception("Đơn hàng chưa được xác nhận nên không thể chuyển trạng thái lên hoàn thành");
+                }
+                if (currentStatus == OrderStatus.PREPARING)
+                {
+                    throw new Exception("Đơn hàng chưa được chuẩn bị xong nên không thể chuyển trạng thái lên hoàn thành");
+                }
+            }
+            if (newStatus == OrderStatus.READYFORPICKUP)
+            {
+                if (currentStatus == OrderStatus.NEW)
+                {
+                    throw new Exception("Đơn hàng chưa được xác nhận nên không thể chuyển sang trạng thái có thể nhận");
+                }
+                if (currentStatus == OrderStatus.CONFIRMED)
+                {
+                    throw new Exception("Đơn hàng chưa được chuẩn bị nên không thể chuyển sang trạng thái có thể nhận");
+                }
+            }
+            if (newStatus == OrderStatus.CANCELLED && currentStatus == OrderStatus.COMPLETED)
+            {
+                throw new Exception("Đơn hàng đã hoàn thành nên không thể hủy");
+            }
+
+            order.Status = newStatus;
+            await _unitOfWork.OrderRepo.UpdateAsync(order);
+            await _unitOfWork.SaveAsync();
+            return null;
+        }
+
         private string GenerateQrCodeBase64(string content)
         {
             using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
