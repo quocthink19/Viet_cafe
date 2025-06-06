@@ -31,7 +31,7 @@ namespace Cafe_Web_App.Controllers
             var response = new TResponse<CartResponse>("thêm sản phẩm vào giỏ hàng thành công", cart);
             return Ok(response);
         }
-
+/*
         [Authorize]
      [HttpPost("add-to-cart")]
     public async Task<ActionResult<CartResponse>> AddToCart([FromBody] AddToCartRequest customize)
@@ -40,7 +40,7 @@ namespace Cafe_Web_App.Controllers
             var cart = await _cartService.AddtoCart(customer.Id, customize.CustomizeId);
             var response = new TResponse<CartResponse>("thêm sản phẩm vào giỏ hàng thành công", cart);
             return Ok(response);
-        }
+        }*/
         [Authorize]
         [HttpGet("get-cart-by-customer")]
         public async Task<ActionResult<CartResponse>> GetCartByCustomer()
