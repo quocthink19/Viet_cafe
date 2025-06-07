@@ -31,7 +31,7 @@ namespace Repository.Mappers
 
             CreateMap<CartItem, OrderItem>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Description));
-
+            CreateMap<Customize, CustomerResponse>();
             CreateMap<Customer, CustomerResponse>();
             CreateMap<CustomizeTopping, CustomizeToppingResponse>()
           .ForMember(dest => dest.Topping, opt => opt.MapFrom(src => src.Topping.Name));

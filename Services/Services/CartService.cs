@@ -108,7 +108,8 @@ namespace Services.Services
                         Quantity = 1,
                         UnitPrice = customizeToUse.Price,
                         CartId = cart.Id,
-                        Description = CustomizeHelper.BuildDescription(customizeToUse)
+                        Customize = customizeToUse
+                        //   Description = CustomizeHelper.BuildDescription(customizeToUse)
                     };
                     cart.TotalAmount += customizeToUse.Price;
                     await _unitOfWork.CartRepo.InsertCartItemAsync(newItem);
