@@ -6,6 +6,8 @@ using Repository.Models;
 using Repository.Repositories;
 using Repository.UnitOfWork;
 using System.Reflection;
+using Services.Services;
+using Services.IServices;
 
 namespace Cafe_Web_App.Extensions
 {
@@ -28,13 +30,16 @@ namespace Cafe_Web_App.Extensions
 
     public static void ConfigureServices(this IServiceCollection services)
     {
-        services.Scan(scan => scan
+           
+            services.Scan(scan => scan
             .FromAssemblies(Assembly.Load("Services"))
             .AddClasses(classes => classes
                 .Where(type => type.Namespace == "Services.Services" && type.Name.EndsWith("Service")))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
-    }
+            services.AddScoped<PaymentBusiness>();
+        }
+     
     public static void ConfigureUtilities(this IServiceCollection services)
     {
         services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();

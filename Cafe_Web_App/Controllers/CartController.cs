@@ -51,13 +51,24 @@ namespace Cafe_Web_App.Controllers
                var response = new TResponse<CartResponse>("lấy giỏ hàng thành công", res);
                 return Ok(response);
             }
+        [Authorize]
+        [HttpGet("{Id}")]
+        public async Task<ActionResult<CartResponse>> GetCartById(Guid Id)
+        {
+            var customer = await GetCurrentCustomer();
+            var cart = await _cartService.GetCartById(Id);
+            var res = _mapper.Map<CartResponse>(cart);
+            var response = new TResponse<CartResponse>("lấy giỏ hàng thành công", res);
+            return Ok(response);
+        }
 
         [Authorize]
         [HttpPost("clear-cart")] 
-        public async Task<ActionResult<Cart>> ClearCart()
+        public async Task<ActionResult<CartResponse>> ClearCart()
         {
             var customer = await GetCurrentCustomer();
             var cart = await _cartService.ClearCart(customer.Id);
+            var res = _mapper.Map<CartResponse>(cart);
             var response = new TResponse<Cart>("clear giỏ hàng thành công", cart);
             return Ok(response);
         }
