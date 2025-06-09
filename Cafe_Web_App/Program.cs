@@ -28,13 +28,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         sqlOptions => sqlOptions.MigrationsAssembly("Cafe_Web_App")
     )
 );
-
+builder.Services.Configure<PayOSSettings>(builder.Configuration.GetSection("PayOSSettings"));
+builder.Services.AddScoped(sp => sp.GetRequiredService<IOptions<PayOSSettings>>().Value);
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 
 builder.Services.AddRepoBase();
 builder.Services.ConfigureRepositories();
 builder.Services.ConfigureServices();
 builder.Services.ConfigureUtilities();
+builder.Services.AddControllersWithViews();
 
 /*builder.Services.AddControllers()
     .AddJsonOptions(options =>

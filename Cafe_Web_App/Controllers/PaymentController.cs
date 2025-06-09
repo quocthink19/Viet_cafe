@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Repository.Helper;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
 using Services.IServices;
 using Services.Services;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text;
 
 namespace Cafe_Web_App.Controllers
 {
@@ -19,13 +22,51 @@ namespace Cafe_Web_App.Controllers
         private readonly IOrderService _orderService;
         private readonly ICustomerService _customerService;
         private readonly ICartService _cartService;
+        private readonly PaymentBusiness _paymentBusiness;
 
-        public PaymentController(IVnPayService vnPayService, IOrderService orderService, ICustomerService customerService, ICartService cartService)
+        public PaymentController(IVnPayService vnPayService, IOrderService orderService, ICustomerService customerService, 
+            ICartService cartService, PaymentBusiness paymentBusiness)
         {
             _vnPayService = vnPayService;
             _orderService = orderService;
             _customerService = customerService;
             _cartService = cartService;
+            _paymentBusiness = paymentBusiness;
+        }
+        [HttpGet("create-payos")]
+        public async Task<IActionResult> CreatePayment(int amount, long orderCode)
+        {
+            var checkoutUrl = await _paymentBusiness.GetPaymentUrlAsync(amount, orderCode);
+            return Redirect(checkoutUrl);
+        }
+        [HttpPost("webhook")]
+        public async Task<IActionResult> Webhook()
+        {
+            using var reader = new StreamReader(Request.Body);
+            var body = await reader.ReadToEndAsync();
+
+            var signatureFromHeader = Request.Headers["x-signature"];
+            var checksumKey = _paymentBusiness.GetChecksumKey();
+
+            var computedSignature = ComputeHmacSHA256(body, checksumKey);
+            if (!string.Equals(signatureFromHeader, computedSignature, StringComparison.OrdinalIgnoreCase))
+            {
+                return Unauthorized("Invalid signature");
+            }
+
+            var payload = JsonSerializer.Deserialize<WebhookPayload>(body);
+            await _paymentBusiness.ProcessWebhookAsync(payload);
+
+            return Ok();
+        }
+
+        private string ComputeHmacSHA256(string data, string key)
+        {
+            var keyBytes = Encoding.UTF8.GetBytes(key);
+            using var hmac = new System.Security.Cryptography.HMACSHA256(keyBytes);
+            var dataBytes = Encoding.UTF8.GetBytes(data);
+            var hashBytes = hmac.ComputeHash(dataBytes);
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }
 
         [Authorize]

@@ -35,8 +35,16 @@ namespace Repository.Repositories
         public async Task<Cart?> GetCartById(Guid Id)
         {
             return await _context.Carts
-                .Include(c => c.CartItems )
-                .ThenInclude(ci =>ci.Customize)
+                .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Customize)
+                        .ThenInclude(cz => cz.Size)
+                .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Customize)
+                        .ThenInclude(cz => cz.Product)
+                .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Customize)
+                        .ThenInclude(cz => cz.CustomizeToppings)
+                            .ThenInclude(ct => ct.Topping)
                 .FirstOrDefaultAsync(c => c.Id == Id);
         }
 
