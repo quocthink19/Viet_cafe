@@ -25,7 +25,14 @@ namespace Services.Services
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _emailService = emailService;
         }
-
+        public async Task<CustomerResponse> TopUpWallet(Guid customerId, double amount)
+        {
+            var customer = await GetCustomerById(customerId);
+            customer.Wallet += (decimal)amount ;
+            await _unitOfWork.CustomerRepo.Update(customer);
+            await _unitOfWork.SaveAsync();   
+            return _mapper.Map<CustomerResponse>(customer);
+        }
         public async Task<CustomerResponse> AddCustomer(AddCustomerRequest customerData)
         {
             if (customerData == null)
@@ -47,9 +54,7 @@ namespace Services.Services
                 var newCustomer = new Customer
                 {
                     UserId = newUser.Id,
-                    BirthDate = customerData.BirthDate,
-                    FullName = customerData.FullName,
-                    gender = customerData.gender,
+                 
                     Verify = false,
                     Wallet = 0,
                     CreatedDate = DateTime.Now
@@ -98,6 +103,16 @@ namespace Services.Services
                 throw new Exception("Không tìm thấy khách hàng này");
 
             return customer;
+        }
+
+        public async Task<CustomerResponse> GetById(Guid Id)
+        {
+            var customer = await _unitOfWork.CustomerRepo.GetByIdAsync(Id);
+            if (customer == null)
+                throw new Exception("Không tìm thấy khách hàng này");
+
+            return _mapper.Map<CustomerResponse>(customer);
+
         }
 
         public async Task<Customer?> GetCustomerByUsername(string username)

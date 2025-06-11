@@ -12,6 +12,7 @@ using System.Text.Json.Serialization;
 using Repository.Models;
 using Repository.Helper;
 using Microsoft.Extensions.Options;
+using Net.payOS;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,7 +78,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
-
 
 
 builder.Services.AddSwaggerGen(c =>

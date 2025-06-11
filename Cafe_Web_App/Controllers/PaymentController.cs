@@ -22,53 +22,27 @@ namespace Cafe_Web_App.Controllers
         private readonly IOrderService _orderService;
         private readonly ICustomerService _customerService;
         private readonly ICartService _cartService;
-        private readonly PaymentBusiness _paymentBusiness;
+
 
         public PaymentController(IVnPayService vnPayService, IOrderService orderService, ICustomerService customerService, 
-            ICartService cartService, PaymentBusiness paymentBusiness)
+            ICartService cartService)
         {
             _vnPayService = vnPayService;
             _orderService = orderService;
             _customerService = customerService;
             _cartService = cartService;
-            _paymentBusiness = paymentBusiness;
-        }
-        [HttpGet("create-payos")]
-        public async Task<IActionResult> CreatePayment(int amount, long orderCode)
-        {
-            var checkoutUrl = await _paymentBusiness.GetPaymentUrlAsync(amount, orderCode);
-            return Redirect(checkoutUrl);
-        }
-        [HttpPost("webhook")]
-        public async Task<IActionResult> Webhook()
-        {
-            using var reader = new StreamReader(Request.Body);
-            var body = await reader.ReadToEndAsync();
-
-            var signatureFromHeader = Request.Headers["x-signature"];
-            var checksumKey = _paymentBusiness.GetChecksumKey();
-
-            var computedSignature = ComputeHmacSHA256(body, checksumKey);
-            if (!string.Equals(signatureFromHeader, computedSignature, StringComparison.OrdinalIgnoreCase))
-            {
-                return Unauthorized("Invalid signature");
-            }
-
-            var payload = JsonSerializer.Deserialize<WebhookPayload>(body);
-            await _paymentBusiness.ProcessWebhookAsync(payload);
-
-            return Ok();
+         
         }
 
-        private string ComputeHmacSHA256(string data, string key)
-        {
-            var keyBytes = Encoding.UTF8.GetBytes(key);
-            using var hmac = new System.Security.Cryptography.HMACSHA256(keyBytes);
-            var dataBytes = Encoding.UTF8.GetBytes(data);
-            var hashBytes = hmac.ComputeHash(dataBytes);
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-        }
-
+        [Authorize]
+        [HttpPost("payment-by-wallet")]
+        public async Task<ActionResult<OrderResponse>> PaymentByWallet([FromBody] OrderRequest dto) {
+            var customer = await GetCurrentCustomer();
+            var order = await _orderService.CreateOrderWallet(customer.Id, dto);
+            var respnose = new TResponse<OrderResponse>("Đơn hàng thanh toán bằng ví đã được tạo thành công", order);
+            return Ok(respnose);
+    }
+        
         [Authorize]
         [HttpPost("create")]
         public async  Task<ActionResult> CreatePaymentUrl([FromBody] OrderRequest dto)
@@ -95,6 +69,24 @@ namespace Cafe_Web_App.Controllers
                 return BadRequest();
             }
         }
+        [Authorize]
+        [HttpPut("up-to-wallet")]
+        public async Task<ActionResult> UpToWallet([FromBody] UpToWalletRequest dto)
+        {
+            var customer = await GetCurrentCustomer();
+            var orderId = $"{customer.Id.ToString("N").Substring(0, 8)}-{DateTime.UtcNow.Ticks}";
+            VnPayRequest vnPay = new VnPayRequest
+            {
+                Amount = (double)dto.Amount,
+                CreatedDate = DateTime.UtcNow,
+                OrderId = Guid.NewGuid(),
+                CustomerId = customer.Id                
+            };
+            var paymentUrl = await _vnPayService.CreatePaymentUrlAsync(HttpContext, vnPay);
+            var respone = new TResponse<string>("link thanh toán", paymentUrl);
+            return Ok(respone);
+        }
+    
 
             [HttpGet("return")]
             public async Task<ActionResult> PaymentResponse()
@@ -103,13 +95,18 @@ namespace Cafe_Web_App.Controllers
                 {
                  var vnpayRes = _vnPayService.PaymentExcute(Request.Query);
                 string orderIdStr = Request.Query["vnp_TxnRef"];
-                
+                string vnpAmount = Request.Query["vnp_Amount"]; 
+                Console.WriteLine($"Số tiền nhận từ VNPAY (vnp_Amount): {vnpAmount}");
+
                 if (!string.IsNullOrEmpty(orderIdStr) && Guid.TryParse(orderIdStr, out Guid orderId))
                 {
                     Console.WriteLine($"Order ID nhận từ VNPAY: {orderId}");
                     var customer = await _orderService.GetCustomerByOrderId(orderId);
-                    Console.WriteLine($"CustomerID: {customer.Id}");
-                    await _cartService.ClearCart(customer.Id);
+                    if (customer != null)
+                    {
+                        await _cartService.ClearCart(customer.Id);
+                    }
+
                 }
                 if (!vnpayRes.IsSuccess)
                     {
@@ -125,6 +122,7 @@ namespace Cafe_Web_App.Controllers
                     return BadRequest("Đã xảy ra lỗi trong quá trình xử lý. Vui lòng thử lại sau ít phút nữa.");
                 }
             }
+
             private async Task<Customer?> GetCurrentCustomer()
             {
                 var username = User.FindFirst(ClaimTypes.Name)?.Value;

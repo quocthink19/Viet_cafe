@@ -23,16 +23,5 @@ namespace Repository.Models.DTOs.Request
         [EmailAddress(ErrorMessage = "Email không đúng định dạng.")]
         public string? Email { get; set; }
 
-        [Required(ErrorMessage = "Họ và tên là bắt buộc.")]
-        [StringLength(100, ErrorMessage = "Họ và tên không được vượt quá 100 ký tự.")]
-        public string? FullName { get; set; }
-
-        [Required(ErrorMessage = "Ngày sinh là bắt buộc.")]
-        [DataType(DataType.Date, ErrorMessage = "Ngày sinh không hợp lệ.")]
-        public DateTime? BirthDate { get; set; }
-
-        [Required(ErrorMessage = "Giới tính là bắt buộc.")]
-        [EnumDataType(typeof(Gender), ErrorMessage = "Giới tính không hợp lệ.")]
-        public Gender? gender { get; set; }
     }
 }

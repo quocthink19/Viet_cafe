@@ -31,7 +31,7 @@ namespace Services.Services
             vnpay.AddRequestData("vnp_Version", _vnPayConfig.Version);
             vnpay.AddRequestData("vnp_Command", _vnPayConfig.Command);
             vnpay.AddRequestData("vnp_TmnCode", _vnPayConfig.TmnCode);
-            vnpay.AddRequestData("vnp_Amount", (vnPayRequest.Amount * 100).ToString()); //Số tiền thanh toán. Số tiền không 
+            vnpay.AddRequestData("vnp_Amount", (vnPayRequest.Amount * 100).ToString()); 
                                                                                       
 
             Console.BackgroundColor = ConsoleColor.Green;
