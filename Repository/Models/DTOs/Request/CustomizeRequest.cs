@@ -14,6 +14,7 @@ namespace Repository.Models.DTOs.Request
         public string Note {  get; set; }
         public Guid SizeId { get; set; }
         public Guid ProductId { get; set; }
+        public int Quanity { get; set; }
         public List<CustomizeToppingDto> CustomizeToppings { get; set; } = new();
 
     }

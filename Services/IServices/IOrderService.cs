@@ -17,6 +17,7 @@ namespace Services.IServices
         Task<OrderResponse> UpdateOrder(Guid Id, OrderRequest Order);
         Task<OrderResponse> UpdateOrderByQR(Guid Id);
         Task<IEnumerable<Order>> GetOrder();
+        Task<OrderResponse> CreateOrderWallet(Guid customerId, OrderRequest order);
         Task<OrderResponse> updateStatusOrder(Guid Id, StatusOrderRequest status);
         Task<OrderResponse> GetOrderById(Guid Id);
 

@@ -60,7 +60,9 @@ namespace Services.Services
             return new AuthResponse
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken,
+                customerId = customer.Id,
+                customerName = customer.FullName
             };
         }
 

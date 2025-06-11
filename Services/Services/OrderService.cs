@@ -22,6 +22,102 @@ namespace Services.Services
             _mapper = mapper;
             _promotionRepo =promotionRepo;
         }
+        public async Task<OrderResponse> CreateOrderWallet(Guid customerId, OrderRequest order)
+        {
+            double? finalPrice = 0;
+            double? discountPrice = 0;
+
+            var cart = await _unitOfWork.CartRepo.GetCartByCustomerId(customerId);
+            var customer = await _unitOfWork.CustomerRepo.GetByIdAsync(customerId);
+            Promotion promotion = null;
+            
+            int totalProductQuantity = cart.CartItems?.Sum(item => item.Quantity ?? 0) ?? 0;
+
+
+            if (!string.IsNullOrEmpty(order.Code))
+            {
+                promotion = await _promotionRepo.GetPromotionByCode(order.Code);
+
+                if (promotion != null && promotion.DiscountPercent.HasValue)
+                {
+                    discountPrice = cart.TotalAmount * (promotion.DiscountPercent.Value / 100);
+                    finalPrice = cart.TotalAmount - discountPrice;
+                }
+                else
+                {
+                    finalPrice = cart.TotalAmount;
+                }
+            }
+            else
+            {
+                finalPrice = cart.TotalAmount;
+            }
+            var orderId = Guid.NewGuid();
+            var item = _mapper.Map<List<OrderItem>>(cart.CartItems);
+            foreach (var orderItem in item)
+            {
+                orderItem.Id = Guid.NewGuid();
+                orderItem.OrderId = orderId;
+            }
+
+            var newOrder = new Order
+            {
+                Id = orderId,
+                CustomerId = customerId,
+                Payment = order.Paymemt,
+                Status = Repository.Models.Enum.OrderStatus.NEW,
+                PickUpTime = order.PickUpTime,
+                OrderItems = item,
+                TotalAmount = finalPrice,
+                FinalPrice = finalPrice,
+                DiscountPrice = discountPrice,
+            };
+
+            if(customer.Wallet - (decimal)newOrder.FinalPrice >= 0)
+            {
+                customer.Wallet = customer.Wallet - (decimal)newOrder.FinalPrice;
+            }else
+            {
+                throw new Exception("ví của bạn không đủ để thanh toán đơn hàng này ");
+            }
+            
+            var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(newOrder.PickUpTime);
+            if (orderLimit != null)
+            {
+                var orderCount = await _unitOfWork.OrderRepo.GetOrdersCountAsync(orderLimit.StartedAt, orderLimit.EndTime);
+                var cupCount = await _unitOfWork.OrderRepo.GetTotalCupsByPickUpTimeAsync(orderLimit.StartedAt, orderLimit.EndTime);
+
+                if (orderLimit.MaxOrders <= orderCount || orderLimit.MaxCups <= cupCount)
+                {
+                    throw new Exception("Hiện tại đơn hàng đã quá tải, vui lòng đặt lại sau");
+                }
+            }
+
+            string qrContent = $"https://localhost:7207/Order/update-by-qr/{newOrder.Id}";
+            newOrder.QRcode = GenerateQrCodeBase64(qrContent);
+
+
+
+            try
+            {
+                await _unitOfWork.CustomerRepo.UpdateAsync(customer);
+                await _unitOfWork.OrderRepo.AddAsync(newOrder);
+
+                await _unitOfWork.SaveAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi khi lưu đơn hàng:");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException?.Message);
+                throw;
+            }
+
+            var response = _mapper.Map<OrderResponse>(newOrder);
+            return response;
+        }
+
         public async Task<OrderResponse> CreateOrder(Guid customerId, OrderRequest order)
         {
             double? finalPrice = 0;
@@ -73,15 +169,18 @@ namespace Services.Services
             };
 
             var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(newOrder.PickUpTime);
-            var orderCount = await _unitOfWork.OrderRepo.GetOrdersCountAsync(orderLimit.StartedAt, orderLimit.EndTime);
-            var cupCount = await _unitOfWork.OrderRepo.GetTotalCupsByPickUpTimeAsync(orderLimit.StartedAt, orderLimit.EndTime);
-
-            if (orderLimit.MaxOrders <= orderCount || orderLimit.MaxCups <= cupCount)
+            if (orderLimit != null)
             {
-                throw new Exception("hiện tại đã đơn hàng đã quá tải vui lòng đặt lại sau");
+                var orderCount = await _unitOfWork.OrderRepo.GetOrdersCountAsync(orderLimit.StartedAt, orderLimit.EndTime);
+                var cupCount = await _unitOfWork.OrderRepo.GetTotalCupsByPickUpTimeAsync(orderLimit.StartedAt, orderLimit.EndTime);
+
+                if (orderLimit.MaxOrders <= orderCount || orderLimit.MaxCups <= cupCount)
+                {
+                    throw new Exception("Hiện tại đơn hàng đã quá tải, vui lòng đặt lại sau");
+                }
             }
-            
-           
+
+
             string qrContent = $"https://localhost:7207/Order/update-by-qr/{newOrder.Id}";
             newOrder.QRcode = GenerateQrCodeBase64(qrContent);
 
@@ -105,6 +204,8 @@ namespace Services.Services
             var response = _mapper.Map<OrderResponse>(newOrder);
             return response;
         }
+
+
 
         public async Task DeleteOrder(Guid Id)
         {
