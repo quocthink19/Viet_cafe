@@ -36,16 +36,25 @@ namespace Services.Services
 
         public async Task<CartResponse> AddCustomizeToCart(Guid customerId, CustomizeRequest customizeRequest)
         {
-           await _unitOfWork.BeginTransactionAsync();
+            await _unitOfWork.BeginTransactionAsync();
             try
             {
+                // Lọc topping null/rỗng cho chắc chắn
+                var filteredToppings = (customizeRequest.CustomizeToppings ?? new List<CustomizeToppingDto>())
+                    .Where(t => t != null && t.ToppingId != Guid.Empty)
+                    .ToList();
+
+                // Cập nhật customizeRequest với danh sách topping đã lọc (nếu cần)
+                customizeRequest.CustomizeToppings = filteredToppings;
+
                 var existingCustomize = await _customizeService.GetExistingCustomizeAsync(customizeRequest);
                 Customize customizeToUse;
 
                 if (existingCustomize != null)
                 {
                     customizeToUse = existingCustomize;
-                }else
+                }
+                else
                 {
                     var size = await _sizeService.GetSizeById(customizeRequest.SizeId);
                     var product = await _productService.GetProductById(customizeRequest.ProductId);
@@ -54,7 +63,7 @@ namespace Services.Services
                     var newCustomize = new Customize
                     {
                         Id = Guid.NewGuid(),
-                        Note  = customizeRequest.Note,
+                        Note = customizeRequest.Note,
                         SizeId = customizeRequest.SizeId,
                         ProductId = customizeRequest.ProductId,
                         Extra = 0,
@@ -62,13 +71,10 @@ namespace Services.Services
                     };
                     var toppingList = new List<CustomizeTopping>();
 
-                    if (customizeRequest.CustomizeToppings?.Any() == true)
+                    if (filteredToppings.Any())
                     {
-                        foreach (var topping in customizeRequest.CustomizeToppings)
+                        foreach (var topping in filteredToppings)
                         {
-                            if (topping == null || topping.ToppingId == Guid.Empty)
-                                continue;
-
                             var toppingEntity = await _toppingService.GetToppingById(topping.ToppingId);
                             if (toppingEntity == null)
                                 continue;
@@ -91,13 +97,14 @@ namespace Services.Services
                     await _unitOfWork.CustomizeRepo.AddAsync(newCustomize);
                     customizeToUse = newCustomize;
                 }
+
                 var cart = await GetCartByCustomerId(customerId);
                 var existingItem = await _unitOfWork.CartRepo.GetCartItem(cart.Id, customizeToUse.Id);
 
                 if (existingItem != null)
                 {
                     existingItem.Quantity += customizeRequest.Quanity;
-                    cart.TotalAmount += customizeToUse.Price;
+                    cart.TotalAmount += customizeToUse.Price * customizeRequest.Quanity;
                 }
                 else
                 {
@@ -121,8 +128,6 @@ namespace Services.Services
 
                 var res = _mapper.Map<CartResponse>(cart);
                 return res;
-
-
             }
             catch (Exception ex)
             {
@@ -130,7 +135,7 @@ namespace Services.Services
                 throw new Exception($"Lỗi khi thêm tuỳ chỉnh vào giỏ hàng: {ex.Message}", ex);
             }
         }
-    
+
 
         public async Task<CartResponse> AddtoCart(Guid customerId, Guid customizeId)
         {

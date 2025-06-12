@@ -123,27 +123,37 @@ namespace Services.Services
 
         public async Task<Customize?> GetExistingCustomizeAsync(CustomizeRequest customize)
         {
+          
+            var inputToppings = (customize.CustomizeToppings ?? new List<CustomizeToppingDto>())
+                .Where(t => t != null && t.ToppingId != Guid.Empty)
+                .ToList();
+
             var existingCustomizes = await _unitOfWork.CustomizeRepo.GetQueryable()
                 .Where(c =>
-            c.ProductId == customize.ProductId &&
-            c.SizeId == customize.SizeId &&
-            c.Note == customize.Note 
-            ).Include(c => c.CustomizeToppings)
-            .ToListAsync();
+                    c.ProductId == customize.ProductId &&
+                    c.SizeId == customize.SizeId &&
+                    c.Note == customize.Note
+                )
+                .Include(c => c.CustomizeToppings)
+                .ToListAsync();
+
             foreach (var cus in existingCustomizes)
             {
-                var toppingsEqual = true;
-               
-                if (cus.CustomizeToppings.Count != customize.CustomizeToppings?.Count)
+                var cusToppings = (cus.CustomizeToppings ?? new List<CustomizeTopping>())
+                    .Where(t => t != null && t.ToppingId != Guid.Empty)
+                    .ToList();
+
+                bool toppingsEqual = true;
+
+                if (cusToppings.Count != inputToppings.Count)
                 {
                     toppingsEqual = false;
                 }
                 else
                 {
-                    
-                    foreach (var topping in customize.CustomizeToppings)
+                    foreach (var topping in inputToppings)
                     {
-                        if (!cus.CustomizeToppings.Any(t =>
+                        if (!cusToppings.Any(t =>
                             t.ToppingId == topping.ToppingId &&
                             t.Quantity == topping.Quantity))
                         {
