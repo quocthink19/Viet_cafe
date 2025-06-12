@@ -55,7 +55,7 @@ namespace Services.Services
                 {
                     UserId = newUser.Id,
                  
-                    Verify = false,
+                    Verify = true,
                     Wallet = 0,
                     CreatedDate = DateTime.Now
                 };
