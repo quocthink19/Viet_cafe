@@ -34,7 +34,7 @@ namespace Cafe_Web_App.Controllers
             return Ok(response);
         }
 
-        [HttpPost("register")]
+       /* [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest userData)
         {
             if (!ModelState.IsValid)
@@ -43,7 +43,7 @@ namespace Cafe_Web_App.Controllers
             var newUser = await _userService.RegisterAsync(userData);
 
             return Ok(new TResponse<User>("User registered successfully", newUser));
-        }
+        }*/
         [HttpPost("register-customer")]
         public async Task<ActionResult<CustomerResponse>> CreateCustomer([FromBody] AddCustomerRequest customer)
         {
