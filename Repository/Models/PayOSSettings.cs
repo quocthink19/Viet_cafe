@@ -8,8 +8,10 @@ namespace Repository.Models
 {
     public class PayOSSettings
     {
-        public string ClientId { get; set; }
-        public string ApiKey { get; set; }
-        public string ChecksumKey { get; set; }
+        public required string ClientID { get; set; }
+        public required string ApiKey { get; set; }
+        public required string ChecksumKey { get; set; }
+        public required string CancelUrl { get; set; }
+        public required string ReturnUrl { get; set; }
     }
 }

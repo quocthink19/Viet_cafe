@@ -16,7 +16,7 @@ namespace Repository.Models.DTOs.Request
         public Guid SizeId { get; set; }
         public Guid ProductId { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "số lượng nên lớn hơn 0")]
-        public int Quanity { get; set; }
+        public int Quantity { get; set; }
         public List<CustomizeToppingDto> CustomizeToppings { get; set; } = new();
 
     }

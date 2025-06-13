@@ -24,6 +24,15 @@ namespace Repository.Repositories
                 .Include(o => o.OrderItems)
                 .ToListAsync();
         }
+
+        public async Task<Order> GetById(Guid OrderId)
+        {
+            return await _context.Orders
+                .Include(c => c.Customer)
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == OrderId);
+        }
+
         public async Task<Customer> GetCustomerByOrderId(Guid orderId)
         {
             var order =  await _context.Orders
