@@ -103,8 +103,8 @@ namespace Services.Services
 
                 if (existingItem != null)
                 {
-                    existingItem.Quantity += customizeRequest.Quanity;
-                    cart.TotalAmount += customizeToUse.Price * customizeRequest.Quanity;
+                    existingItem.Quantity += customizeRequest.Quantity;
+                    cart.TotalAmount += customizeToUse.Price * customizeRequest.Quantity;
                 }
                 else
                 {
@@ -112,13 +112,13 @@ namespace Services.Services
                     {
                         Id = Guid.NewGuid(),
                         CustomizeId = customizeToUse.Id,
-                        Quantity = customizeRequest.Quanity,
+                        Quantity = customizeRequest.Quantity,
                         UnitPrice = customizeToUse.Price,
                         CartId = cart.Id,
                         Customize = customizeToUse,
                         Description = CustomizeHelper.BuildDescription(customizeToUse)
                     };
-                    cart.TotalAmount += customizeToUse.Price * customizeRequest.Quanity;
+                    cart.TotalAmount += customizeToUse.Price * customizeRequest.Quantity;
                     await _unitOfWork.CartRepo.InsertCartItemAsync(newItem);
                 }
 
