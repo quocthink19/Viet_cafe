@@ -12,14 +12,14 @@ namespace Services.IServices
     public interface IOrderService
     {
         Task<OrderResponse> CreateOrder(Guid customerId,OrderRequest order);
-        Task DeleteOrder(Guid Id);
-        Task<Customer> GetCustomerByOrderId(Guid orderId);
-        Task<OrderResponse> UpdateOrder(Guid Id, OrderRequest Order);
-        Task<OrderResponse> UpdateOrderByQR(Guid Id);
+        Task DeleteOrder(long Id);
+        Task<Customer> GetCustomerByOrderId(long orderId);
+        Task<OrderResponse> UpdateOrder(long Id, OrderRequest Order);
+        Task<OrderResponse> UpdateOrderByQR(long Id);
         Task<IEnumerable<Order>> GetOrder();
         Task<OrderResponse> CreateOrderWallet(Guid customerId, OrderRequest order);
-        Task<OrderResponse> updateStatusOrder(Guid Id, StatusOrderRequest status);
-        Task<OrderResponse> GetOrderById(Guid Id);
+        Task<OrderResponse> updateStatusOrder(long Id, StatusOrderRequest status);
+        Task<OrderResponse> GetOrderById(long Id);
 
     }
 }

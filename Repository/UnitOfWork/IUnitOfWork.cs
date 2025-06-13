@@ -18,6 +18,7 @@ namespace Repository.UnitOfWork
         IOrderSlotLimitRepo OrderSlotLimitRepo { get; }
         ICartRepo CartRepo { get; }
         IOrderRepo OrderRepo { get; }
+        IPaymentRepo PaymentRepo { get; }
         IOTPCodeRepo OTPCodeRepo { get; }
         Task<int> SaveAsync();
         Task BeginTransactionAsync();

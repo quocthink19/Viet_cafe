@@ -34,6 +34,7 @@ namespace Repository
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<OrderSlotLimit> OrderSlotLimits { get; set; }
+        public DbSet<Payment> payments { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
