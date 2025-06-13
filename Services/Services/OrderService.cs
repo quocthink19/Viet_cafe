@@ -52,7 +52,7 @@ namespace Services.Services
             {
                 finalPrice = cart.TotalAmount;
             }
-            var orderId = Guid.NewGuid();
+            long orderId = DateTime.UtcNow.Ticks;
             var item = _mapper.Map<List<OrderItem>>(cart.CartItems);
             foreach (var orderItem in item)
             {
@@ -123,12 +123,13 @@ namespace Services.Services
             double? finalPrice = 0;
             double? discountPrice = 0;
 
+            // Lấy giỏ hàng của khách
             var cart = await _unitOfWork.CartRepo.GetCartByCustomerId(customerId);
             Promotion promotion = null;
 
             int totalProductQuantity = cart.CartItems?.Sum(item => item.Quantity ?? 0) ?? 0;
 
-
+            // Tính giá theo promotion
             if (!string.IsNullOrEmpty(order.Code))
             {
                 promotion = await _promotionRepo.GetPromotionByCode(order.Code);
@@ -147,27 +148,29 @@ namespace Services.Services
             {
                 finalPrice = cart.TotalAmount;
             }
-            var orderId = Guid.NewGuid();
-            var item = _mapper.Map<List<OrderItem>>(cart.CartItems);
-            foreach (var orderItem in item)
+
+            // Map CartItems sang OrderItem, KHÔNG gán OrderId hoặc Id cho OrderItem tại đây!
+            var orderItems = _mapper.Map<List<OrderItem>>(cart.CartItems);
+            foreach (var orderItem in orderItems)
             {
                 orderItem.Id = Guid.NewGuid();
-                orderItem.OrderId = orderId;
             }
-
+            // KHÔNG tạo OrderId hoặc gán Id cho Order ở đây! EF và SQL sẽ tự làm
             var newOrder = new Order
             {
-                Id = orderId,
+                
                 CustomerId = customerId,
                 Payment = order.Paymemt,
                 Status = Repository.Models.Enum.OrderStatus.NEW,
                 PickUpTime = order.PickUpTime,
-                OrderItems = item,
+                OrderItems = orderItems, 
                 TotalAmount = finalPrice,
                 FinalPrice = finalPrice,
                 DiscountPrice = discountPrice,
+                QRcode = ""
             };
 
+           
             var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(newOrder.PickUpTime);
             if (orderLimit != null)
             {
@@ -180,18 +183,18 @@ namespace Services.Services
                 }
             }
 
-
-            string qrContent = $"https://localhost:7207/Order/update-by-qr/{newOrder.Id}";
-            newOrder.QRcode = GenerateQrCodeBase64(qrContent);
-
-            
-
+          
             try
             {
                 await _unitOfWork.OrderRepo.AddAsync(newOrder);
-           
                 await _unitOfWork.SaveAsync();
-               
+
+              
+                string qrContent = $"https://localhost:7207/Order/update-by-qr/{newOrder.Id}";
+                newOrder.QRcode = GenerateQrCodeBase64(qrContent);
+
+                
+                await _unitOfWork.SaveAsync();
             }
             catch (Exception ex)
             {
@@ -201,21 +204,21 @@ namespace Services.Services
                 throw;
             }
 
+           
             var response = _mapper.Map<OrderResponse>(newOrder);
             return response;
         }
 
 
 
-        public async Task DeleteOrder(Guid Id)
+        public async Task DeleteOrder(long Id)
         {
             var order = await GetOrderById(Id);
-            await _unitOfWork.OrderRepo.DeleteAsync(Id);
-            await _unitOfWork.SaveAsync();
-            
+            await _unitOfWork.OrderRepo.Delete(Id);
+            await _unitOfWork.SaveAsync();  
         }
 
-        public async Task<Customer> GetCustomerByOrderId(Guid orderId)
+        public async Task<Customer> GetCustomerByOrderId(long orderId)
         {
             var customer = await _unitOfWork.OrderRepo.GetCustomerByOrderId(orderId);
             return customer;
@@ -227,9 +230,9 @@ namespace Services.Services
             return order;
         }
 
-        public async Task<OrderResponse> GetOrderById(Guid Id)
+        public async Task<OrderResponse> GetOrderById(long Id)
         {
-            var order =await _unitOfWork.OrderRepo.GetByIdAsync(Id);    
+            var order =await _unitOfWork.OrderRepo.GetById(Id);    
             if(order == null)
             {
                 throw new Exception("không tìm thấy đơn hàng");
@@ -238,13 +241,13 @@ namespace Services.Services
             return orderes;
         }
 
-        public Task<OrderResponse> UpdateOrder(Guid Id, OrderRequest Order)
+        public Task<OrderResponse> UpdateOrder(long Id, OrderRequest Order)
         {
             throw new NotImplementedException();
         }
-        public async Task<OrderResponse> UpdateOrderByQR(Guid Id)
+        public async Task<OrderResponse> UpdateOrderByQR(long Id)
         {
-            var order = await _unitOfWork.OrderRepo.GetByIdAsync(Id);
+            var order = await _unitOfWork.OrderRepo.GetById(Id);
             if (order == null)
             {
                 throw new Exception("không tìm thấy đơn hàng");
@@ -256,9 +259,9 @@ namespace Services.Services
             return res;
         }
 
-        public async Task<OrderResponse> updateStatusOrder(Guid id, StatusOrderRequest status)
+        public async Task<OrderResponse> updateStatusOrder(long id, StatusOrderRequest status)
         {
-            var order = await _unitOfWork.OrderRepo.GetByIdAsync(id);
+            var order = await _unitOfWork.OrderRepo.GetById(id);
             if (order == null)
             {
                 throw new Exception("Không tìm thấy đơn hàng");

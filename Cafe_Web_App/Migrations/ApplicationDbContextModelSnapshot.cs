@@ -206,9 +206,11 @@ namespace Cafe_Web_App.Migrations
 
             modelBuilder.Entity("Repository.Models.Order", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -252,8 +254,8 @@ namespace Cafe_Web_App.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
 
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
@@ -293,6 +295,39 @@ namespace Cafe_Web_App.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderSlotLimits");
+                });
+
+            modelBuilder.Entity("Repository.Models.Payment", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<double?>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Method")
+                        .HasColumnType("int");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionIdResponse")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("payments");
                 });
 
             modelBuilder.Entity("Repository.Models.Product", b =>
@@ -544,6 +579,17 @@ namespace Cafe_Web_App.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Repository.Models.Payment", b =>
+                {
+                    b.HasOne("Repository.Models.Order", "Order")
+                        .WithMany("Payments")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("Repository.Models.Product", b =>
                 {
                     b.HasOne("Repository.Models.Category", "Category")
@@ -580,6 +626,8 @@ namespace Cafe_Web_App.Migrations
             modelBuilder.Entity("Repository.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Repository.Models.Product", b =>

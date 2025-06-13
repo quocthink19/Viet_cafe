@@ -9,7 +9,7 @@ namespace Repository.Models.DTOs.Response
 {
     public  class OrderResponse
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public double? TotalAmount { get; set; }
         public double? DiscountPrice { get; set; }
         public double? FinalPrice { get; set; }

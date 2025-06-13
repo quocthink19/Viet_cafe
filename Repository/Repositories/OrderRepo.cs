@@ -16,6 +16,7 @@ namespace Repository.Repositories
         {
             _context = context;
         }
+        
 
         public async Task<IEnumerable<Order>> GetAll()
         {
@@ -24,16 +25,24 @@ namespace Repository.Repositories
                 .Include(o => o.OrderItems)
                 .ToListAsync();
         }
-
-        public async Task<Order> GetById(Guid OrderId)
+        
+        public async Task<Order> GetById(long OrderId)
         {
             return await _context.Orders
                 .Include(c => c.Customer)
                 .Include(o => o.OrderItems)
                 .FirstOrDefaultAsync(o => o.Id == OrderId);
         }
+        public async Task Delete(long id)
+        {
+            var entity = await GetById(id);
+            if (entity != null)
+            {
+                _context.Remove(entity);
+            }
+        }
 
-        public async Task<Customer> GetCustomerByOrderId(Guid orderId)
+        public async Task<Customer> GetCustomerByOrderId(long orderId)
         {
             var order =  await _context.Orders
                 .Include(c => c.Customer)

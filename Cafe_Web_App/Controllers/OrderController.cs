@@ -37,14 +37,14 @@ namespace Cafe_Web_App.Controllers
         }
         [Authorize]
         [HttpDelete("Id")]
-        public async Task<ActionResult> DeleteOrder(Guid Id)
+        public async Task<ActionResult> DeleteOrder(long Id)
         {
             await _orderService.DeleteOrder(Id);
             return Ok(new { message = " đã xóa đơn hành thành công " });
         }
         [Authorize]
         [HttpPut("Id")]
-        public async Task<ActionResult<OrderResponse>> UpdateStatusOrder(Guid Id,[FromBody] StatusOrderRequest status)
+        public async Task<ActionResult<OrderResponse>> UpdateStatusOrder(long Id,[FromBody] StatusOrderRequest status)
         {
             var order = await _orderService.updateStatusOrder(Id, status);
             var respnose = new TResponse<OrderResponse>("thay đổi trạng thái thành công", order);
@@ -58,7 +58,7 @@ namespace Cafe_Web_App.Controllers
             return Ok(res);
         }
         [HttpPut("update-by-qr/{Id}")]
-        public async Task<ActionResult> UpdateOrderByQR(Guid Id)
+        public async Task<ActionResult> UpdateOrderByQR(long Id)
         {
             await _orderService.UpdateOrderByQR(Id);
             return Ok(new { message = "cập nhât trạng thái thành công" });

@@ -1,5 +1,4 @@
-﻿using Cafe_Web_App.Migrations;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Helper;
@@ -79,7 +78,7 @@ namespace Cafe_Web_App.Controllers
             {
                 Amount = (double)dto.Amount,
                 CreatedDate = DateTime.UtcNow,
-                OrderId = Guid.NewGuid(),
+                /*OrderId = Guid.NewGuid(),*/
                 CustomerId = customer.Id                
             };
             var paymentUrl = await _vnPayService.CreatePaymentUrlAsync(HttpContext, vnPay);
@@ -98,7 +97,7 @@ namespace Cafe_Web_App.Controllers
                 string vnpAmount = Request.Query["vnp_Amount"]; 
                 Console.WriteLine($"Số tiền nhận từ VNPAY (vnp_Amount): {vnpAmount}");
 
-                if (!string.IsNullOrEmpty(orderIdStr) && Guid.TryParse(orderIdStr, out Guid orderId))
+                if (!string.IsNullOrEmpty(orderIdStr) && long.TryParse(orderIdStr, out long orderId))
                 {
                     Console.WriteLine($"Order ID nhận từ VNPAY: {orderId}");
                     var customer = await _orderService.GetCustomerByOrderId(orderId);

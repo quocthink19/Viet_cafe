@@ -2,11 +2,13 @@
 using Net.payOS;
 using Net.payOS.Types;
 using Repository.Models;
+using Repository.Models.Enum;
 using Repository.UnitOfWork;
 using Services.IServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,7 +23,7 @@ namespace Services.Services
             _payOSSettings = payOSSettings.Value;
             _unitOfWork = unitOfWork;
         }
-        public async Task<CreatePaymentResult> CreatePaymentUrl(Guid orderId)
+        public async Task<CreatePaymentResult> CreatePaymentUrl(long orderId)
         {
             PayOS payOS = new PayOS(_payOSSettings.ClientID, _payOSSettings.ApiKey, _payOSSettings.ChecksumKey);
             var order = await _unitOfWork.OrderRepo.GetById(orderId);
@@ -45,25 +47,66 @@ namespace Services.Services
             }
             Random random = new Random();
             var PaymentCode = $"POS{random.Next(1000000, 9999999)}";
-            /*  var payment = new Payment
-              {
+            var payment = new Payment
+            {
+                Id = Guid.NewGuid().ToString(),
+                Code = PaymentCode,
+                Amount = order.FinalPrice,
+                Method = (int)Method.PAYOS,
+                OrderId = order.Id,
+                Description = "Thanh toán của đơn hàng " + order.Id.ToString(),
+                Status = PaymentStatus.UNPAID,
+                TransactionIdResponse = null , 
+            };
+            await _unitOfWork.PaymentRepo.AddAsync(payment);
+            await _unitOfWork.SaveAsync();
 
-              }*/
-            return null;
-        }
-    public Task<PaymentLinkInformation> CancelOrder(string orderId, string reason)
-        {
-            throw new NotImplementedException();
-        }
+            long expiredAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 600;
 
-        public Task<PaymentLinkInformation> GetPaymentInfo(int orderId)
+            var paymentData = new PaymentData(
+                order.Id,
+                (int)payment.Amount,
+                "Thanh toán đơn hàng " +order.Id ,
+                items, 
+                _payOSSettings.CancelUrl,
+                _payOSSettings.ReturnUrl,
+                 null, null, null, null, null,
+                expiredAt);
+
+            var createPayment = await payOS.createPaymentLink(paymentData);
+            payment.TransactionIdResponse = createPayment.paymentLinkId.ToString();
+            await _unitOfWork.SaveAsync();
+            return createPayment;
+        }
+    public async Task<PaymentLinkInformation> CancelOrder(string orderId, string reason)
         {
-            throw new NotImplementedException();
+            try
+            {
+                PayOS payOS = new PayOS(_payOSSettings.ClientID, _payOSSettings.ApiKey, _payOSSettings.ChecksumKey);
+
+                int orderCode = int.Parse(orderId);
+                PaymentLinkInformation paymentLinkInformation = await payOS.cancelPaymentLink(orderCode, reason);
+                return paymentLinkInformation;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+    }
+
+        public async  Task<PaymentLinkInformation> GetPaymentInfo(long orderId)
+        {
+            PayOS payOS = new PayOS(_payOSSettings.ClientID, _payOSSettings.ApiKey, _payOSSettings.ChecksumKey);
+
+            return await payOS.getPaymentLinkInformation(orderId);
         }
 
         public WebhookData VerifyWebhook(WebhookType webhook)
         {
-            throw new NotImplementedException();
+            PayOS payOS = new PayOS(_payOSSettings.ClientID, _payOSSettings.ApiKey, _payOSSettings.ChecksumKey);
+
+            return payOS.verifyPaymentWebhookData(webhook);
         }
     }
 }

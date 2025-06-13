@@ -9,7 +9,7 @@ namespace Repository.Models
 {
     public  class Order
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public double? TotalAmount { get; set; }
         public double? DiscountPrice { get; set; }
         public double? FinalPrice { get; set; }
@@ -20,6 +20,6 @@ namespace Repository.Models
         public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
         public List<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();
-
+        public List<Payment>? Payments { get; set; } = new List<Payment>();
     }
 }

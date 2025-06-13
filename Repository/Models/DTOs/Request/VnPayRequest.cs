@@ -8,7 +8,7 @@ namespace Repository.Models.DTOs.Request
 {
     public class VnPayRequest
     {
-        public Guid OrderId { get; set; }   
+        public long OrderId { get; set; }   
         public double Amount { get; set; }
         public DateTime CreatedDate { get; set; }
         public Guid CustomerId { get; set; }

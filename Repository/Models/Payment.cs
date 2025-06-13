@@ -9,11 +9,12 @@ namespace Repository.Models
 {
     public class Payment
     {
+        public string? Id { get; set; }
         public string? Code { get; set; }
         public double? Amount { get; set; }
         public int? Method { get; set; }
 
-        public int OrderId { get; set; }
+        public long OrderId { get; set; }
 
         public string? Description { get; set; }
 

@@ -9,6 +9,6 @@ namespace Repository.Models.Enum
     public enum Method
     {
         CASH,
-        ZALO
+        PAYOS
     }
 }
