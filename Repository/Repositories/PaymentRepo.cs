@@ -1,4 +1,5 @@
-﻿using Repository.IRepository;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.IRepository;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,13 @@ namespace Repository.Repositories
         public PaymentRepo(ApplicationDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<Payment> GetByOrderId(long orderId)
+        {
+            return await _context.payments
+                 .Include(o => o.Order)
+                 .FirstOrDefaultAsync(x => x.OrderId == orderId);
         }
     }
 }

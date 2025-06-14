@@ -10,6 +10,7 @@ using Services.Services;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text;
+using Repository.UnitOfWork;
 
 namespace Cafe_Web_App.Controllers
 {
@@ -21,15 +22,17 @@ namespace Cafe_Web_App.Controllers
         private readonly IOrderService _orderService;
         private readonly ICustomerService _customerService;
         private readonly ICartService _cartService;
+        private readonly IUnitOfWork _unitOfWork;
 
 
         public PaymentController(IVnPayService vnPayService, IOrderService orderService, ICustomerService customerService, 
-            ICartService cartService)
+            ICartService cartService, IUnitOfWork unitOfWork)
         {
             _vnPayService = vnPayService;
             _orderService = orderService;
             _customerService = customerService;
             _cartService = cartService;
+            _unitOfWork = unitOfWork;
          
         }
 
@@ -121,8 +124,48 @@ namespace Cafe_Web_App.Controllers
                     return BadRequest("Đã xảy ra lỗi trong quá trình xử lý. Vui lòng thử lại sau ít phút nữa.");
                 }
             }
+        [HttpGet("cancel")]
+        public async Task<ActionResult> CancelPayment([FromQuery(Name = "OrderCode")] long orderId)
+        {
+            var payment = await _unitOfWork.PaymentRepo.GetByOrderId(orderId);
+            if (payment == null)
+            {
+                return BadRequest("không tìm thấy thanh toán");
+            }
+            var order = await _unitOfWork.OrderRepo.GetById(orderId);
+            if (order == null)
+            {
+                return BadRequest("không tìm thấy đơn hàng");
+            }
+            order.Status = Repository.Models.Enum.OrderStatus.CANCELLED;
+            await _unitOfWork.OrderRepo.UpdateAsync(order);
+            await _unitOfWork.SaveAsync();
 
-            private async Task<Customer?> GetCurrentCustomer()
+
+            payment.Status = Repository.Models.Enum.PaymentStatus.FAILED;
+            payment.Description += "cancel the payment";
+            await _unitOfWork.PaymentRepo.UpdateAsync(payment);
+            await _unitOfWork.SaveAsync();
+
+            return Ok(new { message = "thanh toán đơn hàng bị hủy" });
+
+            }
+        /* [HttpGet("success")]
+         public async Task<ActionResult> SuccessPayment([FromQuery(Name = "orderCde")] long orderId)
+         {
+             var payment = await _unitOfWork.PaymentRepo.GetByOrderId(orderId);
+             if (payment == null)
+             {
+                 return BadRequest("không tìm thấy thanh toán");
+             }
+             var order = await _unitOfWork.OrderRepo.GetById(orderId);
+             if (order == null)
+             {
+                 return BadRequest("không tìm thấy đơn hàng");
+             }
+   }
+        */
+        private async Task<Customer?> GetCurrentCustomer()
             {
                 var username = User.FindFirst(ClaimTypes.Name)?.Value;
                 if (string.IsNullOrEmpty(username)) return null;

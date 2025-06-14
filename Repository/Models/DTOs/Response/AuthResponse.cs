@@ -10,8 +10,7 @@ namespace Repository.Models.DTOs.Response
     {
         public string? AccessToken { get; set; }
         public string? RefreshToken { get; set; }
-        public Guid? customerId {  get; set; }
-        public string? customerName { get; set;}
+        public CustomerResponse Customer { get; set; }
 
     }
 }

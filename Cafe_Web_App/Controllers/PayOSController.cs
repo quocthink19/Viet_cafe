@@ -55,6 +55,8 @@ namespace Cafe_Web_App.Controllers
         /// <summary>
         /// Lấy thông tin thanh toán bằng orderCode
         /// </summary>
+        /// 
+
         [HttpGet("info/{orderId}")]
         public async Task<IActionResult> GetPaymentInfo(int orderId)
         {
