@@ -237,6 +237,12 @@ namespace Cafe_Web_App.Migrations
                     b.Property<double?>("TotalAmount")
                         .HasColumnType("float");
 
+                    b.Property<string>("fullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("phoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");

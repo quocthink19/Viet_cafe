@@ -9,5 +9,6 @@ namespace Repository.IRepository
 {
     public interface IPaymentRepo : IRepository<Payment>
     {
+        Task<Payment> GetByOrderId(long orderId);
     }
 }

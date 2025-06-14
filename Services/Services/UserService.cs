@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -24,12 +25,14 @@ namespace Services.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IMapper _mapper;
 
-        public UserService(IUnitOfWork unitOfWork, IConfiguration configuration, IPasswordHasher<User> passwordHasher)
+        public UserService(IUnitOfWork unitOfWork, IConfiguration configuration, IPasswordHasher<User> passwordHasher, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _passwordHasher = passwordHasher;
+            _mapper = mapper;
         }
 
         public async Task<AuthResponse> LoginAsync(string username, string password)
@@ -51,18 +54,17 @@ namespace Services.Services
 
             var accessToken = GenerateJwtToken(user);
             var refreshToken = GenerateRefreshToken();
-
+            
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _unitOfWork.UserRepo.UpdateAsync(user);
             await _unitOfWork.SaveAsync();
-
+            var customerRes = _mapper.Map<CustomerResponse>(customer);
             return new AuthResponse
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                customerId = customer.Id,
-                customerName = customer.FullName
+                Customer = customerRes
             };
         }
 

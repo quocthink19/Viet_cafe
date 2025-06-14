@@ -14,7 +14,8 @@ namespace Repository.Models.DTOs.Response
         public double? DiscountPrice { get; set; }
         public double? FinalPrice { get; set; }
         public string CustomerName { get; set; }
-
+        public string fullName {  get; set; }
+        public string? phoneNumber {  get; set; } 
         public string QRcode { get; set; }
         public OrderStatus Status { get; set; }
         public List<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();

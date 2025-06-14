@@ -15,6 +15,8 @@ namespace Repository.Models
         public double? FinalPrice { get; set; }
         public DateTime? PickUpTime { get; set; }
         public OrderStatus Status { get; set; }
+        public string? fullName { get; set; }
+        public string? phoneNumber { get; set; }
         public string QRcode { get; set; }
         public Method? Payment { get; set; }
         public Guid CustomerId { get; set; }

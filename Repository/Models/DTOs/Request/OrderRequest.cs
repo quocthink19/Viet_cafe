@@ -11,6 +11,8 @@ namespace Repository.Models.DTOs.Request
     {
         public string? Code { get; set; }
         public DateTime? PickUpTime { get; set; }
-        public Method? Paymemt { get; set; }
+        //public Method? Paymemt { get; set; }
+        public string? fullName { get; set; }
+        public string? phoneNumber { get; set; }
     }
 }

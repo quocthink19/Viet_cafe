@@ -22,6 +22,7 @@ namespace Services.Services
             _mapper = mapper;
             _promotionRepo =promotionRepo;
         }
+
         public async Task<OrderResponse> CreateOrderWallet(Guid customerId, OrderRequest order)
         {
             double? finalPrice = 0;
@@ -64,10 +65,12 @@ namespace Services.Services
             {
                 Id = orderId,
                 CustomerId = customerId,
-                Payment = order.Paymemt,
+                Payment = Method.WALLET,
                 Status = Repository.Models.Enum.OrderStatus.NEW,
                 PickUpTime = order.PickUpTime,
                 OrderItems = item,
+                fullName = order.fullName,
+                phoneNumber = order.phoneNumber,
                 TotalAmount = finalPrice,
                 FinalPrice = finalPrice,
                 DiscountPrice = discountPrice,
@@ -149,21 +152,23 @@ namespace Services.Services
                 finalPrice = cart.TotalAmount;
             }
 
-            // Map CartItems sang OrderItem, KHÔNG gán OrderId hoặc Id cho OrderItem tại đây!
+           
             var orderItems = _mapper.Map<List<OrderItem>>(cart.CartItems);
             foreach (var orderItem in orderItems)
             {
                 orderItem.Id = Guid.NewGuid();
             }
-            // KHÔNG tạo OrderId hoặc gán Id cho Order ở đây! EF và SQL sẽ tự làm
+            
             var newOrder = new Order
             {
                 
                 CustomerId = customerId,
-                Payment = order.Paymemt,
+                Payment = Method.CASH,
                 Status = Repository.Models.Enum.OrderStatus.NEW,
                 PickUpTime = order.PickUpTime,
-                OrderItems = orderItems, 
+                OrderItems = orderItems,
+                fullName = order.fullName,
+                phoneNumber = order.phoneNumber,
                 TotalAmount = finalPrice,
                 FinalPrice = finalPrice,
                 DiscountPrice = discountPrice,
