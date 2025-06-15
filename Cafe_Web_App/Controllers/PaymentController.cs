@@ -11,6 +11,8 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Text;
 using Repository.UnitOfWork;
+using static QRCoder.PayloadGenerator;
+using static System.Net.WebRequestMethods;
 
 namespace Cafe_Web_App.Controllers
 {
@@ -23,17 +25,18 @@ namespace Cafe_Web_App.Controllers
         private readonly ICustomerService _customerService;
         private readonly ICartService _cartService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
 
 
         public PaymentController(IVnPayService vnPayService, IOrderService orderService, ICustomerService customerService, 
-            ICartService cartService, IUnitOfWork unitOfWork)
+            ICartService cartService, IUnitOfWork unitOfWork, IEmailService emailService)
         {
             _vnPayService = vnPayService;
             _orderService = orderService;
             _customerService = customerService;
             _cartService = cartService;
             _unitOfWork = unitOfWork;
-         
+            _emailService = emailService;
         }
 
         [Authorize]
@@ -150,21 +153,30 @@ namespace Cafe_Web_App.Controllers
             return Ok(new { message = "thanh toán đơn hàng bị hủy" });
 
             }
-        /* [HttpGet("success")]
-         public async Task<ActionResult> SuccessPayment([FromQuery(Name = "orderCde")] long orderId)
-         {
-             var payment = await _unitOfWork.PaymentRepo.GetByOrderId(orderId);
-             if (payment == null)
-             {
-                 return BadRequest("không tìm thấy thanh toán");
-             }
-             var order = await _unitOfWork.OrderRepo.GetById(orderId);
-             if (order == null)
-             {
-                 return BadRequest("không tìm thấy đơn hàng");
-             }
-   }
-        */
+        [HttpGet("success")]
+        public async Task<ActionResult> SuccessPayment([FromQuery(Name = "orderCode")] long orderId)
+        {
+            var payment = await _unitOfWork.PaymentRepo.GetByOrderId(orderId);
+            if (payment == null)
+            {
+                return BadRequest("không tìm thấy thanh toán");
+            }
+            var order = await _unitOfWork.OrderRepo.GetById(orderId);
+            if (order == null)
+            {
+                return BadRequest("không tìm thấy đơn hàng");
+            }
+            payment.Status = Repository.Models.Enum.PaymentStatus.PAID;
+            payment.Description += " - Success the payment.";
+            await _unitOfWork.PaymentRepo.UpdateAsync(payment);
+            await _unitOfWork.SaveAsync();
+            var customer = await _unitOfWork.OrderRepo.GetCustomerByOrderId(orderId);
+
+            var body = $"Đơn hàng {order.Code} của bạn đã được thanh toán thành công vui lòng chờ tin nhắn thông báo đến nhận hàng của chúng tôi, Xin Cảm Ơn";
+            await _emailService.SendEmail(customer.User.Email, "Thanh toán đơn hàng thành công ", body);
+
+            return Ok(new { message = "thanh toán đơn hàng thành công" });
+        }
         private async Task<Customer?> GetCurrentCustomer()
             {
                 var username = User.FindFirst(ClaimTypes.Name)?.Value;

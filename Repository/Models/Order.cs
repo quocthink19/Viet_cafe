@@ -10,6 +10,7 @@ namespace Repository.Models
     public  class Order
     {
         public long Id { get; set; }
+        public string? Code { get; set; }
         public double? TotalAmount { get; set; }
         public double? DiscountPrice { get; set; }
         public double? FinalPrice { get; set; }

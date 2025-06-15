@@ -44,8 +44,9 @@ namespace Repository.Repositories
 
         public async Task<Customer> GetCustomerByOrderId(long orderId)
         {
-            var order =  await _context.Orders
+            var order = await _context.Orders
                 .Include(c => c.Customer)
+                    .ThenInclude(u => u.User)
                 .Where(o => o.Id == orderId)
                 .FirstOrDefaultAsync();
 

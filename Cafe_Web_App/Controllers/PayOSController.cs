@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Net.payOS.Types;
 using Repository.Models;
+using Repository.Models.DTOs.Request;
 using Services.IServices;
+using Services.Services;
+using System.Security.Claims;
 
 namespace Cafe_Web_App.Controllers
 {
@@ -12,35 +16,58 @@ namespace Cafe_Web_App.Controllers
     {
         private readonly IPayOSService _payOSService;
         private readonly IOrderService _orderService;
-        public PayOSController(IOptions<PayOSSettings> payOSSettings, IPayOSService payOSService, IOrderService orderService)
+        private readonly ICustomerService _customerService;
+        public PayOSController(IOptions<PayOSSettings> payOSSettings, IPayOSService payOSService, IOrderService orderService, ICustomerService customerService)
         {
             _payOSService = payOSService;
             _orderService = orderService;
+            _customerService = customerService;
+
         }
-       /* [HttpPost("webhook")]
-        public async Task<IActionResult> WebhookHandler(WebhookType webhook)
-        {
-            try
-            {
-                await _orderService.ConfirmOrderPayment(webhook);
-                return Ok(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                // Log lỗi nếu cần
-                return BadRequest(new { success = false, message = ex.Message });
-            }
-        }*/
+        /* [HttpPost("webhook")]
+         public async Task<IActionResult> WebhookHandler(WebhookType webhook)
+         {
+             try
+             {
+                 await _orderService.ConfirmOrderPayment(webhook);
+                 return Ok(new { success = true });
+             }
+             catch (Exception ex)
+             {
+                 // Log lỗi nếu cần
+                 return BadRequest(new { success = false, message = ex.Message });
+             }
+         }*/
         /// <summary>
         /// Tạo link thanh toán từ orderId
-        /// </summary>
-        [HttpPost("create-payment-url/{orderId}")]
-        public async Task<IActionResult> CreatePaymentUrl(long orderId)
+        /* /// </summary>
+         [HttpPost("create-payment-url/{orderId}")]
+         public async Task<IActionResult> CreatePaymentUrl(long orderId)
+         {
+             try
+             {
+                 var result = await _payOSService.CreatePaymentUrl(orderId);
+                 return Ok(new { orderId = orderId, PaymentUrl = result.checkoutUrl, PaymentId = result.paymentLinkId });
+             }
+             catch (ArgumentException ex)
+             {
+                 return NotFound(new { Message = ex.Message });
+             }
+             catch (Exception ex)
+             {
+                 return BadRequest(new { Message = ex.Message });
+             }
+         }*/
+        [Authorize]
+        [HttpPost("create-payment-url")]
+        public async Task<IActionResult> CreatePaymentUrl([FromBody] OrderRequest dto)
         {
             try
             {
-                var result = await _payOSService.CreatePaymentUrl(orderId);
-                return Ok(new { orderId = orderId, PaymentUrl = result.checkoutUrl, PaymentId = result.paymentLinkId });
+                var customer = await GetCurrentCustomer();
+                var order = await _orderService.CreateOrder(customer.Id, dto);
+                var result = await _payOSService.CreatePaymentUrl(order.Id);
+                return Ok(new { orderId = order.Id, PaymentUrl = result.checkoutUrl, PaymentId = result.paymentLinkId });
             }
             catch (ArgumentException ex)
             {
@@ -83,6 +110,12 @@ namespace Cafe_Web_App.Controllers
             {
                 return BadRequest(new { success = false, message = ex.Message });
             }
+        }
+        private async Task<Customer?> GetCurrentCustomer()
+        {
+            var username = User.FindFirst(ClaimTypes.Name)?.Value;
+            if (string.IsNullOrEmpty(username)) return null;
+            return await _customerService.GetCustomerByUsername(username);
         }
 
         public class CancelRequest

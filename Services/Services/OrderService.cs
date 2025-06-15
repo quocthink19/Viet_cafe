@@ -53,22 +53,22 @@ namespace Services.Services
             {
                 finalPrice = cart.TotalAmount;
             }
-            long orderId = DateTime.UtcNow.Ticks;
-            var item = _mapper.Map<List<OrderItem>>(cart.CartItems);
-            foreach (var orderItem in item)
+            var orderItems = _mapper.Map<List<OrderItem>>(cart.CartItems);
+            foreach (var orderItem in orderItems)
             {
                 orderItem.Id = Guid.NewGuid();
-                orderItem.OrderId = orderId;
             }
+            
+            string code = UniqueCodeGenerator.GenerateCode();
 
             var newOrder = new Order
             {
-                Id = orderId,
+                Code = code, 
                 CustomerId = customerId,
                 Payment = Method.WALLET,
                 Status = Repository.Models.Enum.OrderStatus.NEW,
                 PickUpTime = order.PickUpTime,
-                OrderItems = item,
+                OrderItems = orderItems,
                 fullName = order.fullName,
                 phoneNumber = order.phoneNumber,
                 TotalAmount = finalPrice,
@@ -158,11 +158,12 @@ namespace Services.Services
             {
                 orderItem.Id = Guid.NewGuid();
             }
-            
+            string code = order.Code;
             var newOrder = new Order
             {
                 
                 CustomerId = customerId,
+                Code = code,
                 Payment = Method.CASH,
                 Status = Repository.Models.Enum.OrderStatus.NEW,
                 PickUpTime = order.PickUpTime,
@@ -213,8 +214,6 @@ namespace Services.Services
             var response = _mapper.Map<OrderResponse>(newOrder);
             return response;
         }
-
-
 
         public async Task DeleteOrder(long Id)
         {
@@ -313,6 +312,18 @@ namespace Services.Services
             return null;
         }
 
+        private class UniqueCodeGenerator
+        {
+            private static readonly char[] chars =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
+
+            public static string GenerateCode(int length = 8)
+            {
+                var random = new Random();
+                return new string(Enumerable.Repeat(chars, length)
+                    .Select(s => s[random.Next(s.Length)]).ToArray());
+            }
+        }
         private string GenerateQrCodeBase64(string content)
         {
             using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
