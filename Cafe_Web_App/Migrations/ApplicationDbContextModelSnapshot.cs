@@ -63,6 +63,10 @@ namespace Cafe_Web_App.Migrations
                     b.Property<double?>("UnitPrice")
                         .HasColumnType("float");
 
+                    b.Property<string>("imageProduct")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
@@ -260,7 +264,6 @@ namespace Cafe_Web_App.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("OrderId")

@@ -11,7 +11,7 @@ namespace Repository.Models
 
         public Guid CustomizeId { get; set; }
         public Customize? Customize { get; set; }
-
+        public string imageProduct { get; set ; }
         public int? Quantity { get; set; }
         public double? UnitPrice { get; set; }
         public string? Description { get; set; }

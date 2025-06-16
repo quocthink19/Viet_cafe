@@ -40,6 +40,16 @@ namespace Cafe_Web_App.Controllers
         }
 
         [Authorize]
+        [HttpPost("payment-by-cash")]
+        public async Task<ActionResult<OrderResponse>> CreateCashOrder([FromBody] OrderRequest dto)
+        {
+            var customer = await GetCurrentCustomer();
+            var order = await _orderService.CreateOrder(customer.Id, dto);
+            // await _cartService.ClearCart(customer.Id);
+            var respnose = new TResponse<OrderResponse>("Đơn hàng thanh toán tiền mặt đã được tạo thành công", order);
+            return Ok(respnose);
+        }
+        [Authorize]
         [HttpPost("payment-by-wallet")]
         public async Task<ActionResult<OrderResponse>> PaymentByWallet([FromBody] OrderRequest dto) {
             var customer = await GetCurrentCustomer();
@@ -49,7 +59,7 @@ namespace Cafe_Web_App.Controllers
     }
         
         [Authorize]
-        [HttpPost("create")]
+        [HttpPost("payment-by-vnpay")]
         public async  Task<ActionResult> CreatePaymentUrl([FromBody] OrderRequest dto)
         {
             try

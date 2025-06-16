@@ -25,7 +25,7 @@ namespace Repository.Helper
 
             var toppings = toppingList != null && toppingList.Any()
                 ? $"thêm: {string.Join(", ", toppingList)}"
-                : "không topping";
+                : "";
 
             return $"{productName} size {size} {note} ,{toppings}";
         }

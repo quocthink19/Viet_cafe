@@ -25,16 +25,7 @@ namespace Cafe_Web_App.Controllers
             _orderService = orderService;
             _customerService = customerService;
         }
-        [Authorize]
-        [HttpPost("create-cash")]
-        public async Task<ActionResult<OrderResponse>> CreateCashOrder([FromBody] OrderRequest dto)
-        {
-            var customer = await GetCurrentCustomer();
-            var order = await _orderService.CreateOrder(customer.Id, dto);
-         // await _cartService.ClearCart(customer.Id);
-            var respnose = new TResponse<OrderResponse>("Đơn hàng thanh toán tiền mặt đã được tạo thành công", order);
-            return Ok(respnose);
-        }
+        
         [Authorize]
         [HttpDelete("Id")]
         public async Task<ActionResult> DeleteOrder(long Id)
