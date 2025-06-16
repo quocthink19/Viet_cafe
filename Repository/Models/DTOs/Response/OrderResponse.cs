@@ -19,7 +19,7 @@ namespace Repository.Models.DTOs.Response
         public string fullName {  get; set; }
         public string? phoneNumber {  get; set; } 
         public string QRcode { get; set; }
-        public OrderStatus Status { get; set; }
+        public string Status { get; set; }
         public List<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();
     }
 }

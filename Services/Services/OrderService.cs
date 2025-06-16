@@ -57,6 +57,7 @@ namespace Services.Services
             foreach (var orderItem in orderItems)
             {
                 orderItem.Id = Guid.NewGuid();
+                
             }
             
             string code = UniqueCodeGenerator.GenerateCode();

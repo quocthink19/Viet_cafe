@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Repository.Helper;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
@@ -39,16 +40,23 @@ namespace Services.Services
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                // Lọc topping null/rỗng cho chắc chắn
+                
                 var filteredToppings = (customizeRequest.CustomizeToppings ?? new List<CustomizeToppingDto>())
                     .Where(t => t != null && t.ToppingId != Guid.Empty)
                     .ToList();
 
                 // Cập nhật customizeRequest với danh sách topping đã lọc (nếu cần)
                 customizeRequest.CustomizeToppings = filteredToppings;
+              
+
+              
 
                 var existingCustomize = await _customizeService.GetExistingCustomizeAsync(customizeRequest);
                 Customize customizeToUse;
+
+                var size = await _sizeService.GetSizeById(customizeRequest.SizeId);
+                var product = await _productService.GetProductById(customizeRequest.ProductId);
+                var extra = +size.ExtraPrice;
 
                 if (existingCustomize != null)
                 {
@@ -56,16 +64,16 @@ namespace Services.Services
                 }
                 else
                 {
-                    var size = await _sizeService.GetSizeById(customizeRequest.SizeId);
-                    var product = await _productService.GetProductById(customizeRequest.ProductId);
-                    var extra = +size.ExtraPrice;
+                  
 
                     var newCustomize = new Customize
                     {
                         Id = Guid.NewGuid(),
                         Note = customizeRequest.Note,
                         SizeId = customizeRequest.SizeId,
+                        Size = size,
                         ProductId = customizeRequest.ProductId,
+                        Product = product,
                         Extra = 0,
                         Price = 0
                     };
@@ -115,6 +123,7 @@ namespace Services.Services
                         Quantity = customizeRequest.Quantity,
                         UnitPrice = customizeToUse.Price,
                         CartId = cart.Id,
+                        imageProduct = product.Image,
                         Customize = customizeToUse,
                         Description = CustomizeHelper.BuildDescription(customizeToUse)
                     };
