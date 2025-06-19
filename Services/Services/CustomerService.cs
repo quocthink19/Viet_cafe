@@ -98,7 +98,7 @@ namespace Services.Services
 
         public async Task<Customer> GetCustomerById(Guid Id)
         {
-            var customer = await _unitOfWork.CustomerRepo.GetByIdAsync(Id);
+            var customer = await _unitOfWork.CustomerRepo.GetCustomerById(Id);
             if (customer == null)
                 throw new Exception("Không tìm thấy khách hàng này");
 
@@ -107,7 +107,7 @@ namespace Services.Services
 
         public async Task<CustomerResponse> GetById(Guid Id)
         {
-            var customer = await _unitOfWork.CustomerRepo.GetByIdAsync(Id);
+            var customer = await _unitOfWork.CustomerRepo.GetCustomerById(Id);
             if (customer == null)
                 throw new Exception("Không tìm thấy khách hàng này");
 
@@ -143,6 +143,7 @@ namespace Services.Services
                 customer.FullName = newCustomer.FullName;
                 customer.BirthDate = newCustomer.BirthDate;
                 customer.gender = newCustomer.gender;
+                customer.phoneNumber = newCustomer.phoneNumber;
 
                 await _unitOfWork.CustomerRepo.UpdateAsync(customer);
 

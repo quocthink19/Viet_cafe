@@ -15,10 +15,10 @@ namespace Repository.Models
         public string? FullName { get; set; }
         public DateTime? BirthDate { get; set; }
         public Gender? gender { get; set; }
+        public string? phoneNumber { get; set; }
         public decimal? Wallet { get; set; }
         public DateTime? CreatedDate { get; set; }
         public bool Verify { get; set; }
-
         [JsonIgnore]
         public Cart? Cart { get; set; }
 

@@ -74,10 +74,10 @@ namespace Cafe_Web_App.Controllers
         }
         [Authorize]
         [HttpPut("delete-cart-item")]
-        public async Task<ActionResult<CartResponse>> DeleteCartItem([FromBody] AddToCartRequest customize)
+        public async Task<ActionResult<CartResponse>> DeleteCartItem([FromBody] RemoveCartItemRequest cartItem)
         {
             var customer = await GetCurrentCustomer();
-            var cart = await _cartService.DeleteCartItem(customer.Id,customize.CustomizeId);
+            var cart = await _cartService.DeleteCartItem(customer.Id,cartItem.CartItemId);
             var res = _mapper.Map<CartResponse>(cart);
             var response = new TResponse<CartResponse>("xóa cart item thành công", res);
             return Ok(response);
