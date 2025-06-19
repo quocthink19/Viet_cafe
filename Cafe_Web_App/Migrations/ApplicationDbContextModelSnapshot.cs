@@ -119,6 +119,9 @@ namespace Cafe_Web_App.Migrations
                     b.Property<int?>("gender")
                         .HasColumnType("int");
 
+                    b.Property<string>("phoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("UserId")

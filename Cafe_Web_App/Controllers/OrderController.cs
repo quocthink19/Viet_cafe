@@ -42,6 +42,15 @@ namespace Cafe_Web_App.Controllers
             return Ok(respnose);
         }
         [Authorize]
+        [HttpGet("get-order-of-cusomer")]
+        public async Task<ActionResult<IEnumerable<OrderResponse>>> GetAllOrdersByCustomerId()
+        {
+            var customer = await GetCurrentCustomer();
+            var orders = await _orderService.GetAllOrdersByCustomerId(customer.Id);
+            var res = new TResponse<IEnumerable<OrderResponse>>("lấy danh sách tất đơn hàng thành công", orders);
+            return Ok(res);
+        }
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders() {
             var orders = await _orderService.GetOrder();

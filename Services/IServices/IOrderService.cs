@@ -12,6 +12,7 @@ namespace Services.IServices
     public interface IOrderService
     {
         Task<OrderResponse> CreateOrder(Guid customerId,OrderRequest order);
+        Task<IEnumerable<OrderResponse>> GetAllOrdersByCustomerId(Guid customerId);
         Task DeleteOrder(long Id);
         Task<Customer> GetCustomerByOrderId(long orderId);
         Task<OrderResponse> UpdateOrder(long Id, OrderRequest Order);

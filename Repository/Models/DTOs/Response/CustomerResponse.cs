@@ -10,7 +10,9 @@ namespace Repository.Models.DTOs.Response
     public class CustomerResponse
     {
         public Guid Id { get; set; }
-        public Guid UserId { get; set; }
+        //public Guid UserId { get; set; }
+        public string Email { get; set; }
+        public string phoneNumber { get; set; }
         public string? FullName { get; set; }
         public DateTime? BirthDate { get; set; }
         public Gender? gender { get; set; }

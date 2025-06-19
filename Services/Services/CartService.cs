@@ -250,6 +250,10 @@ namespace Services.Services
 
                 cart.TotalAmount = await _unitOfWork.CartRepo.CalculateTotalAmount(cart.Id);
                 cart.TotalAmount -= minus;
+                if (cart.TotalAmount < 0)
+                {
+                    cart.TotalAmount = 0 ;
+                }
                 await _unitOfWork.CartRepo.UpdateAsync(cart);
 
                 await _unitOfWork.SaveAsync();

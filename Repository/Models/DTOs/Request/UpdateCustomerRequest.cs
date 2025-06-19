@@ -12,6 +12,7 @@ namespace Repository.Models.DTOs.Request
         public string? Email { get; set; }
         public string? FullName { get; set; }
         public DateTime? BirthDate { get; set; }
+        public string? phoneNumber { get; set; }
         public Gender? gender { get; set; }
     }
 }

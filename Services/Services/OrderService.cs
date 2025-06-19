@@ -342,6 +342,11 @@ namespace Services.Services
             }
         }
 
+        public async Task<IEnumerable<OrderResponse>> GetAllOrdersByCustomerId(Guid customerId)
+        {
+            var orders = await _unitOfWork.OrderRepo.GetAllOrdersByCustomerId(customerId);
+            return _mapper.Map<IEnumerable<OrderResponse>>(orders);
+        }
     }
 }
 
