@@ -42,7 +42,7 @@ namespace Cafe_Web_App.Controllers
             return Ok(respnose);
         }
         [Authorize]
-        [HttpGet("get-order-of-cusomer")]
+        [HttpGet("get-orders-of-customer")]
         public async Task<ActionResult<IEnumerable<OrderResponse>>> GetAllOrdersByCustomerId()
         {
             var customer = await GetCurrentCustomer();

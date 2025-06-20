@@ -45,7 +45,7 @@ namespace Cafe_Web_App.Controllers
         {
             var customer = await GetCurrentCustomer();
             var order = await _orderService.CreateOrder(customer.Id, dto);
-            // await _cartService.ClearCart(customer.Id);
+            await _cartService.ClearCart(customer.Id);
             var respnose = new TResponse<OrderResponse>("Đơn hàng thanh toán tiền mặt đã được tạo thành công", order);
             return Ok(respnose);
         }
