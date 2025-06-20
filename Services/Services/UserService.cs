@@ -156,5 +156,32 @@ namespace Services.Services
             rng.GetBytes(randomBytes);
             return Convert.ToBase64String(randomBytes);
         }
+
+        public async Task<AuthResponse> RefreshTokenAsync(string refreshToken)
+        {
+
+            var user = await _unitOfWork.UserRepo.GetUserByRefreshTokenAsync(refreshToken);
+            if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+                throw new SecurityTokenException("Refresh token không hợp lệ hoặc đã hết hạn");
+
+            var newAccessToken = GenerateJwtToken(user);
+
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+            await _unitOfWork.UserRepo.UpdateAsync(user);
+            await _unitOfWork.SaveAsync();
+
+            var customer = await _unitOfWork.CustomerRepo.GetCustomerByUsernameAsync(user.Username);
+            var customerRes = _mapper.Map<CustomerResponse>(customer);
+
+            return new AuthResponse
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken,
+                Customer = customerRes
+            };
+        }
     }
 }

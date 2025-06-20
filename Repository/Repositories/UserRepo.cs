@@ -20,6 +20,12 @@ namespace Repository.Repositories
             await _context.Users.AddAsync(user);
         }
 
+        public async Task<User> GetUserByRefreshTokenAsync(string refreshToken)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(x => x.RefreshToken == refreshToken);
+        }
+
         public async Task<User> GetUserByUsernameAsync(string username)
         {
             Console.WriteLine(username);

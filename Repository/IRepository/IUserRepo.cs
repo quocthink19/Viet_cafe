@@ -9,6 +9,7 @@ namespace Repository.IRepository
 {
     public  interface IUserRepo  : IRepository<User>
     {
+        Task<User> GetUserByRefreshTokenAsync(string refreshToken);
         Task<User> GetUserByUsernameAsync(string username);
         Task AddUserAsync(User user);
     }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
@@ -34,7 +35,7 @@ namespace Cafe_Web_App.Controllers
             return Ok(response);
         }
 
-       /* [HttpPost("register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest userData)
         {
             if (!ModelState.IsValid)
@@ -43,7 +44,8 @@ namespace Cafe_Web_App.Controllers
             var newUser = await _userService.RegisterAsync(userData);
 
             return Ok(new TResponse<User>("User registered successfully", newUser));
-        }*/
+        }
+
         [HttpPost("register-customer")]
         public async Task<ActionResult<CustomerResponse>> CreateCustomer([FromBody] AddCustomerRequest customer)
         {
@@ -86,9 +88,15 @@ namespace Cafe_Web_App.Controllers
             return Ok("gửi mã OTP thành công cho bạn");
         }
 
-     
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+        
+            {
+                var response = await _userService.RefreshTokenAsync(request.RefreshToken);
+                return Ok(response);
+            }
 
-        [Authorize]
+    [Authorize]
         [HttpPut("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest passwordData)
         {
