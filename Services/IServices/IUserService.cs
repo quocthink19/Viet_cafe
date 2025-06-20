@@ -13,6 +13,7 @@ namespace Services.IServices
     public interface IUserService
     {
         Task <AuthResponse> LoginAsync(string username, string password);
+        Task<AuthResponse> RefreshTokenAsync(string refreshToken);
         Task <User>RegisterAsync (RegisterUserRequest user);
         Task <User> GetUserByUsername(string userName);
         Task <bool> ChangePassword(ChangePasswordRequest changePassword, User user); 
