@@ -181,7 +181,7 @@ namespace Cafe_Web_App.Controllers
             await _unitOfWork.PaymentRepo.UpdateAsync(payment);
             await _unitOfWork.SaveAsync();
             var customer = await _unitOfWork.OrderRepo.GetCustomerByOrderId(orderId);
-
+            await _cartService.ClearCart(customer.Id);
             var body = $"Đơn hàng {order.Code} của bạn đã được thanh toán thành công vui lòng chờ tin nhắn thông báo đến nhận hàng của chúng tôi, Xin Cảm Ơn";
             await _emailService.SendEmail(customer.User.Email, "Thanh toán đơn hàng thành công ", body);
 
