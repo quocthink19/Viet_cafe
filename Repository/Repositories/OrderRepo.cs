@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Repository.IRepository;
 using Repository.Models;
+using Repository.Models.DTOs.Response;
+using Repository.Models.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +18,7 @@ namespace Repository.Repositories
         {
             _context = context;
         }
-        
+
 
         public async Task<IEnumerable<Order>> GetAll()
         {
@@ -25,7 +27,7 @@ namespace Repository.Repositories
                 .Include(o => o.OrderItems)
                 .ToListAsync();
         }
-        
+
         public async Task<Order> GetById(long OrderId)
         {
             return await _context.Orders
@@ -55,9 +57,9 @@ namespace Repository.Repositories
 
         public async Task<int> GetOrdersCountAsync(DateTime start, DateTime end)
         {
-               int totalOrders = await _context.Orders
-               .Where(o => o.PickUpTime >= start && o.PickUpTime <= end)
-               .CountAsync();
+            int totalOrders = await _context.Orders
+            .Where(o => o.PickUpTime >= start && o.PickUpTime <= end)
+            .CountAsync();
             return totalOrders;
         }
         public async Task<int> GetTotalCupsByPickUpTimeAsync(DateTime start, DateTime end)
@@ -71,11 +73,72 @@ namespace Repository.Repositories
 
         public async Task<IEnumerable<Order>> GetAllOrdersByCustomerId(Guid customerId)
         {
-           return await _context.Orders
-                .Include(c => c.Customer)
-                .Include(o => o.OrderItems).
-                Where(o => o.CustomerId == customerId)
-               .ToListAsync();
+            return await _context.Orders
+                 .Include(c => c.Customer)
+                 .Include(o => o.OrderItems).
+                 Where(o => o.CustomerId == customerId)
+                .ToListAsync();
+        }
+
+        public async Task<DailyStatsResponse?> GetDailyStatsAsync(DateTime date)
+        {
+            var stats = await _context.Orders
+        .Where(o => o.Status == OrderStatus.COMPLETED && o.PickUpTime.HasValue && o.PickUpTime.Value.Date == date.Date)
+        .GroupBy(o => o.PickUpTime.Value.Date)
+        .Select(g => new DailyStatsResponse
+        {
+            Date = g.Key,
+            TotalOrders = g.Count(),
+            TotalRevenue = g.Sum(o => o.FinalPrice ?? 0)
+        })
+        .FirstOrDefaultAsync();
+
+            return stats;
+        }
+
+        public async Task<MonthlyStatsResponse?> GetMonthlyStatsAsync(int year, int month)
+        {
+            var stats = await _context.Orders
+              .Where(o =>
+                  o.Status == OrderStatus.COMPLETED &&
+                  o.PickUpTime.HasValue &&
+                  o.PickUpTime.Value.Year == year &&
+                  o.PickUpTime.Value.Month == month)
+              .GroupBy(o => new { o.PickUpTime.Value.Year, o.PickUpTime.Value.Month })
+              .Select(g => new MonthlyStatsResponse
+              {
+                  Year = g.Key.Year,
+                  Month = g.Key.Month,
+                  TotalOrders = g.Count(),
+                  TotalRevenue = g.Sum(o => o.FinalPrice ?? 0)
+              })
+              .FirstOrDefaultAsync();
+
+            return stats;
+        }
+
+        public async Task<TodayStatsRessponse> GetTodayStatsAsync()
+        {
+            var today = DateTime.Today;
+
+            var stats = await _context.Orders
+                .Where(o => o.Status == OrderStatus.COMPLETED && o.PickUpTime.HasValue && o.PickUpTime.Value.Date == today)
+                .GroupBy(o => o.PickUpTime.Value.Date)
+                .Select(g => new TodayStatsRessponse
+                {
+                    Date = g.Key,
+                    TotalOrders = g.Count(),
+                    TotalRevenue = g.Sum(o => o.FinalPrice ?? 0)
+                })
+                .FirstOrDefaultAsync();
+
+            // Nếu không có đơn nào hôm nay thì trả về 0
+            return stats ?? new TodayStatsRessponse
+            {
+                Date = today,
+                TotalOrders = 0,
+                TotalRevenue = 0
+            };
         }
     }
 }

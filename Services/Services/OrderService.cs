@@ -159,7 +159,7 @@ namespace Services.Services
             {
                 orderItem.Id = Guid.NewGuid();
             }
-            string code = order.Code;
+            string code = UniqueCodeGenerator.GenerateCode();
             var newOrder = new Order
             {
                 
@@ -310,7 +310,8 @@ namespace Services.Services
             order.Status = newStatus;
             await _unitOfWork.OrderRepo.UpdateAsync(order);
             await _unitOfWork.SaveAsync();
-            return null;
+            var res = _mapper.Map<OrderResponse>(order);
+            return res;
         }
 
         private class UniqueCodeGenerator
@@ -318,11 +319,16 @@ namespace Services.Services
             private static readonly char[] chars =
                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
 
-            public static string GenerateCode(int length = 8)
+            public static string GenerateCode()
             {
+                const string prefix = "VC-";
+                int randomLength = 9 - prefix.Length;
+
                 var random = new Random();
-                return new string(Enumerable.Repeat(chars, length)
+                var randomPart = new string(Enumerable.Repeat(chars, randomLength)
                     .Select(s => s[random.Next(s.Length)]).ToArray());
+
+                return prefix + randomPart;
             }
         }
         private string GenerateQrCodeBase64(string content)

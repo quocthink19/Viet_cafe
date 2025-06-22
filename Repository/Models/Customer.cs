@@ -23,6 +23,9 @@ namespace Repository.Models
         public Cart? Cart { get; set; }
 
         [JsonIgnore]
+        public virtual Member Member { get; set; }
+
+        [JsonIgnore]
         public virtual User? User { get; set; }
     }
 }

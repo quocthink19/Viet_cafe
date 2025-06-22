@@ -184,6 +184,31 @@ namespace Cafe_Web_App.Migrations
                     b.ToTable("CustomizeToppings");
                 });
 
+            modelBuilder.Entity("Repository.Models.Member", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Point")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
+
+                    b.ToTable("Members");
+                });
+
             modelBuilder.Entity("Repository.Models.OTPCode", b =>
                 {
                     b.Property<Guid>("Id")
@@ -277,6 +302,10 @@ namespace Cafe_Web_App.Migrations
 
                     b.Property<double?>("UnitPrice")
                         .HasColumnType("float");
+
+                    b.Property<string>("imageProduct")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -470,6 +499,7 @@ namespace Cafe_Web_App.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RefreshToken")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
@@ -572,6 +602,17 @@ namespace Cafe_Web_App.Migrations
                     b.Navigation("Topping");
                 });
 
+            modelBuilder.Entity("Repository.Models.Member", b =>
+                {
+                    b.HasOne("Repository.Models.Customer", "Customer")
+                        .WithOne("Member")
+                        .HasForeignKey("Repository.Models.Member", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("Repository.Models.Order", b =>
                 {
                     b.HasOne("Repository.Models.Customer", "Customer")
@@ -629,6 +670,9 @@ namespace Cafe_Web_App.Migrations
             modelBuilder.Entity("Repository.Models.Customer", b =>
                 {
                     b.Navigation("Cart");
+
+                    b.Navigation("Member")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Repository.Models.Customize", b =>

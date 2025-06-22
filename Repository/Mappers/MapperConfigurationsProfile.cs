@@ -37,7 +37,9 @@ namespace Repository.Mappers
 
             CreateMap<Order, OrderResponse>()
                 .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.FullName ))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.ToString()));
+            
 
             CreateMap<OrderSlotLimitRequest,OrderSlotLimit>();
         }

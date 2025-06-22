@@ -34,6 +34,14 @@ namespace Cafe_Web_App.Controllers
             return Ok(new { message = " đã xóa đơn hành thành công " });
         }
         [Authorize]
+        [HttpGet("Id")]
+        public async Task<ActionResult<OrderResponse>> GetOrderById(long Id)
+        {
+            var order = await _orderService.GetOrderById(Id);
+            var res = new TResponse<OrderResponse>("lây order thành công", order);
+            return Ok(res);
+        }
+        [Authorize]
         [HttpPut("Id")]
         public async Task<ActionResult<OrderResponse>> UpdateStatusOrder(long Id,[FromBody] StatusOrderRequest status)
         {
