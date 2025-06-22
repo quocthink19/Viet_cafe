@@ -25,16 +25,16 @@ namespace Cafe_Web_App.Controllers
             _orderService = orderService;
             _customerService = customerService;
         }
-        
+
         [Authorize]
-        [HttpDelete("Id")]
+        [HttpDelete("{Id}")]
         public async Task<ActionResult> DeleteOrder(long Id)
         {
             await _orderService.DeleteOrder(Id);
             return Ok(new { message = " đã xóa đơn hành thành công " });
         }
         [Authorize]
-        [HttpGet("Id")]
+        [HttpGet("{Id}")]
         public async Task<ActionResult<OrderResponse>> GetOrderById(long Id)
         {
             var order = await _orderService.GetOrderById(Id);
@@ -42,7 +42,7 @@ namespace Cafe_Web_App.Controllers
             return Ok(res);
         }
         [Authorize]
-        [HttpPut("Id")]
+        [HttpPut("{Id}")]
         public async Task<ActionResult<OrderResponse>> UpdateStatusOrder(long Id,[FromBody] StatusOrderRequest status)
         {
             var order = await _orderService.updateStatusOrder(Id, status);
@@ -60,9 +60,9 @@ namespace Cafe_Web_App.Controllers
         }
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders() {
+        public async Task<ActionResult<IEnumerable<OrderResponse>>> GetOrders() {
             var orders = await _orderService.GetOrder();
-            var res = new TResponse<IEnumerable<Order>>("lấy danh sách tất đơn hàng thành công", orders);
+            var res = new TResponse<IEnumerable<OrderResponse>>("lấy danh sách tất đơn hàng thành công", orders);
             return Ok(res);
         }
         [HttpPut("update-by-qr/{Id}")]

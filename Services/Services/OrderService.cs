@@ -229,10 +229,11 @@ namespace Services.Services
             return customer;
         }
 
-        public async Task<IEnumerable<Order>> GetOrder()
+        public async Task<IEnumerable<OrderResponse>> GetOrder()
         {
             var order = await _unitOfWork.OrderRepo.GetAll();
-            return order;
+            return _mapper.Map<IEnumerable<OrderResponse>>(order);
+             
         }
 
         public async Task<OrderResponse> GetOrderById(long Id)

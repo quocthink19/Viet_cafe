@@ -8,5 +8,6 @@ namespace Repository.Models.DTOs.Request
 {
     public class MemberRequest
     {
+        public Guid CustomerId { get; set; }
     }
 }
