@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace Services.IServices
 {
-    public interface MemberService 
+    public interface IMemberService 
     {
         Task<Member> AddMember(MemberRequest Member);
         Task DeleteMember(int Id);
         Task<Member> UpdateMember(int Id, MemberRequest Member);
         Task<IEnumerable<Member>> GetMember();
         Task<Member> GetMemberById(int Id);
+        Task<Member> GetMemberByCustomer(Guid CustomerId);
     }
 }
