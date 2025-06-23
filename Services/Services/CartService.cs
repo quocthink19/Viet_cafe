@@ -84,16 +84,17 @@ namespace Services.Services
                         foreach (var topping in filteredToppings)
                         {
                             var toppingEntity = await _toppingService.GetToppingById(topping.ToppingId);
+                           
                             if (toppingEntity == null)
                                 continue;
-
                             extra += toppingEntity.Price * topping.Quantity;
 
                             toppingList.Add(new CustomizeTopping
                             {
                                 CustomizeId = newCustomize.Id,
                                 ToppingId = topping.ToppingId,
-                                Quantity = topping.Quantity
+                                Quantity = topping.Quantity,
+                              
                             });
                         }
                     }
@@ -101,19 +102,22 @@ namespace Services.Services
                     newCustomize.Extra = extra;
                     newCustomize.Price = product.Price + extra;
                     newCustomize.CustomizeToppings = toppingList;
-
                     await _unitOfWork.CustomizeRepo.AddAsync(newCustomize);
                     customizeToUse = newCustomize;
                 }
-
+                foreach (var ct in customizeToUse.CustomizeToppings)
+                {
+                    Console.WriteLine($"check : {ct.ToppingId} - {ct.Topping?.Name}");
+                };
                 var cart = await GetCartByCustomerId(customerId);
                 var existingItem = await _unitOfWork.CartRepo.GetCartItem(cart.Id, customizeToUse.Id);
-
+               
                 if (existingItem != null)
                 {
                     existingItem.Quantity += customizeRequest.Quantity;
                     cart.TotalAmount += customizeToUse.Price * customizeRequest.Quantity;
                 }
+                
                 else
                 {
                     var newItem = new CartItem
@@ -134,8 +138,8 @@ namespace Services.Services
                 await _unitOfWork.CartRepo.UpdateAsync(cart);
                 await _unitOfWork.SaveAsync();
                 await _unitOfWork.CommitAsync();
-
-                var res = _mapper.Map<CartResponse>(cart);
+                var updateCart = await _unitOfWork.CartRepo.GetCartById(cart.Id);
+                var res = _mapper.Map<CartResponse>(updateCart);
                 return res;
             }
             catch (Exception ex)

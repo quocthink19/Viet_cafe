@@ -10,9 +10,9 @@ namespace Repository.Models
     {
         public Guid Id { get; set; }
         public string SlotName { get; set; }
+        public TimeSpan StartTime { get; set; }   // Chỉ lưu giờ bắt đầu
+        public TimeSpan EndTime { get; set; }     // Chỉ lưu giờ kết thúc
         public int MaxOrders { get; set; }
         public int MaxCups { get; set; }
-        public DateTime StartedAt { get; set; }
-        public DateTime EndTime  { get; set;}
     }
 }

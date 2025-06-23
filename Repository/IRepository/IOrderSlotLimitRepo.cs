@@ -9,6 +9,6 @@ namespace Repository.IRepository
 {
     public interface IOrderSlotLimitRepo : IRepository<OrderSlotLimit> 
     {
-        Task<OrderSlotLimit> GetSlotByTimeAsync(DateTime? checkTime);
+        Task<OrderSlotLimit> GetSlotByTimeAsync(TimeSpan? checkTime);
     }
 }
