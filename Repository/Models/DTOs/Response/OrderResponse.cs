@@ -17,6 +17,7 @@ namespace Repository.Models.DTOs.Response
         public double? FinalPrice { get; set; }
         public string CustomerName { get; set; }
         public string fullName {  get; set; }
+        public DateTime CreateAt { get; set; }
         public string? Payment { get; set; }
         public string? phoneNumber {  get; set; } 
         public string QRcode { get; set; }

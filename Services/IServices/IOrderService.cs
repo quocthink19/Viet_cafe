@@ -21,6 +21,8 @@ namespace Services.IServices
         Task<OrderResponse> CreateOrderWallet(Guid customerId, OrderRequest order);
         Task<OrderResponse> updateStatusOrder(long Id, StatusOrderRequest status);
         Task<OrderResponse> GetOrderById(long Id);
+        Task<string> OrderLimitNotification(DateTime dateTime);
+
 
     }
 }

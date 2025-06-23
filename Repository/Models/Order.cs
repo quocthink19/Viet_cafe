@@ -20,9 +20,12 @@ namespace Repository.Models
         public string? phoneNumber { get; set; }
         public string QRcode { get; set; }
         public Method? Payment { get; set; }
+        public DateTime CreateAt { get; set; }
         public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
         public List<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();
         public List<Payment>? Payments { get; set; } = new List<Payment>();
+
+
     }
 }

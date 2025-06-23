@@ -27,14 +27,14 @@ namespace Repository.Repositories
         public async  Task<Member> GetMemberByCustomerId(Guid customerId)
         {
             return await _context.Members
-                .Include(c => c.CustomerId)
+                .Include(c => c.Customer)
                 .FirstOrDefaultAsync(c => c.CustomerId == customerId);
         }
 
         public async Task<Member> GetMemberById(int id)
         {
             return await _context.Members
-              .Include(c => c.CustomerId)
+              .Include(c => c.Customer)
               .FirstOrDefaultAsync(c => c.Id == id);
         }
     }

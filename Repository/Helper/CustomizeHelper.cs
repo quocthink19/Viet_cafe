@@ -24,10 +24,10 @@ namespace Repository.Helper
                 .ToList();
 
             var toppings = toppingList != null && toppingList.Any()
-                ? $"thêm: {string.Join(", ", toppingList)}"
+                ? $"thêm {string.Join(", ", toppingList)}"
                 : "";
 
-            return $"{productName} size {size} {note} ,{toppings}";
+            return $"{productName} size {size} {note} {toppings}";
         }
         }
     }

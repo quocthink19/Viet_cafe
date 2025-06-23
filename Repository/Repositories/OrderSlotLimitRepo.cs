@@ -16,10 +16,10 @@ namespace Repository.Repositories
         {
             _context = context;
         }
-        public async Task<OrderSlotLimit?> GetSlotByTimeAsync(DateTime? checkTime)
+        public async Task<OrderSlotLimit?> GetSlotByTimeAsync(TimeSpan? checkTime)
         {
             return await _context.OrderSlotLimits
-                .FirstOrDefaultAsync(s => s.StartedAt <= checkTime && checkTime <= s.EndTime);
+                .FirstOrDefaultAsync(s => s.StartTime <= checkTime && checkTime <= s.EndTime);
         }
     }
 }

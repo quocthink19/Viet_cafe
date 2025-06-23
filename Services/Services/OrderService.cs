@@ -8,6 +8,7 @@ using Repository.UnitOfWork;
 using Services.IServices;
 using QRCoder;
 using Repository.Models.Enum;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Services.Services
 {
@@ -72,6 +73,7 @@ namespace Services.Services
                 OrderItems = orderItems,
                 fullName = order.fullName,
                 phoneNumber = order.phoneNumber,
+                CreateAt = DateTime.Now,
                 TotalAmount = finalPrice,
                 FinalPrice = finalPrice,
                 DiscountPrice = discountPrice,
@@ -85,7 +87,7 @@ namespace Services.Services
                 throw new Exception("ví của bạn không đủ để thanh toán đơn hàng này ");
             }
             
-            var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(newOrder.PickUpTime);
+/*            var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(newOrder.PickUpTime);
             if (orderLimit != null)
             {
                 var orderCount = await _unitOfWork.OrderRepo.GetOrdersCountAsync(orderLimit.StartedAt, orderLimit.EndTime);
@@ -95,7 +97,7 @@ namespace Services.Services
                 {
                     throw new Exception("Hiện tại đơn hàng đã quá tải, vui lòng đặt lại sau");
                 }
-            }
+            }*/
 
             string qrContent = $"https://localhost:7207/Order/update-by-qr/{newOrder.Id}";
             newOrder.QRcode = GenerateQrCodeBase64(qrContent);
@@ -169,6 +171,7 @@ namespace Services.Services
                 Status = Repository.Models.Enum.OrderStatus.NEW,
                 PickUpTime = order.PickUpTime,
                 OrderItems = orderItems,
+                CreateAt = DateTime.Now,
                 fullName = order.fullName,
                 phoneNumber = order.phoneNumber,
                 TotalAmount = finalPrice,
@@ -178,7 +181,7 @@ namespace Services.Services
             };
 
            
-            var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(newOrder.PickUpTime);
+          /*  var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(newOrder.PickUpTime);
             if (orderLimit != null)
             {
                 var orderCount = await _unitOfWork.OrderRepo.GetOrdersCountAsync(orderLimit.StartedAt, orderLimit.EndTime);
@@ -189,7 +192,7 @@ namespace Services.Services
                     throw new Exception("Hiện tại đơn hàng đã quá tải, vui lòng đặt lại sau");
                 }
             }
-
+*/
           
             try
             {
@@ -353,6 +356,36 @@ namespace Services.Services
         {
             var orders = await _unitOfWork.OrderRepo.GetAllOrdersByCustomerId(customerId);
             return _mapper.Map<IEnumerable<OrderResponse>>(orders);
+        }
+
+        public async  Task<string> OrderLimitNotification(DateTime dateTime)
+        {
+            TimeSpan time = dateTime.TimeOfDay;
+            var (start, end) = RoundToHour(dateTime);
+            var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(time);
+            if (orderLimit != null)
+            {
+                var orderCount = await _unitOfWork.OrderRepo.GetOrdersCountAsync(start, end);
+                var cupCount = await _unitOfWork.OrderRepo.GetTotalCupsByPickUpTimeAsync(start, end);
+
+                if (orderLimit.MaxOrders <= orderCount || orderLimit.MaxCups <= cupCount)
+                {
+                    throw new Exception("Hiện tại đơn hàng đã quá tải trong khung giờ bạn đặt, vui lòng đặt lại sau");
+                }
+            }
+            return null;
+        }
+        public static (DateTime FloorHour, DateTime CeilHour) RoundToHour(DateTime dateTime)
+        {
+            
+            DateTime floor = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, 0, 0, dateTime.Kind);
+
+            
+            DateTime ceil = dateTime.Minute == 0 && dateTime.Second == 0 && dateTime.Millisecond == 0
+                ? floor
+                : floor.AddHours(1);
+
+            return (floor, ceil);
         }
     }
 }
