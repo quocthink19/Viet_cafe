@@ -75,16 +75,20 @@ namespace Services.Services
                         ProductId = customizeRequest.ProductId,
                         Product = product,
                         Extra = 0,
-                        Price = 0
+                        Price = 0,
+                        
+                        
                     };
                     var toppingList = new List<CustomizeTopping>();
-
+                    
                     if (filteredToppings.Any())
                     {
+                        
                         foreach (var topping in filteredToppings)
                         {
+                            
                             var toppingEntity = await _toppingService.GetToppingById(topping.ToppingId);
-                           
+                            
                             if (toppingEntity == null)
                                 continue;
                             extra += toppingEntity.Price * topping.Quantity;
@@ -94,7 +98,7 @@ namespace Services.Services
                                 CustomizeId = newCustomize.Id,
                                 ToppingId = topping.ToppingId,
                                 Quantity = topping.Quantity,
-                              
+                                Topping = toppingEntity
                             });
                         }
                     }
@@ -111,7 +115,7 @@ namespace Services.Services
                 };
                 var cart = await GetCartByCustomerId(customerId);
                 var existingItem = await _unitOfWork.CartRepo.GetCartItem(cart.Id, customizeToUse.Id);
-               
+                
                 if (existingItem != null)
                 {
                     existingItem.Quantity += customizeRequest.Quantity;

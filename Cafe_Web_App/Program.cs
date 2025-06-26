@@ -55,7 +55,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
-        policy.WithOrigins("http://localhost:8081")
+         policy.WithOrigins("http://localhost:8081", "http://localhost:5173")
               .AllowAnyHeader()
               .AllowAnyMethod()
     );
