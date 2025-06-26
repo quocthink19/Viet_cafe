@@ -13,6 +13,7 @@ using Repository.Models;
 using Repository.Helper;
 using Microsoft.Extensions.Options;
 using Net.payOS;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 

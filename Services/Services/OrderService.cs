@@ -87,17 +87,7 @@ namespace Services.Services
                 throw new Exception("ví của bạn không đủ để thanh toán đơn hàng này ");
             }
             
-/*            var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(newOrder.PickUpTime);
-            if (orderLimit != null)
-            {
-                var orderCount = await _unitOfWork.OrderRepo.GetOrdersCountAsync(orderLimit.StartedAt, orderLimit.EndTime);
-                var cupCount = await _unitOfWork.OrderRepo.GetTotalCupsByPickUpTimeAsync(orderLimit.StartedAt, orderLimit.EndTime);
 
-                if (orderLimit.MaxOrders <= orderCount || orderLimit.MaxCups <= cupCount)
-                {
-                    throw new Exception("Hiện tại đơn hàng đã quá tải, vui lòng đặt lại sau");
-                }
-            }*/
 
             string qrContent = $"https://localhost:7207/Order/update-by-qr/{newOrder.Id}";
             newOrder.QRcode = GenerateQrCodeBase64(qrContent);
@@ -180,19 +170,6 @@ namespace Services.Services
                 QRcode = ""
             };
 
-           
-          /*  var orderLimit = await _unitOfWork.OrderSlotLimitRepo.GetSlotByTimeAsync(newOrder.PickUpTime);
-            if (orderLimit != null)
-            {
-                var orderCount = await _unitOfWork.OrderRepo.GetOrdersCountAsync(orderLimit.StartedAt, orderLimit.EndTime);
-                var cupCount = await _unitOfWork.OrderRepo.GetTotalCupsByPickUpTimeAsync(orderLimit.StartedAt, orderLimit.EndTime);
-
-                if (orderLimit.MaxOrders <= orderCount || orderLimit.MaxCups <= cupCount)
-                {
-                    throw new Exception("Hiện tại đơn hàng đã quá tải, vui lòng đặt lại sau");
-                }
-            }
-*/
           
             try
             {
