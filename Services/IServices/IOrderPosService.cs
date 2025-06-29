@@ -11,7 +11,7 @@ namespace Services.IServices
 {
     public interface IOrderPosService
     {
-        Task<OrderPos> CreateOrderPos(OrderRequest order);
+        public Task<OrderPos> CreateOrderPos(OrderPosRequest order);
         Task<OrderPos> GetOrderPosById(long Id);
 
     }
