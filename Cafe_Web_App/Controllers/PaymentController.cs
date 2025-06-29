@@ -54,6 +54,7 @@ namespace Cafe_Web_App.Controllers
         public async Task<ActionResult<OrderResponse>> PaymentByWallet([FromBody] OrderRequest dto) {
             var customer = await GetCurrentCustomer();
             var order = await _orderService.CreateOrderWallet(customer.Id, dto);
+            await _cartService.ClearCart(customer.Id);
             var respnose = new TResponse<OrderResponse>("Đơn hàng thanh toán bằng ví đã được tạo thành công", order);
             return Ok(respnose);
     }
