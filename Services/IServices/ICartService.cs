@@ -17,6 +17,7 @@ namespace Services.IServices
         Task<CartResponse> AddCustomizeToCart(Guid customerId,CustomizeRequest customizeRequest);
         Task<CartResponse> AddtoCart(Guid customerId,Guid CustomizeId);
         Task<Cart> UpdateCart(Guid customerId);
-        Task<Cart> DeleteCartItem(Guid customerId, Guid CartItemId);
+        Task<Cart> UpdateCartItem(Guid customerId, Guid CartItemId, int newQuantity);
+        Task<CartResponse> RemoveCartItem(Guid customerId, Guid CartItemId);
     }
-}
+ }
