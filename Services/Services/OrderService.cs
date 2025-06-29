@@ -169,7 +169,7 @@ namespace Services.Services
                 DiscountPrice = discountPrice,
                 QRcode = ""
             };
-
+            Console.WriteLine($"total order {newOrder.FinalPrice}");
           
             try
             {

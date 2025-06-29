@@ -32,7 +32,7 @@ namespace Services.Services
             _sizeService = sizeService;
             _customizeService = customizeService;
             _toppingService = toppingService;
-            
+
         }
 
         public async Task<CartResponse> AddCustomizeToCart(Guid customerId, CustomizeRequest customizeRequest)
@@ -40,16 +40,16 @@ namespace Services.Services
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                
+
                 var filteredToppings = (customizeRequest.CustomizeToppings ?? new List<CustomizeToppingDto>())
                     .Where(t => t != null && t.ToppingId != Guid.Empty)
                     .ToList();
 
                 // Cập nhật customizeRequest với danh sách topping đã lọc (nếu cần)
                 customizeRequest.CustomizeToppings = filteredToppings;
-              
 
-              
+
+
 
                 var existingCustomize = await _customizeService.GetExistingCustomizeAsync(customizeRequest);
                 Customize customizeToUse;
@@ -64,7 +64,7 @@ namespace Services.Services
                 }
                 else
                 {
-                  
+
 
                     var newCustomize = new Customize
                     {
@@ -76,19 +76,19 @@ namespace Services.Services
                         Product = product,
                         Extra = 0,
                         Price = 0,
-                        
-                        
+
+
                     };
                     var toppingList = new List<CustomizeTopping>();
-                    
+
                     if (filteredToppings.Any())
                     {
-                        
+
                         foreach (var topping in filteredToppings)
                         {
-                            
+
                             var toppingEntity = await _toppingService.GetToppingById(topping.ToppingId);
-                            
+
                             if (toppingEntity == null)
                                 continue;
                             extra += toppingEntity.Price * topping.Quantity;
@@ -115,13 +115,13 @@ namespace Services.Services
                 };
                 var cart = await GetCartByCustomerId(customerId);
                 var existingItem = await _unitOfWork.CartRepo.GetCartItem(cart.Id, customizeToUse.Id);
-                
+
                 if (existingItem != null)
                 {
                     existingItem.Quantity += customizeRequest.Quantity;
                     cart.TotalAmount += customizeToUse.Price * customizeRequest.Quantity;
                 }
-                
+
                 else
                 {
                     var newItem = new CartItem
@@ -187,7 +187,7 @@ namespace Services.Services
                     await _unitOfWork.CartRepo.InsertCartItemAsync(newItem);
                 }
 
-               
+
 
                 await _unitOfWork.CartRepo.UpdateAsync(cart);
 
@@ -233,7 +233,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<Cart> DeleteCartItem(Guid customerId, Guid cartItemId)
+        public async Task<Cart> UpdateCartItem(Guid customerId, Guid cartItemId, int newQuanity)
         {
             await _unitOfWork.BeginTransactionAsync();
             try
@@ -244,23 +244,18 @@ namespace Services.Services
                 {
                     throw new Exception("Không tìm thấy sản phẩm để xóa");
                 }
-                double? minus = 0;
-                if (item.Quantity == 1)
+                if(newQuanity <= 0)
                 {
-                    await _unitOfWork.CartRepo.DeleteCartItem(item);
-                    minus = item.Customize.Price;
-                }
-                else
-                {
-                    item.Quantity -= 1;
-                    minus = item.Customize.Price;
-                }
+                    throw new ArgumentException("số lượng phải luôn lớn hơn 0");
+                } 
+                item.Quantity = newQuanity;
+                await _unitOfWork.CartRepo.UpdateAsync(cart);
 
-                cart.TotalAmount = await _unitOfWork.CartRepo.CalculateTotalAmount(cart.Id);
-                cart.TotalAmount -= minus;
+                cart.TotalAmount = cart.CartItems.Sum(ci => ci.Quantity * ci.Customize.Price);
+
                 if (cart.TotalAmount < 0)
                 {
-                    cart.TotalAmount = 0 ;
+                    cart.TotalAmount = 0;
                 }
                 await _unitOfWork.CartRepo.UpdateAsync(cart);
 
@@ -328,5 +323,41 @@ namespace Services.Services
                 throw;
             }
         }
+
+        public async Task<CartResponse> RemoveCartItem(Guid customerId, Guid CartItemId)
+        {
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var cart = await GetCartByCustomerId(customerId);
+                var item = cart.CartItems.FirstOrDefault(ci => ci.Id == CartItemId);
+                if (item == null)
+                {
+                    throw new Exception("Không tìm thấy sản phẩm để xóa");
+                }
+                await _unitOfWork.CartRepo.DeleteCartItem(item);
+                
+
+                cart.TotalAmount = await _unitOfWork.CartRepo.CalculateTotalAmount(cart.Id);
+
+                if (cart.TotalAmount < 0)
+                {
+                    cart.TotalAmount = 0;
+                }
+                await _unitOfWork.CartRepo.UpdateAsync(cart);
+
+                await _unitOfWork.SaveAsync();
+                await _unitOfWork.CommitAsync();
+
+                var res = _mapper.Map<CartResponse>(cart);
+                return res;
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
+        }
+
     }
 }

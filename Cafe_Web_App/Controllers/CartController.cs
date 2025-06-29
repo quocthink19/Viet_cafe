@@ -55,7 +55,7 @@ namespace Cafe_Web_App.Controllers
         [HttpGet("{Id}")]
         public async Task<ActionResult<CartResponse>> GetCartById(Guid Id)
         {
-            var customer = await GetCurrentCustomer();
+           
             var cart = await _cartService.GetCartById(Id);
             var res = _mapper.Map<CartResponse>(cart);
             var response = new TResponse<CartResponse>("lấy giỏ hàng thành công", res);
@@ -72,17 +72,28 @@ namespace Cafe_Web_App.Controllers
             var response = new TResponse<Cart>("clear giỏ hàng thành công", cart);
             return Ok(response);
         }
+
         [Authorize]
-        [HttpPut("delete-cart-item")]
+        [HttpPut("update-cart-item")]
+        public async Task<ActionResult<CartResponse>> DUpdateCartItem([FromBody] UpdateCartItemRequest cartItem)
+        {
+            var customer = await GetCurrentCustomer();
+            var cart = await _cartService.UpdateCartItem(customer.Id,cartItem.CartItemId, cartItem.newQuantity );
+            var res = _mapper.Map<CartResponse>(cart);
+            var response = new TResponse<CartResponse>("cập nhật cart item thành công", res);
+            return Ok(response);
+        }
+        [Authorize]
+        [HttpDelete("remove-cart-item")]
         public async Task<ActionResult<CartResponse>> DeleteCartItem([FromBody] RemoveCartItemRequest cartItem)
         {
             var customer = await GetCurrentCustomer();
-            var cart = await _cartService.DeleteCartItem(customer.Id,cartItem.CartItemId);
-            var res = _mapper.Map<CartResponse>(cart);
-            var response = new TResponse<CartResponse>("xóa cart item thành công", res);
+            var cart = await _cartService.RemoveCartItem(customer.Id, cartItem.CartItemId);
+            var response = new TResponse<CartResponse>("xóa cart item thành công", cart);
             return Ok(response);
         }
-       
+
+
         private async Task<Customer?> GetCurrentCustomer()
         {
             var username = User.FindFirst(ClaimTypes.Name)?.Value;
