@@ -12,6 +12,7 @@ namespace Repository.UnitOfWork
         ICustomerRepo CustomerRepo { get; }
         IUserRepo UserRepo { get; }
         IToppingRepo ToppingRepo { get; }
+        IOrderPosRepo OrderPosRepo { get; }
         IProductRepo ProductRepo { get; }
         ICustomizeToppingRepo CustomizeToppingRepo { get; }
         ICustomizeRepo CustomizeRepo { get; }
