@@ -13,7 +13,7 @@ namespace Services.Services
     {
         public Task<OrderPos> CreateOrderPos(OrderPosRequest order)
         {
-            
+            throw new NotImplementedException();
         }
 
         public Task<OrderPos> GetOrderPosById(long Id)
