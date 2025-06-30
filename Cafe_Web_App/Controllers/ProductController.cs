@@ -18,7 +18,7 @@ namespace Cafe_Web_App.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<TResponse<IEnumerable<Product >>>> GetAll()
+        public async Task<ActionResult<TResponse<IEnumerable<Product>>>> GetAll()
         {
             var Products = await _productService.GetProduct();
             var response = new TResponse<IEnumerable<Product>>("Lấy danh sách thành công", Products);
@@ -32,7 +32,13 @@ namespace Cafe_Web_App.Controllers
             var response = new TResponse<Product>("Lấy Product thành công", Product);
             return Ok(response);
         }
-
+        [HttpGet("BestSeller")]
+        public async Task<ActionResult<TResponse<IEnumerable<Product>>>> GetBestSeller()
+            {
+            var res = await _productService.GetBestSeller();
+            var respone = new TResponse<IEnumerable<Product>>("lấy top sản phẩm thành công", res);
+            return Ok(respone);
+        }
         [HttpPost]
         public async Task<ActionResult<TResponse<ProductResponse>>> CreateProduct([FromBody] ProductRequest Product)
         {

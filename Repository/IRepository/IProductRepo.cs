@@ -11,6 +11,7 @@ namespace Repository.IRepository
     {
         Task<IEnumerable<Product>> GetAll();
         Task<Product> GetById(Guid id);
+        Task<IEnumerable<Product>> GetBestSeller();
 
     }
 }

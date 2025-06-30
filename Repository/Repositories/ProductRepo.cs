@@ -22,6 +22,15 @@ namespace Repository.Repositories
                 .Include(p => p.Category)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Product>> GetBestSeller()
+        {
+            return await _context.Products
+            .OrderByDescending(p => p.PurchaseCount)
+            .Take(4)
+            .ToListAsync();
+        }
+
         public async Task<Product> GetById(Guid id)
         {
             return await _context.Products

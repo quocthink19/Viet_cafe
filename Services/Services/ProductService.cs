@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Core;
+using Microsoft.Identity.Client;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
@@ -70,6 +71,11 @@ namespace Services.Services
             }
         }
 
+        public async Task<IEnumerable<Product>> GetBestSeller()
+        {
+            var product = await _unitOfWork.ProductRepo.GetBestSeller();
+            return product;
+        }
 
         public async Task<IEnumerable<Product>> GetProduct()
         {
