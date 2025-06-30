@@ -1,6 +1,7 @@
 ﻿using Repository.Models;
 using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
+using Repository.Models.Filter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace Services.IServices
 {
     public interface IProductService 
     {
+        Task<PagedResult<Product>> GetFilteredProductsAsync(ProductFilter filter);
+
         Task<ProductResponse> AddProduct(ProductRequest newProduct);
         Task DeleteProduct(Guid Id);
         Task<Product> UpdateProduct(Guid Id, ProductRequest updateProduct);

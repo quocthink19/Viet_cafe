@@ -4,6 +4,7 @@ using Microsoft.Identity.Client;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
+using Repository.Models.Filter;
 using Repository.UnitOfWork;
 using Services.IServices;
 using System;
@@ -74,6 +75,11 @@ namespace Services.Services
         {
             var product = await _unitOfWork.ProductRepo.GetBestSeller();
             return product;
+        }
+
+        public async  Task<PagedResult<Product>> GetFilteredProductsAsync(ProductFilter filter)
+        {
+            return await _unitOfWork.ProductRepo.GetAllFilteredProductsAsync(filter);
         }
 
         public async Task<IEnumerable<Product>> GetProduct()

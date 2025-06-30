@@ -6,6 +6,7 @@ using Repository.Models;
 using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
 using Repository.Models.Enum;
+using Repository.Models.Filter;
 using Services.IServices;
 using Services.Services;
 using System.Security.Claims;
@@ -24,6 +25,15 @@ namespace Cafe_Web_App.Controllers
         {
             _orderService = orderService;
             _customerService = customerService;
+        }
+
+        
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetFilteredOrders([FromQuery] OrderFilter filter)
+        {
+            var result = await _orderService.GetFilteredOrdersAsync(filter);
+            var res = new TResponse<PagedResult<Order>>("lấy danh sách đơn hàng thành công", result);
+            return Ok(res);
         }
 
         [Authorize]

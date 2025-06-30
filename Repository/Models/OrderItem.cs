@@ -9,6 +9,7 @@ namespace Repository.Models
         public int? Quantity { get; set; }
         public double? UnitPrice { get; set; }
         public string imageProduct { get; set; }
+        public Guid productId { get; set; }
         public long OrderId { get; set; }
         [JsonIgnore]
         public Order Order { get; set; }     

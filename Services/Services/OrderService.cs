@@ -9,6 +9,8 @@ using Services.IServices;
 using QRCoder;
 using Repository.Models.Enum;
 using Microsoft.Extensions.Logging.Abstractions;
+using Repository.Models.Filter;
+using Repository.Repositories;
 
 namespace Services.Services
 {
@@ -17,11 +19,14 @@ namespace Services.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPromotionRepo _promotionRepo;
         private readonly IMapper _mapper;
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IPromotionRepo promotionRepo)
+        private readonly IEmailService _emailService;
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, IPromotionRepo promotionRepo, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _promotionRepo =promotionRepo;
+            _promotionRepo = promotionRepo;
+            _emailService = emailService;
+
         }
 
         public async Task<OrderResponse> CreateOrderWallet(Guid customerId, OrderRequest order)
@@ -99,6 +104,22 @@ namespace Services.Services
                 await _unitOfWork.CustomerRepo.UpdateAsync(customer);
                 await _unitOfWork.OrderRepo.AddAsync(newOrder);
 
+                foreach (var cartItem in cart.CartItems)
+                {
+                    var productId = await _unitOfWork.ProductRepo.GetProductIdByCartItemIdAsync(cartItem.Id);
+                    var quantity = cartItem.Quantity ?? 0;
+
+                    if (productId != null && productId != Guid.Empty)
+                    {
+                        var product = await _unitOfWork.ProductRepo.GetByIdAsync(productId.Value);
+                        if (product != null)
+                        {
+                            product.PurchaseCount = (product.PurchaseCount ?? 0) + quantity;
+                            await _unitOfWork.ProductRepo.UpdateAsync(product);
+                        }
+                    }
+                }
+
                 await _unitOfWork.SaveAsync();
 
             }
@@ -150,6 +171,7 @@ namespace Services.Services
             foreach (var orderItem in orderItems)
             {
                 orderItem.Id = Guid.NewGuid();
+
             }
             string code = UniqueCodeGenerator.GenerateCode();
             var newOrder = new Order
@@ -169,11 +191,26 @@ namespace Services.Services
                 DiscountPrice = discountPrice,
                 QRcode = ""
             };
-            Console.WriteLine($"total order {newOrder.FinalPrice}");
+          
           
             try
             {
                 await _unitOfWork.OrderRepo.AddAsync(newOrder);
+                foreach (var cartItem in cart.CartItems)
+                {
+                    var productId = await _unitOfWork.ProductRepo.GetProductIdByCartItemIdAsync(cartItem.Id);
+                    var quantity = cartItem.Quantity ?? 0;
+
+                    if (productId != null && productId != Guid.Empty)
+                    {
+                        var product = await _unitOfWork.ProductRepo.GetByIdAsync(productId.Value);
+                        if (product != null)
+                        {
+                            product.PurchaseCount = (product.PurchaseCount ?? 0) + quantity;
+                            await _unitOfWork.ProductRepo.UpdateAsync(product);
+                        }
+                    }
+                }
                 await _unitOfWork.SaveAsync();
 
               
@@ -248,6 +285,7 @@ namespace Services.Services
         public async Task<OrderResponse> updateStatusOrder(long id, StatusOrderRequest status)
         {
             var order = await _unitOfWork.OrderRepo.GetById(id);
+            var customer = await _unitOfWork.OrderRepo.GetCustomerByOrderId(id);
             if (order == null)
             {
                 throw new Exception("Không tìm thấy đơn hàng");
@@ -282,13 +320,49 @@ namespace Services.Services
                 {
                     throw new Exception("Đơn hàng chưa được chuẩn bị nên không thể chuyển sang trạng thái có thể nhận");
                 }
+                var subject = $"Đơn hàng {order.Code} của bạn đã sẵn sàng!";
+
+                var body = $@"
+                <!DOCTYPE html>
+                <html>
+                <body style='font-family: Arial, sans-serif; color: #333;'>
+                  <h2>Kính gửi {customer.FullName},</h2>
+                  <p>Cảm ơn bạn đã lựa chọn <b>Lượn Cafe</b>! 🎉</p>
+                  <p>Đơn hàng <b>{order.Code}</b> của bạn đã được chuẩn bị xong và sẵn sàng để bạn đến nhận tại quán.</p>
+                  <p>Hãy ghé qua để thưởng thức ly cà phê thơm ngon được chuẩn bị riêng cho bạn! ☕</p>
+                  <p>Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua email hoặc số điện thoại <b>0927363868</b>.</p>
+                  <p>Trân trọng,<br><b>Lượn Cafe</b><br>22 Khổng Tử, P. Bình Thọ, Tp. Thủ đức | 0927363868 | <a href='https://www.instagram.com/luon_cafe/#'>Lượn Cafe</a></p>
+                </body>
+                </html>";
+
+                await _emailService.SendEmail(customer.User.Email, subject, body);
             }
             if (newStatus == OrderStatus.CANCELLED && currentStatus == OrderStatus.COMPLETED)
             {
                 throw new Exception("Đơn hàng đã hoàn thành nên không thể hủy");
             }
+            if(newStatus == OrderStatus.CANCELLED)
+            {
+                customer.Wallet += (decimal)order.FinalPrice;
+                foreach (var orderItem in order.OrderItems)
+                {
+                    
+                    var quantity = orderItem.Quantity ?? 0;
+
+                    if (orderItem.productId != null && orderItem.productId != Guid.Empty)
+                    {
+                        var product = await _unitOfWork.ProductRepo.GetByIdAsync(orderItem.productId);
+                        if (product != null)
+                        {
+                            product.PurchaseCount = (product.PurchaseCount ?? 0) - quantity;
+                            await _unitOfWork.ProductRepo.UpdateAsync(product);
+                        }
+                    }
+                }
+            }
 
             order.Status = newStatus;
+            await _unitOfWork.CustomerRepo.UpdateAsync(customer);
             await _unitOfWork.OrderRepo.UpdateAsync(order);
             await _unitOfWork.SaveAsync();
             var res = _mapper.Map<OrderResponse>(order);
@@ -363,6 +437,13 @@ namespace Services.Services
                 : floor.AddHours(1);
 
             return (floor, ceil);
+        }
+
+        public async Task<PagedResult<Order>> GetFilteredOrdersAsync(OrderFilter filter)
+        {
+            var order = await _unitOfWork.OrderRepo.GetFilteredOrdersAsync(filter);
+            
+            return order;
         }
     }
 }
