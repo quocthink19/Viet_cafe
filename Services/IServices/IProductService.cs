@@ -17,5 +17,6 @@ namespace Services.IServices
         Task<IEnumerable<Product>> GetProduct();
         Task<Product> GetProductById(Guid Id);
         Task<Product> UpdateAvaillableProduct(Guid Id);
+        Task<IEnumerable<Product>> GetBestSeller();
     }
 }

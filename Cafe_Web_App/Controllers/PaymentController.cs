@@ -186,7 +186,7 @@ namespace Cafe_Web_App.Controllers
             var body = $"Đơn hàng {order.Code} của bạn đã được thanh toán thành công vui lòng chờ tin nhắn thông báo đến nhận hàng của chúng tôi, Xin Cảm Ơn";
             await _emailService.SendEmail(customer.User.Email, "Thanh toán đơn hàng thành công ", body);
 
-            return Ok(new { message = "thanh toán đơn hàng thành công" });
+            return Redirect($"https://luoncoffeeweb.vercel.app/payment-success?orderId={orderId}");
         }
         private async Task<Customer?> GetCurrentCustomer()
             {
