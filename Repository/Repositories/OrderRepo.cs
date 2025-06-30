@@ -3,6 +3,7 @@ using Repository.IRepository;
 using Repository.Models;
 using Repository.Models.DTOs.Response;
 using Repository.Models.Enum;
+using Repository.Models.Filter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -139,6 +140,56 @@ namespace Repository.Repositories
                 Date = today,
                 TotalOrders = 0,
                 TotalRevenue = 0
+            };
+        }
+        public async Task<PagedResult<Order>> GetFilteredOrdersAsync(OrderFilter filter)
+        {
+            var query = _context.Orders
+                 .Include(c => c.Customer)
+                .Include(o => o.OrderItems)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter.Code))
+                query = query.Where(o => o.Code.Contains(filter.Code));
+
+            if (filter.Status.HasValue)
+                query = query.Where(o => o.Status == filter.Status.Value);
+
+            if (filter.Payment.HasValue)
+                query = query.Where(o => o.Payment == filter.Payment.Value);
+
+            if (!string.IsNullOrEmpty(filter.FullName))
+                query = query.Where(o => o.fullName.Contains(filter.FullName));
+
+            if (!string.IsNullOrEmpty(filter.PhoneNumber))
+                query = query.Where(o => o.phoneNumber.Contains(filter.PhoneNumber));
+
+            if (filter.CustomerId.HasValue)
+                query = query.Where(o => o.CustomerId == filter.CustomerId.Value);
+
+            if (filter.FromDate.HasValue)
+                query = query.Where(o => o.CreateAt >= filter.FromDate.Value);
+
+            if (filter.ToDate.HasValue)
+                query = query.Where(o => o.CreateAt <= filter.ToDate.Value);
+
+            var totalCount = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize);
+            var skip = (filter.Page - 1) * filter.PageSize;
+
+            var items = await query
+                .OrderByDescending(o => o.CreateAt)
+                .Skip(skip)
+                .Take(filter.PageSize)
+                .ToListAsync();
+
+            return new PagedResult<Order>
+            {
+                CurrentPage = filter.Page,
+                PageSize = filter.PageSize,
+                TotalPages = totalPages,
+                TotalCount = totalCount,
+                Items = items
             };
         }
     }

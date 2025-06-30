@@ -26,7 +26,9 @@ namespace Repository.Mappers
             CreateMap<PromotionRequest, Promotion>();
 
             CreateMap<CartItem, OrderItem>()
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Description));
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.productId, opt => opt.MapFrom(src => src.Customize.ProductId));
+            
             CreateMap<Customize, CustomerResponse>();
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));

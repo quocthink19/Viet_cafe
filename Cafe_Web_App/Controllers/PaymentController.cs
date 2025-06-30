@@ -183,8 +183,30 @@ namespace Cafe_Web_App.Controllers
             await _unitOfWork.SaveAsync();
             var customer = await _unitOfWork.OrderRepo.GetCustomerByOrderId(orderId);
             await _cartService.ClearCart(customer.Id);
-            var body = $"Đơn hàng {order.Code} của bạn đã được thanh toán thành công vui lòng chờ tin nhắn thông báo đến nhận hàng của chúng tôi, Xin Cảm Ơn";
-            await _emailService.SendEmail(customer.User.Email, "Thanh toán đơn hàng thành công ", body);
+            var subject = $"Thanh toán đơn hàng {order.Code} thành công";
+
+            var body = $@"
+            <!DOCTYPE html>
+            <html lang=""vi"">
+            <head>
+              <meta charset=""UTF-8"">
+              <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+            </head>
+            <body style=""font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;"">
+              <div style=""text-align: center; padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"">
+                <h2 style=""color: #2c3e50;"">Kính gửi {customer.FullName},</h2>
+                <p style=""font-size: 16px;"">Cảm ơn bạn đã đặt hàng tại <strong>Lượn Cafe</strong>! 🎉</p>
+                <p style=""font-size: 16px;"">Chúng tôi xin thông báo rằng <strong>đơn hàng {order.Code}</strong> của bạn đã được <span style=""color: #27ae60;"">thanh toán thành công</span>.</p>
+                <p style=""font-size: 16px;"">Vui lòng chờ tin nhắn hoặc email tiếp theo từ chúng tôi để đến nhận ly cà phê thơm ngon của bạn! ☕</p>
+                <p style=""font-size: 14px; color: #7f8c8d;"">Nếu bạn có bất kỳ câu hỏi nào, hãy liên hệ với chúng tôi qua email hoặc số điện thoại <strong>0927363868</strong>.</p>
+                <div style=""margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;"">
+                  <p style=""font-size: 14px; color: #2c3e50;"">Trân trọng,<br><strong>Lượn Cafe</strong><br>22 Khổng Tử, P. Bình Thọ, Tp. Thủ đức | 0927363868 | <a href=""https://www.instagram.com/luon_cafe/#"" style=""color: #3498db; text-decoration: none;"">Lượn Cafe</a></p>
+                </div>
+              </div>
+            </body>
+            </html>";
+
+            await _emailService.SendEmail(customer.User.Email, subject, body);
 
             return Redirect($"https://luoncoffeeweb.vercel.app/payment-success?orderCode={orderId}");
         }

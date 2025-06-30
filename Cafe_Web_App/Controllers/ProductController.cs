@@ -4,6 +4,7 @@ using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
 using Repository.Models;
 using Services.IServices;
+using Repository.Models.Filter;
 
 namespace Cafe_Web_App.Controllers
 {
@@ -15,6 +16,13 @@ namespace Cafe_Web_App.Controllers
         public ProductController(IProductService productService)
         {
             _productService = productService;
+        }
+        [HttpGet("filter")]
+        public async Task<ActionResult<PagedResult<Product>>> GetFilteredProducts([FromQuery] ProductFilter filter)
+        {
+            var result = await _productService.GetFilteredProductsAsync(filter);
+            var res = new TResponse<PagedResult<Product>>("lấy danh sách sản phẩm thành công",result);
+            return Ok(res);
         }
 
         [HttpGet]
