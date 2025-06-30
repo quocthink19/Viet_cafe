@@ -70,7 +70,6 @@ namespace Services.Services
                 throw;
             }
         }
-
         public async Task<IEnumerable<Product>> GetBestSeller()
         {
             var product = await _unitOfWork.ProductRepo.GetBestSeller();
