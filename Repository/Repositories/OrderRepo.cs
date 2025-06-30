@@ -74,10 +74,11 @@ namespace Repository.Repositories
         public async Task<IEnumerable<Order>> GetAllOrdersByCustomerId(Guid customerId)
         {
             return await _context.Orders
-                 .Include(c => c.Customer)
-                 .Include(o => o.OrderItems).
-                 Where(o => o.CustomerId == customerId)
-                .ToListAsync();
+           .Include(c => c.Customer)
+           .Include(o => o.OrderItems)
+           .Where(o => o.CustomerId == customerId)
+           .OrderByDescending(o => o.CreateAt) 
+           .ToListAsync();
         }
 
         public async Task<DailyStatsResponse?> GetDailyStatsAsync(DateTime date)
