@@ -24,40 +24,7 @@ namespace Cafe_Web_App.Controllers
             _customerService = customerService;
 
         }
-        /* [HttpPost("webhook")]
-         public async Task<IActionResult> WebhookHandler(WebhookType webhook)
-         {
-             try
-             {
-                 await _orderService.ConfirmOrderPayment(webhook);
-                 return Ok(new { success = true });
-             }
-             catch (Exception ex)
-             {
-                 // Log lỗi nếu cần
-                 return BadRequest(new { success = false, message = ex.Message });
-             }
-         }*/
-        /// <summary>
-        /// Tạo link thanh toán từ orderId
-        /* /// </summary>
-         [HttpPost("create-payment-url/{orderId}")]
-         public async Task<IActionResult> CreatePaymentUrl(long orderId)
-         {
-             try
-             {
-                 var result = await _payOSService.CreatePaymentUrl(orderId);
-                 return Ok(new { orderId = orderId, PaymentUrl = result.checkoutUrl, PaymentId = result.paymentLinkId });
-             }
-             catch (ArgumentException ex)
-             {
-                 return NotFound(new { Message = ex.Message });
-             }
-             catch (Exception ex)
-             {
-                 return BadRequest(new { Message = ex.Message });
-             }
-         }*/
+
         [Authorize]
         [HttpPost("create-payment-url")]
         public async Task<IActionResult> CreatePaymentUrl([FromBody] OrderRequest dto)

@@ -161,9 +161,9 @@ namespace Cafe_Web_App.Controllers
             await _unitOfWork.PaymentRepo.UpdateAsync(payment);
             await _unitOfWork.SaveAsync();
 
-            return Ok(new { message = "thanh toán đơn hàng bị hủy" });
+            return Redirect($"https://luoncoffeeweb.vercel.app/payment-cancel");
 
-            }
+        }
         [HttpGet("success")]
         public async Task<ActionResult> SuccessPayment([FromQuery(Name = "orderCode")] long orderId)
         {
