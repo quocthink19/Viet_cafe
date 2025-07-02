@@ -106,6 +106,9 @@ namespace Cafe_Web_App.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<long>("MKH")
+                        .HasColumnType("bigint");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -361,10 +364,13 @@ namespace Cafe_Web_App.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<long?>("MKH")
+                        .HasColumnType("bigint");
+
                     b.Property<int?>("Method")
                         .HasColumnType("int");
 
-                    b.Property<long>("OrderId")
+                    b.Property<long?>("OrderId")
                         .HasColumnType("bigint");
 
                     b.Property<int?>("Status")
@@ -645,9 +651,7 @@ namespace Cafe_Web_App.Migrations
                 {
                     b.HasOne("Repository.Models.Order", "Order")
                         .WithMany("Payments")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrderId");
 
                     b.Navigation("Order");
                 });
