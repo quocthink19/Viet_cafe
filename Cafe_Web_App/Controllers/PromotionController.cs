@@ -28,6 +28,13 @@ namespace Cafe_Web_App.Controllers
             var response = new TResponse<Promotion>("Lấy khuyến mãi thành công", promotion);
             return Ok(response);
         }
+        [HttpGet("get-by-code")]
+        public async Task<ActionResult<Promotion>> GetPromotionByCode(string code)
+        {
+            var promotion = await _service.GetPromotionByCode(code);
+            var response = new TResponse<Promotion>("Lấy mã khuyến mãi thành công", promotion);
+            return Ok(response);
+        }
         [HttpPost]
         public async Task<ActionResult<Promotion>> CreatePromotion(PromotionRequest request)
         {

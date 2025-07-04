@@ -46,6 +46,39 @@ namespace Cafe_Web_App.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost("create-top-up-payment-url")]
+        public async Task<IActionResult> CreateTopUpPaymentUrl([FromBody] TopUpRequest dto)
+        {
+            try
+            {
+                // Lấy thông tin CustomerId từ JWT hoặc context (tuỳ app bạn implement)
+                var customer = await GetCurrentCustomer(); // hoặc truyền Guid customerId nếu lấy được
+
+                if (customer == null)
+                {
+                    return Unauthorized(new { Message = "Không xác định được người dùng" });
+                }
+
+                if (dto.Amount <= 0)
+                {
+                    return BadRequest(new { Message = "Số tiền nạp không hợp lệ" });
+                }
+
+                var result = await _payOSService.CreateTopUpPaymentUrl(dto.Amount, customer.Id);
+
+                // Tuỳ bạn muốn trả về gì. Thường là trả paymentUrl hoặc object PaymentResult
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
         /// <summary>
         /// Lấy thông tin thanh toán bằng orderCode
         /// </summary>

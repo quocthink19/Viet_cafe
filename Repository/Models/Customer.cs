@@ -12,6 +12,7 @@ namespace Repository.Models
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
+        public long MKH {get; set; }
         public string? FullName { get; set; }
         public DateTime? BirthDate { get; set; }
         public Gender? gender { get; set; }

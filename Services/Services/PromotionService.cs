@@ -15,9 +15,10 @@ namespace Services.Services
     {
         private readonly IPromotionRepo _repo;
         private readonly IMapper _mapper;
-        public PromotionService(IPromotionRepo repo)
+        public PromotionService(IPromotionRepo repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
         public async Task<Promotion> AddPromotion(PromotionRequest Request)
         {
@@ -38,6 +39,16 @@ namespace Services.Services
         {
             var promotions = await _repo.GetAllAsync();
             return promotions;
+        }
+
+        public async Task<Promotion> GetPromotionByCode(string code)
+        {
+            var promotion = await _repo.GetPromotionByCode(code);
+            if (promotion == null)
+            {
+                throw new ArgumentException("Không tìm thấy promotion");
+            }
+            return promotion;
         }
 
         public async Task<Promotion> GetPromotionById(Guid Id)

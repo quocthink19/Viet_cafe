@@ -15,5 +15,6 @@ namespace Services.IServices
         Task<Promotion> UpdatePromotion(Guid Id, PromotionRequest Request);
         Task<IEnumerable<Promotion>> GetPromotion();
         Task<Promotion> GetPromotionById(Guid Id);
+        Task<Promotion> GetPromotionByCode(string code);
     }
 }

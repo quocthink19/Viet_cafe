@@ -108,5 +108,63 @@ namespace Services.Services
 
             return payOS.verifyPaymentWebhookData(webhook);
         }
+
+        public async  Task<CreatePaymentResult> CreateTopUpPaymentUrl(decimal amount, Guid CustomerId)
+        {
+            if (amount <= 0) throw new Exception("Số tiền nạp không hợp lệ");
+
+            PayOS payOS = new PayOS(_payOSSettings.ClientID, _payOSSettings.ApiKey, _payOSSettings.ChecksumKey);
+
+            
+
+
+            Random random = new Random();
+            var paymentCode = $"TOPUP{random.Next(1000000, 9999999)}";
+            var cus = await _unitOfWork.CustomerRepo.GetCustomerById(CustomerId);
+
+            string description = $"Nạp tiền {cus.MKH}";
+            if (description.Length > 25)
+                description = description.Substring(0, 25);
+
+            var payment = new Payment
+            {
+                Id = Guid.NewGuid().ToString(),
+                Code = paymentCode,
+                Amount = (double?)amount,
+                Method = (int)Method.PAYOS,
+                OrderId = null, // vì không liên quan đến đơn hàng
+                Description = description,
+                Status = PaymentStatus.UNPAID,
+                TransactionIdResponse = null,
+                MKH = cus.MKH // nếu có liên kết người dùng
+            };
+
+            long randomLong = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+
+            await _unitOfWork.PaymentRepo.AddAsync(payment);
+            await _unitOfWork.SaveAsync();
+
+            long expiredAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 600;
+
+            // Không có danh sách sản phẩm, nhưng bạn có thể thêm mô tả tùy ý
+            var paymentData = new PaymentData(
+                randomLong,
+                (int)amount,
+                description,
+                new List<ItemData> {
+            new ItemData("Nạp tiền vào tài khoản", 1, (int)amount)
+                },
+                _payOSSettings.CancelUrl,
+                _payOSSettings.ReturnUrl,
+                null, null, null, null, null,
+                expiredAt);
+
+            var createPayment = await payOS.createPaymentLink(paymentData);
+            payment.TransactionIdResponse = createPayment.paymentLinkId.ToString();
+            await _unitOfWork.SaveAsync();
+
+            return createPayment;
+        }
     }
 }
