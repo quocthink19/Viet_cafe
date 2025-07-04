@@ -179,7 +179,7 @@ namespace Services.Services
                 
                 CustomerId = customerId,
                 Code = code,
-                Payment = Method.CASH,
+                Payment = Method.PAYOS,
                 Status = Repository.Models.Enum.OrderStatus.NEW,
                 PickUpTime = order.PickUpTime,
                 OrderItems = orderItems,

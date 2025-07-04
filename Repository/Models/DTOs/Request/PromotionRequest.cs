@@ -10,6 +10,7 @@ namespace Repository.Models.DTOs.Request
     {
         public string? Name { get; set; }
         public double? Condition { get; set; }
+        public string code { get; set; }
         public string? Description { get; set; }
         public double? DiscountPercent { get; set; }
         public DateTime? StartDate { get; set; }

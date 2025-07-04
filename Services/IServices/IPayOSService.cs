@@ -10,9 +10,12 @@ namespace Services.IServices
     public interface IPayOSService
     {
         Task<CreatePaymentResult> CreatePaymentUrl(long orderId);
+        
+        Task<CreatePaymentResult> CreateTopUpPaymentUrl(decimal amount, Guid CustomerId);
 
         WebhookData VerifyWebhook(WebhookType webhook);
         Task<PaymentLinkInformation> GetPaymentInfo(long orderId);
+
         Task<PaymentLinkInformation> CancelOrder(string orderId, string reason);
     }
 }

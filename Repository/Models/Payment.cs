@@ -14,7 +14,8 @@ namespace Repository.Models
         public double? Amount { get; set; }
         public int? Method { get; set; }
 
-        public long OrderId { get; set; }
+        public long? OrderId { get; set; }
+        public long? MKH {get; set; }
 
         public string? Description { get; set; }
 

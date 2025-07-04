@@ -28,7 +28,8 @@ namespace Repository.Repositories
         {
             var query = _context.Products.
                 Include(c => c.Category).
-                AsQueryable();
+                AsQueryable()
+                .Where(m => m.IsAvaillable == true);
 
             if (!string.IsNullOrEmpty(filter.Name))
                 query = query.Where(p => p.Name.Contains(filter.Name));

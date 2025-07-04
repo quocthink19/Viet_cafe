@@ -164,6 +164,7 @@ namespace Cafe_Web_App.Controllers
             return Redirect($"https://luoncoffeeweb.vercel.app/payment-cancel");
 
         }
+        [Authorize]
         [HttpGet("success")]
         public async Task<ActionResult> SuccessPayment([FromQuery(Name = "orderCode")] long orderId)
         {

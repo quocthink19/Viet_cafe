@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.Models.Enum
+namespace Repository.Models.DTOs.Request
 {
-    public enum Method
+    public class TopUpRequest
     {
-        PAYOS,
-        WALLET
+        public decimal Amount { get; set; }
     }
 }

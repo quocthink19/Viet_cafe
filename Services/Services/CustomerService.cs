@@ -38,6 +38,8 @@ namespace Services.Services
             if (customerData == null)
                 throw new ArgumentNullException(nameof(customerData));
 
+
+
             await _unitOfWork.BeginTransactionAsync();
             try
             {
@@ -48,13 +50,12 @@ namespace Services.Services
                     Password = customerData.Password,
                     role = Repository.Models.Enum.UserRole.CUSTOMER
                 };
-
                 var newUser = await _userService.RegisterAsync(userData);
-
+                long mkh = await _unitOfWork.CustomerRepo.GetNextCustomerCodeAsync();
                 var newCustomer = new Customer
                 {
                     UserId = newUser.Id,
-                 
+                    MKH = mkh,
                     Verify = true,
                     Wallet = 0,
                     CreatedDate = DateTime.Now
@@ -83,10 +84,8 @@ namespace Services.Services
             try
             {
                 var customer = await GetCustomerById(Id);
-
                 await _unitOfWork.CustomerRepo.DeleteAsync(Id);
                 await _unitOfWork.SaveAsync();
-
                 await _unitOfWork.CommitAsync();
             }
             catch (Exception)
@@ -101,7 +100,6 @@ namespace Services.Services
             var customer = await _unitOfWork.CustomerRepo.GetCustomerById(Id);
             if (customer == null)
                 throw new Exception("Không tìm thấy khách hàng này");
-
             return customer;
         }
 

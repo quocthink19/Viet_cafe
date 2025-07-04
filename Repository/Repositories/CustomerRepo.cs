@@ -31,6 +31,15 @@ namespace Repository.Repositories
                  .FirstOrDefaultAsync();
         }
 
+        public async Task<long> GetNextCustomerCodeAsync()
+        {
+            var lastCustomer = await _context.Customers
+                .OrderByDescending(c => c.MKH)
+                .FirstOrDefaultAsync();
+
+            return (lastCustomer?.MKH ?? 0) + 1;
+        }
+
         public async  Task<Customer?> GetCustomerByUsernameAsync(string username)
         {
          return await _context.Customers
