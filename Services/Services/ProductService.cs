@@ -38,7 +38,8 @@ namespace Services.Services
                     PurchaseCount = 0,
                     Image = newProduct.Image,
                     CategoryId = newProduct.CategoryId,
-                    IsAvaillable = true
+                    IsAvaillable = true,
+                    CreatedAt = DateTime.Now
                 };
                 await _unitOfWork.ProductRepo.AddAsync(product);
                 await _unitOfWork.SaveAsync();

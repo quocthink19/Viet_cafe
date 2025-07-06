@@ -70,11 +70,11 @@ namespace Cafe_Web_App.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("{Id}")]
+      /*  [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteProduct(Guid Id)
         {
             await _productService.DeleteProduct(Id);
             return Ok(new { message = "Xóa Product thành công" });
-        }
+        }*/
     }
 }

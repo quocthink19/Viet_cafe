@@ -21,6 +21,7 @@ namespace Repository.Repositories
         {
             return await _context.Products
                 .Include(p => p.Category)
+                .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
         }
 
