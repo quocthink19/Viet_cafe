@@ -14,7 +14,7 @@ namespace Repository.Models
         public string? Description { get; set; }
         public double? Price { get; set; }
         public double? Rating { get; set; }
-        public string? Image {  get; set; }
+        public string? Image { get; set; }
         public double? PurchaseCount { get; set; }
         public bool? IsAvaillable { get; set; }
 
@@ -22,5 +22,6 @@ namespace Repository.Models
         public Category? Category { get; set; }
         [JsonIgnore]
         public List<Customize>? Customizes { get; set; } = new List<Customize>();
+        public DateTime CreatedAt {  get; set; }
     }
 }
