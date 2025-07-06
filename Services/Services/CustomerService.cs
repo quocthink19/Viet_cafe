@@ -56,7 +56,7 @@ namespace Services.Services
                 {
                     UserId = newUser.Id,
                     MKH = mkh,
-                    Verify = true,
+                    Verify = false,
                     Wallet = 0,
                     CreatedDate = DateTime.Now
                 };
