@@ -49,6 +49,17 @@ namespace Cafe_Web_App.Controllers
             return Ok(response);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<TResponse<string>>> DeleteCate(Guid id)
+        {
+            string mess = await _service.DeleteCate(id);
+            if(mess == null) {
+
+                return BadRequest("xóa sản phẩm thất bại");
+            }
+            var response = new TResponse<string>("message", mess);
+            return Ok(response);
+        }
         public class UpdateCategoryRequest
         {
             public string CategoryName { get; set; }
