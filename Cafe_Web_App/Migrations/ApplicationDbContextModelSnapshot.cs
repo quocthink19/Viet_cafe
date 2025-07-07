@@ -69,9 +69,10 @@ namespace Cafe_Web_App.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId");
-
                     b.HasIndex("CustomizeId")
+                        .IsUnique();
+
+                    b.HasIndex("CartId", "CustomizeId")
                         .IsUnique();
 
                     b.ToTable("CartItems");
@@ -85,6 +86,9 @@ namespace Cafe_Web_App.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDelete")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
