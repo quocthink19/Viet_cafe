@@ -22,6 +22,7 @@ namespace Repository.UnitOfWork
         IMemberRepo MemberRepo { get; }
         IPaymentRepo PaymentRepo { get; }
         IOTPCodeRepo OTPCodeRepo { get; }
+        ITopUpRepo TopUpRepo { get; }
         Task<int> SaveAsync();
         Task BeginTransactionAsync();
         Task CommitAsync();

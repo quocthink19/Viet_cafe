@@ -35,6 +35,7 @@ namespace Repository
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<OrderSlotLimit> OrderSlotLimits { get; set; }
         public DbSet<Payment> payments { get; set; }
+        public DbSet<TopUp> TopUps { get; set; }
         public DbSet<Member> Members { get; set; }
 
 
@@ -100,6 +101,10 @@ namespace Repository
                 .WithOne(oi => oi.Order)
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TopUp>()
+               .Property(t => t.Amount)
+               .HasPrecision(18, 2);
         }
     }
 }

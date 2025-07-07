@@ -126,22 +126,29 @@ namespace Services.Services
             if (description.Length > 25)
                 description = description.Substring(0, 25);
 
+            var topUp = new TopUp
+            {
+                Id = await GenerateUniqueRandomLongId(),
+                Status = PaymentStatus.UNPAID,
+                CustomerId = CustomerId,
+                Description = description,
+                Amount = amount,
+                CreatedAt = DateTime.UtcNow,
+            };
+
             var payment = new Payment
             {
                 Id = Guid.NewGuid().ToString(),
                 Code = paymentCode,
                 Amount = (double?)amount,
-                Method = (int)Method.PAYOS,
-                OrderId = null, // vì không liên quan đến đơn hàng
+                Method = (int)PaymentMethod.TOUP,
+                OrderId = null, 
                 Description = description,
                 Status = PaymentStatus.UNPAID,
                 TransactionIdResponse = null,
-                MKH = cus.MKH // nếu có liên kết người dùng
+                MKH = cus.MKH 
             };
-
-            long randomLong = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-
+            await _unitOfWork.TopUpRepo.AddAsync(topUp);
             await _unitOfWork.PaymentRepo.AddAsync(payment);
             await _unitOfWork.SaveAsync();
 
@@ -149,7 +156,7 @@ namespace Services.Services
 
             // Không có danh sách sản phẩm, nhưng bạn có thể thêm mô tả tùy ý
             var paymentData = new PaymentData(
-                randomLong,
+                topUp.Id,
                 (int)amount,
                 description,
                 new List<ItemData> {
@@ -165,6 +172,11 @@ namespace Services.Services
             await _unitOfWork.SaveAsync();
 
             return createPayment;
+        }
+
+        public async Task<long> GenerateUniqueRandomLongId()
+        {
+            return long.Parse(DateTime.UtcNow.Ticks.ToString().Substring(3, 13));
         }
     }
 }
