@@ -166,17 +166,18 @@ namespace Services.Services
                 finalPrice = cart.TotalAmount;
             }
 
-           
+            long newOrderId = await GenerateUniqueRandomLongId();
+
             var orderItems = _mapper.Map<List<OrderItem>>(cart.CartItems);
             foreach (var orderItem in orderItems)
             {
                 orderItem.Id = Guid.NewGuid();
-
+                orderItem.OrderId = newOrderId;
             }
             string code = UniqueCodeGenerator.GenerateCode();
             var newOrder = new Order
             {
-                
+                Id = newOrderId,
                 CustomerId = customerId,
                 Code = code,
                 Payment = Method.PAYOS,
@@ -444,6 +445,10 @@ namespace Services.Services
             var order = await _unitOfWork.OrderRepo.GetFilteredOrdersAsync(filter);
             
             return order;
+        }
+        public async Task<long> GenerateUniqueRandomLongId()
+        {
+            return long.Parse(DateTime.UtcNow.Ticks.ToString().Substring(3, 13));
         }
     }
 }

@@ -192,5 +192,10 @@ namespace Repository.Repositories
                 Items = items
             };
         }
+
+        public async Task<bool> ExistsAsync(long id)
+        {
+            return await _context.Orders.AnyAsync(x => x.Id == id);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Repository.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.Models;
 using Repository.Models.DTOs.Response;
 using Repository.Models.Filter;
 using System;
@@ -15,6 +16,8 @@ namespace Repository.IRepository
         Task<PagedResult<Order>> GetFilteredOrdersAsync(OrderFilter filter);
         Task<IEnumerable<Order>> GetAll();
         Task<Order> GetById(long OrderId);
+        Task<bool> ExistsAsync(long id);
+        
         Task Delete(long id);
         Task<Customer> GetCustomerByOrderId(long orderId);
         Task<IEnumerable<Order>> GetAllOrdersByCustomerId(Guid customerId);

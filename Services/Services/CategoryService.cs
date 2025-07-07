@@ -22,7 +22,8 @@ namespace Services.Services
                 throw new ArgumentException("Tên category không được để trống hoặc null.");
             }
 
-            var category = new Category { Name = categoryName };
+            var category = new Category { Name = categoryName,
+            isDelete = false };
             await _repo.Add(category);
             return category;
         }
@@ -38,9 +39,21 @@ namespace Services.Services
             await _repo.DeleteAsync(id);
         }
 
+        public async Task<string> DeleteCate(Guid id)
+        {
+            var category = await _repo.GetByIdAsync(id);
+            if (category == null)
+            {
+                throw new KeyNotFoundException("Không tìm thấy category để xóa.");
+            }
+            category.isDelete = true;
+            await _repo.Update(category);
+            return ("xóa category thành công");
+        }
+
         public async Task<IEnumerable<Category>> GetCategory()
         {
-            var categories = await _repo.GetAllAsync();
+            var categories = await _repo.GetAll();
             return categories;
         }
 

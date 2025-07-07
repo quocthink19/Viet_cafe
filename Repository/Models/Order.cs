@@ -25,7 +25,5 @@ namespace Repository.Models
         public Customer? Customer { get; set; }
         public List<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();
         public List<Payment>? Payments { get; set; } = new List<Payment>();
-
-
     }
 }

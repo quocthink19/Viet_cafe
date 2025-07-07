@@ -69,18 +69,21 @@ namespace Repository
                 .WithMany(t => t.CustomizeToppings)
                 .HasForeignKey(ct => ct.ToppingId);
 
-            
-           /* modelBuilder.Entity<Customize>()
-                .Property(c => c.Ice)
-                .HasConversion<string>();
 
-            modelBuilder.Entity<Customize>()
-                .Property(c => c.Sugar)
-                .HasConversion<string>();
-*/
-           /* modelBuilder.Entity<Customize>()
-                .Property(c => c.Temperature)
-                .HasConversion<string>();*/
+            /* modelBuilder.Entity<Customize>()
+                 .Property(c => c.Ice)
+                 .HasConversion<string>();
+
+             modelBuilder.Entity<Customize>()
+                 .Property(c => c.Sugar)
+                 .HasConversion<string>();
+ */
+            /* modelBuilder.Entity<Customize>()
+                 .Property(c => c.Temperature)
+                 .HasConversion<string>();*/
+            modelBuilder.Entity<CartItem>()
+             .HasIndex(x => new { x.CartId, x.CustomizeId })
+             .IsUnique();
 
             modelBuilder.Entity<Customer>()
                 .HasOne(c => c.Cart)

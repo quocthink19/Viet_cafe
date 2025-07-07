@@ -1,4 +1,5 @@
-﻿using Repository.IRepository;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.IRepository;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,12 @@ namespace Repository.Repositories
         public CategoryRepo(ApplicationDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<IEnumerable<Category>> GetAll()
+        {
+            return await _context.Categories.
+               Where(i => i.isDelete == false).ToListAsync();
         }
     }
 }
