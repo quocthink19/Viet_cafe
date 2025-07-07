@@ -66,7 +66,7 @@ namespace Services.Services
             var paymentData = new PaymentData(
                 order.Id,
                 (int)payment.Amount,
-                "Thanh toán đơn hàng " +order.Id ,
+               $"Order {order.Id}",
                 items, 
                 _payOSSettings.CancelUrl,
                 _payOSSettings.ReturnUrl,

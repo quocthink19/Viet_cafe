@@ -11,6 +11,7 @@ namespace Repository.Models
     {
         public Guid Id { get; set; }
         public string? Name { get; set; }
+        public bool isDelete { get; set; }
 
         [JsonIgnore]
         public ICollection<Product>? Products { get; set;}

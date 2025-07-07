@@ -9,5 +9,6 @@ namespace Repository.IRepository
 {
     public interface ICategoryRepo : IRepository<Category>
     {
+        Task<IEnumerable<Category>> GetAll();
     }
 }

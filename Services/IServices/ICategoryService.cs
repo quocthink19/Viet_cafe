@@ -12,6 +12,7 @@ namespace Services.IServices
     {
         Task<Category> AddCategory(string categoryName);
         Task DeleteCategory(Guid Id);
+        Task<string> DeleteCate(Guid id);
         Task<Category> UpdateCategory(Guid Id, string categoryName);
         Task<IEnumerable<Category>> GetCategory();
         Task<Category> GetCategoryById(Guid Id);
