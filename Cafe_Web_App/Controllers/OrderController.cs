@@ -20,11 +20,13 @@ namespace Cafe_Web_App.Controllers
         private readonly ICustomerService _customerService;
         private readonly IOrderService _orderService;
         private readonly ICartService _cartService;
+        private readonly ITopUpService _topupService;
 
-        public OrderController(IOrderService orderService, ICustomerService customerService)
+        public OrderController(IOrderService orderService, ICustomerService customerService, ITopUpService topupService)
         {
             _orderService = orderService;
             _customerService = customerService;
+            _topupService = topupService;
         }
 
         
@@ -81,7 +83,14 @@ namespace Cafe_Web_App.Controllers
             await _orderService.UpdateOrderByQR(Id);
             return Ok(new { message = "cập nhât trạng thái thành công" });
         }
-
+  
+        [HttpGet("get-top-up/{id}")]
+        public async Task<ActionResult<TResponse<TopUpResponse>>> GetToUpById(long id)
+        {
+            var topUp = await _topupService.GetTopUpById(id);
+            var res = new TResponse<TopUpResponse>("lấy hoá đơn nạp tiền thành công", topUp);
+            return Ok(res);
+        }
         private async Task<Customer?> GetCurrentCustomer()
         {
             var username = User.FindFirst(ClaimTypes.Name)?.Value;

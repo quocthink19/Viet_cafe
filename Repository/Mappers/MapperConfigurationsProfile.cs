@@ -22,7 +22,8 @@ namespace Repository.Mappers
 
             CreateMap<Cart, CartResponse>();
             CreateMap<CartItem, CartItemResponse>();
-
+            CreateMap<TopUp, TopUpResponse>()
+           .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
             CreateMap<PromotionRequest, Promotion>();
 
             CreateMap<CartItem, OrderItem>()
