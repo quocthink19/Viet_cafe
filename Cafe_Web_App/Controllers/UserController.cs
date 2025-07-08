@@ -69,20 +69,34 @@ namespace Cafe_Web_App.Controllers
 
             }
         }
-        [HttpPost("verify")]
-        public async Task<ActionResult> Verify(string username, string code)
+
+        public class VeriffyRequest
         {
-            var check = await _customerService.VerifyOTP(username, code);
+            public string userName { get; set; }
+            public string code { get; set; }
+
+        }
+
+        [HttpPost("verify")]
+        public async Task<ActionResult> Verify([FromBody] VeriffyRequest res)
+        {
+            var check = await _customerService.VerifyOTP(res.userName, res.code);
             if (!check)
             {
                 return BadRequest(new { message = "Xác nhận người dùng thất bại vì mã OTP của bạn sai hoặc đã hết hạn." });
             }
             return Ok(new { message = "xác nhận thành công " });
         }
-        [HttpPost("send-otp")]
-        public async Task<ActionResult> sendOTP([FromBody] string userName)
+
+        public class OTPrequest
         {
-            var user = await _userService.GetUserByUsername(userName);
+            public string userName { get; set; }
+        }
+
+        [HttpPost("send-otp")]
+        public async Task<ActionResult> sendOTP([FromBody] OTPrequest res)
+        {
+            var user = await _userService.GetUserByUsername(res.userName);
 
             await _customerService.SendOTP(user.Id, user.Email);
             return Ok("gửi mã OTP thành công cho bạn");

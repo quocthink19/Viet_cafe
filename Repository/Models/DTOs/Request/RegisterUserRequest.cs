@@ -13,7 +13,9 @@ namespace Repository.Models.DTOs.Request
         [Required(ErrorMessage = "Tên đăng nhập là bắt buộc.")]
         [MinLength(4, ErrorMessage = "Tên đăng nhập phải có ít nhất 4 ký tự.")]
         [MaxLength(50, ErrorMessage = "Tên đăng nhập không được vượt quá 50 ký tự.")]
+        [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = "Tên đăng nhập chỉ được chứa chữ và số, không có ký tự đặc biệt.")]
         public string? Username { get; set; }
+
 
         [Required(ErrorMessage = "Mật khẩu là bắt buộc.")]
         [MinLength(6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự.")]
