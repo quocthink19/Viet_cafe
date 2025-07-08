@@ -28,17 +28,15 @@ namespace Services.Services
         public async Task<CustomerResponse> TopUpWallet(Guid customerId, double amount)
         {
             var customer = await GetCustomerById(customerId);
-            customer.Wallet += (decimal)amount ;
+            customer.Wallet += (decimal)amount;
             await _unitOfWork.CustomerRepo.Update(customer);
-            await _unitOfWork.SaveAsync();   
+            await _unitOfWork.SaveAsync();
             return _mapper.Map<CustomerResponse>(customer);
         }
         public async Task<CustomerResponse> AddCustomer(AddCustomerRequest customerData)
         {
             if (customerData == null)
                 throw new ArgumentNullException(nameof(customerData));
-
-
 
             await _unitOfWork.BeginTransactionAsync();
             try
@@ -99,7 +97,7 @@ namespace Services.Services
         {
             var customer = await _unitOfWork.CustomerRepo.GetCustomerById(Id);
             if (customer == null)
-                throw new Exception("Không tìm thấy khách hàng này");
+                throw new KeyNotFoundException("Không tìm thấy khách hàng này");
             return customer;
         }
 
@@ -107,10 +105,9 @@ namespace Services.Services
         {
             var customer = await _unitOfWork.CustomerRepo.GetCustomerById(Id);
             if (customer == null)
-                throw new Exception("Không tìm thấy khách hàng này");
+                throw new KeyNotFoundException("Không tìm thấy khách hàng này");
 
             return _mapper.Map<CustomerResponse>(customer);
-
         }
 
         public async Task<Customer?> GetCustomerByUsername(string username)
@@ -118,7 +115,7 @@ namespace Services.Services
             var customer = await _unitOfWork.CustomerRepo.GetCustomerByUsernameAsync(username);
             if (customer == null)
             {
-                throw new Exception("Không tìm thấy khách hàng này");
+                throw new KeyNotFoundException("Không tìm thấy khách hàng này");
             }
             return customer;
         }
@@ -147,7 +144,7 @@ namespace Services.Services
 
                 var user = await _unitOfWork.CustomerRepo.GetUserByCustomerId(Id);
                 if (user == null)
-                    throw new Exception("Không tìm thấy người dùng");
+                    throw new KeyNotFoundException("Không tìm thấy người dùng");
 
                 user.Email = newCustomer.Email;
                 await _unitOfWork.UserRepo.UpdateAsync(user);
@@ -168,7 +165,7 @@ namespace Services.Services
         {
             var user = await _userService.GetUserByUsername(username);
             var otp = await _unitOfWork.OTPCodeRepo.GetValidCodeAsync(user, code);
-            if(otp == null || otp.IsUsed || otp.ExpiresAt < DateTime.UtcNow)
+            if (otp == null || otp.IsUsed || otp.ExpiresAt < DateTime.UtcNow)
             {
                 return false;
             }
@@ -193,7 +190,7 @@ namespace Services.Services
                 ExpiresAt = DateTime.UtcNow.AddMinutes(5),
                 IsUsed = false,
             };
-           
+
             await _unitOfWork.OTPCodeRepo.AddAsync(OtpCode);
             await _unitOfWork.SaveAsync();
 
