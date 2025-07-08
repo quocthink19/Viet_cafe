@@ -14,6 +14,7 @@ using Repository.Helper;
 using Microsoft.Extensions.Options;
 using Net.payOS;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,16 +42,19 @@ builder.Services.ConfigureServices();
 builder.Services.ConfigureUtilities();
 builder.Services.AddControllersWithViews();
 
-/*builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-    });
-*/
 
 builder.Services.AddAutoMapper(typeof(MapperConfigurationsProfile));
 
-builder.Services.AddControllers();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<CustomValidationFilter>();
+});
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddCors(options =>

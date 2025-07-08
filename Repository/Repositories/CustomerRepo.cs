@@ -44,7 +44,7 @@ namespace Repository.Repositories
         {
          return await _context.Customers
         .Include(c => c.User)
-        .Where(c => c.User != null && c.User.Username == username)
+        .Where(c => c.User != null && c.User.Username == username || c.User.Email == username)
         .FirstOrDefaultAsync();
         }
 

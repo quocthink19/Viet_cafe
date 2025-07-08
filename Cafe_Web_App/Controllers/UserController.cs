@@ -110,7 +110,34 @@ namespace Cafe_Web_App.Controllers
                 return Ok(response);
             }
 
-    [Authorize]
+        public class ForgotPasswordRequest
+        {
+            public string Email { get; set; }
+        }
+        public class ResetPasswordRequest
+        {
+            public string Token { get; set; }
+            public string NewPassword { get; set; }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            await _userService.ForgotPasswordAsync(request.Email);
+            // Không leak thông tin
+            return Ok(new { message = "Nếu email tồn tại, bạn sẽ nhận được hướng dẫn reset." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            var result = await _userService.ResetPasswordAsync(request.Token, request.NewPassword);
+            if (!result)
+                return BadRequest(new { message = "Token không hợp lệ hoặc đã hết hạn" });
+            return Ok(new { message = "Mật khẩu đã được đặt lại thành công!" });
+        }
+
+        [Authorize]
         [HttpPut("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest passwordData)
         {
