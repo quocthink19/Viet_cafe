@@ -577,6 +577,35 @@ namespace Cafe_Web_App.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Repository.Models.WalletHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("AmountChanged")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("RemainingAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
+
+                    b.ToTable("WalletHistories");
+                });
+
             modelBuilder.Entity("Repository.Models.Cart", b =>
                 {
                     b.HasOne("Repository.Models.Customer", "Customer")
@@ -713,6 +742,17 @@ namespace Cafe_Web_App.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Repository.Models.WalletHistory", b =>
+                {
+                    b.HasOne("Repository.Models.Customer", "Customer")
+                        .WithOne("WalletHistory")
+                        .HasForeignKey("Repository.Models.WalletHistory", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("Repository.Models.Cart", b =>
                 {
                     b.Navigation("CartItems");
@@ -729,6 +769,8 @@ namespace Cafe_Web_App.Migrations
 
                     b.Navigation("Member")
                         .IsRequired();
+
+                    b.Navigation("WalletHistory");
                 });
 
             modelBuilder.Entity("Repository.Models.Customize", b =>

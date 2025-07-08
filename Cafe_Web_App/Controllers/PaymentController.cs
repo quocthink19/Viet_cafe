@@ -224,10 +224,23 @@ namespace Cafe_Web_App.Controllers
                     // Cộng tiền cho customer
                    
                     customer.Wallet += (decimal)topup.Amount;
+
+
+                    var walletHistory = new WalletHistory { 
+                    TransactionDate = DateTime.Now,
+                    AmountChanged = topup.Amount,
+                    CustomerId = topup.CustomerId,
+                    Description = $"Nạp tiền vào tài khoản thành công + {topup.Amount} VNĐ",
+                    RemainingAmount = (decimal)customer.Wallet
+                    };
+                    await _unitOfWork.WalletHistoryRepo.AddAsync(walletHistory);
                     await _unitOfWork.TopUpRepo.UpdateAsync(topup);
                     await _unitOfWork.CustomerRepo.UpdateAsync(customer);
                     await _unitOfWork.SaveAsync();
                 }
+
+                
+
 
                 var subject = "Nạp tiền thành công vào tài khoản";
                 var body = $@"

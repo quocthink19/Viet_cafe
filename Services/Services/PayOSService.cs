@@ -148,6 +148,8 @@ namespace Services.Services
                 TransactionIdResponse = null,
                 MKH = cus.MKH 
             };
+
+            
             await _unitOfWork.TopUpRepo.AddAsync(topUp);
             await _unitOfWork.PaymentRepo.AddAsync(payment);
             await _unitOfWork.SaveAsync();

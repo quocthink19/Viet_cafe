@@ -87,7 +87,19 @@ namespace Services.Services
             if(customer.Wallet - (decimal)newOrder.FinalPrice >= 0)
             {
                 customer.Wallet = customer.Wallet - (decimal)newOrder.FinalPrice;
-            }else
+
+                var walletHistory = new WalletHistory
+                {
+                    AmountChanged = (decimal)finalPrice,
+                    CustomerId = customer.Id,
+                    TransactionDate = DateTime.Now,
+                    Description = $"Thanh toán đơn hàng bằng ví thành công - {finalPrice} VNĐ ",
+                    RemainingAmount = (decimal)customer.Wallet
+                };
+
+                await _unitOfWork.WalletHistoryRepo.AddAsync(walletHistory);
+            }
+            else
             {
                 throw new Exception("ví của bạn không đủ để thanh toán đơn hàng này ");
             }
@@ -345,6 +357,20 @@ namespace Services.Services
             if(newStatus == OrderStatus.CANCELLED)
             {
                 customer.Wallet += (decimal)order.FinalPrice;
+
+                var walletHistory = new WalletHistory
+                {
+                    CustomerId = customer.Id,
+                    AmountChanged = (decimal)order.FinalPrice,
+                    RemainingAmount =(decimal)customer.Wallet,
+                    Description = $"Đơn hàng bij hủy hoàn tiền vào ví + {order.FinalPrice} VNĐ",
+                    TransactionDate = DateTime.Now,
+                };
+
+
+                await _unitOfWork.WalletHistoryRepo.AddAsync(walletHistory);
+
+
                 foreach (var orderItem in order.OrderItems)
                 {
                     
@@ -363,6 +389,7 @@ namespace Services.Services
             }
 
             order.Status = newStatus;
+           
             await _unitOfWork.CustomerRepo.UpdateAsync(customer);
             await _unitOfWork.OrderRepo.UpdateAsync(order);
             await _unitOfWork.SaveAsync();

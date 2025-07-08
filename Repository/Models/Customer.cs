@@ -28,5 +28,7 @@ namespace Repository.Models
 
         [JsonIgnore]
         public virtual User? User { get; set; }
+        [JsonIgnore]
+        public virtual WalletHistory? WalletHistory { get; set; }
     }
 }

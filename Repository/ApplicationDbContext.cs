@@ -37,6 +37,7 @@ namespace Repository
         public DbSet<Payment> payments { get; set; }
         public DbSet<TopUp> TopUps { get; set; }
         public DbSet<Member> Members { get; set; }
+        public DbSet<WalletHistory> WalletHistories { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -90,6 +91,12 @@ namespace Repository
                 .HasOne(c => c.Cart)
                 .WithOne(c => c.Customer)
                 .HasForeignKey<Cart>(c => c.CustomerId);
+
+            modelBuilder.Entity<Customer>()
+            .HasOne(c => c.WalletHistory)
+            .WithOne(w => w.Customer)
+            .HasForeignKey<WalletHistory>(w => w.CustomerId);
+
 
             modelBuilder.Entity<CartItem>()
                 .HasOne(ci => ci.Cart)
