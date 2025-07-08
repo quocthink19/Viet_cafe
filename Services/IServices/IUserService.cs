@@ -16,7 +16,9 @@ namespace Services.IServices
         Task<AuthResponse> RefreshTokenAsync(string refreshToken);
         Task <User>RegisterAsync (RegisterUserRequest user);
         Task <User> GetUserByUsername(string userName);
-        Task <bool> ChangePassword(ChangePasswordRequest changePassword, User user); 
+        Task <bool> ChangePassword(ChangePasswordRequest changePassword, User user);
+        Task ForgotPasswordAsync(string userName);
+        Task<bool> ResetPasswordAsync(string token, string newPassword);
     }
 
 }

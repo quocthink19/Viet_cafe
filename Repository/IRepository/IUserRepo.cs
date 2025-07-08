@@ -11,6 +11,7 @@ namespace Repository.IRepository
     {
         Task<User> GetUserByRefreshTokenAsync(string refreshToken);
         Task<User> GetUserByUsernameAsync(string username);
+        Task<User> GetByResetTokenAsync(string token);
         Task AddUserAsync(User user);
     }
 }

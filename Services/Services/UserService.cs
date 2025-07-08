@@ -8,6 +8,7 @@ using Repository.Models;
 using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
 using Repository.Models.Enum;
+using Repository.Repositories;
 using Repository.UnitOfWork;
 using Services.IServices;
 using System;
@@ -26,13 +27,15 @@ namespace Services.Services
         private readonly IConfiguration _configuration;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
-        public UserService(IUnitOfWork unitOfWork, IConfiguration configuration, IPasswordHasher<User> passwordHasher, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IConfiguration configuration, IPasswordHasher<User> passwordHasher, IMapper mapper, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _passwordHasher = passwordHasher;
             _mapper = mapper;
+            _emailService = emailService;
         }
 
         public async Task<AuthResponse> LoginAsync(string username, string password)
@@ -182,6 +185,35 @@ namespace Services.Services
                 RefreshToken = newRefreshToken,
                 Customer = customerRes
             };
+        }
+
+        public async Task ForgotPasswordAsync(string userName)
+        {
+            var user = await _unitOfWork.UserRepo.GetUserByUsernameAsync(userName);
+            if (user == null) return;
+
+            var token = Guid.NewGuid().ToString();
+            user.ResetPasswordToken = token;
+            user.ResetPasswordExpiry = DateTime.UtcNow.AddMinutes(30);
+            await _unitOfWork.UserRepo.UpdateAsync(user);
+            await _unitOfWork.SaveAsync();
+
+            var resetLink = $"https://your-frontend.com/reset-password?token={token}";
+            var htmlBody = $"Nhấn vào link để đặt lại mật khẩu: <a href='{resetLink}'>{resetLink}</a>";
+            await _emailService.SendEmail(user.Email, "Đặt lại mật khẩu", htmlBody);
+        }
+
+        public async Task<bool> ResetPasswordAsync(string token, string newPassword)
+        {
+            var user = await _unitOfWork.UserRepo.GetByResetTokenAsync(token);
+            if (user == null) return false;
+
+            user.PasswordHash = _passwordHasher.HashPassword(null, newPassword);
+            user.ResetPasswordToken = null;
+            user.ResetPasswordExpiry = null;
+            await _unitOfWork.UserRepo.UpdateAsync(user);
+            await _unitOfWork.SaveAsync();
+            return true;
         }
     }
 }

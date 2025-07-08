@@ -1,9 +1,10 @@
-﻿using System.Net;
+﻿using Repository.Helper;
+using System.Net;
 using System.Text.Json;
 
 namespace Cafe_Web_App.Middleware
 {
-   public class ExceptionHandlingMiddleware
+    public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
 
@@ -17,6 +18,10 @@ namespace Cafe_Web_App.Middleware
             try
             {
                 await _next(context);
+            }
+            catch (CustomValidationException ex)
+            {
+                await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message, ex.Errors);
             }
             catch (KeyNotFoundException ex)
             {
@@ -34,16 +39,20 @@ namespace Cafe_Web_App.Middleware
             {
                 await HandleExceptionAsync(context, HttpStatusCode.InternalServerError, "Đã xảy ra lỗi hệ thống", ex.Message);
             }
+
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, string message, string? detail = null)
+        private async Task HandleExceptionAsync(HttpContext context, HttpStatusCode statusCode, string message, object? detail = null)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;
 
-            var response = detail == null
-                ? new { status = (int)statusCode, message, detail = (string)null }
-                : new { status = (int)statusCode, message, detail };
+            var response = new
+            {
+                status = (int)statusCode,
+                message,
+                detail // Có thể là object (dictionary)
+            };
 
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             var json = JsonSerializer.Serialize(response, options);
