@@ -255,7 +255,7 @@ namespace Cafe_Web_App.Controllers
               </html>";
                 await _emailService.SendEmail(customer.User.Email, subject, body);
 
-                return Redirect($"https://luoncoffeeweb.vercel.app/payment-success?orderCode={code}&type=topup");
+                return Redirect($"https://luoncoffeeweb.vercel.app/payment-success?topUpCode={code}");
             }
         }
 

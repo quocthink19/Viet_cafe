@@ -122,7 +122,7 @@ namespace Services.Services
             var paymentCode = $"TOPUP{random.Next(1000000, 9999999)}";
             var cus = await _unitOfWork.CustomerRepo.GetCustomerById(CustomerId);
 
-            string description = $"Nạp tiền {cus.MKH}";
+            string description = $"Nạp tiền cho KH {cus.FullName}";
             if (description.Length > 25)
                 description = description.Substring(0, 25);
 
