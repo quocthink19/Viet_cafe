@@ -42,7 +42,7 @@ namespace Cafe_Web_App.Controllers
             var response = new TResponse<Promotion>("tạo khuyến mãi thành công", promotion);
             return Ok(response);
         }
-        [HttpPut("Id")]
+        [HttpPut("{Id}")]
         public async Task<ActionResult<Promotion>> UpdatePromotion(Guid Id,PromotionRequest request)
         {
             var promotion = await _service.UpdatePromotion(Id,request);
