@@ -39,7 +39,7 @@ namespace Services.Services
             Promotion promotion = null;
             
             int totalProductQuantity = cart.CartItems?.Sum(item => item.Quantity ?? 0) ?? 0;
-
+            long newOrderId = await GenerateUniqueRandomLongId();
 
             if (!string.IsNullOrEmpty(order.Code))
             {
@@ -63,13 +63,14 @@ namespace Services.Services
             foreach (var orderItem in orderItems)
             {
                 orderItem.Id = Guid.NewGuid();
-                
+                orderItem.OrderId = newOrderId;
             }
             
             string code = UniqueCodeGenerator.GenerateCode();
 
             var newOrder = new Order
             {
+                Id  = newOrderId,   
                 Code = code, 
                 CustomerId = customerId,
                 Payment = Method.WALLET,
