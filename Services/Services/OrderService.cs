@@ -357,6 +357,11 @@ namespace Services.Services
             }
             if(newStatus == OrderStatus.CANCELLED)
             {
+                if (currentStatus != OrderStatus.NEW)
+                {
+                    throw new ArgumentException("Chỉ được hủy đơn hàng khi trạng thái là NEW.");
+                }
+
                 customer.Wallet += (decimal)order.FinalPrice;
 
                 var walletHistory = new WalletHistory
@@ -364,7 +369,7 @@ namespace Services.Services
                     CustomerId = customer.Id,
                     AmountChanged = (decimal)order.FinalPrice,
                     RemainingAmount =(decimal)customer.Wallet,
-                    Description = $"Đơn hàng bij hủy hoàn tiền vào ví + {order.FinalPrice} VNĐ",
+                    Description = $"Đơn hàng bị hủy hoàn tiền vào ví + {order.FinalPrice} VNĐ",
                     TransactionDate = DateTime.Now,
                 };
 
