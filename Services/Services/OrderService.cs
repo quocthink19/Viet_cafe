@@ -310,29 +310,29 @@ namespace Services.Services
 
             if (currentStatus == OrderStatus.CANCELLED)
             {
-                throw new Exception("Đơn hàng đã bị hủy, không thể cập nhật trạng thái");
+                throw new ArgumentException("Đơn hàng đã bị hủy, không thể cập nhật trạng thái");
             }
 
             if (newStatus == OrderStatus.COMPLETED)
             {
                 if (currentStatus == OrderStatus.NEW)
                 {
-                    throw new Exception("Đơn hàng chưa được xác nhận nên không thể chuyển trạng thái lên hoàn thành");
+                    throw new ArgumentException("Đơn hàng chưa được xác nhận nên không thể chuyển trạng thái lên hoàn thành");
                 }
                 if (currentStatus == OrderStatus.PREPARING)
                 {
-                    throw new Exception("Đơn hàng chưa được chuẩn bị xong nên không thể chuyển trạng thái lên hoàn thành");
+                    throw new ArgumentException("Đơn hàng chưa được chuẩn bị xong nên không thể chuyển trạng thái lên hoàn thành");
                 }
             }
             if (newStatus == OrderStatus.READYFORPICKUP)
             {
                 if (currentStatus == OrderStatus.NEW)
                 {
-                    throw new Exception("Đơn hàng chưa được xác nhận nên không thể chuyển sang trạng thái có thể nhận");
+                    throw new ArgumentException("Đơn hàng chưa được xác nhận nên không thể chuyển sang trạng thái có thể nhận");
                 }
                 if (currentStatus == OrderStatus.CONFIRMED)
                 {
-                    throw new Exception("Đơn hàng chưa được chuẩn bị nên không thể chuyển sang trạng thái có thể nhận");
+                    throw new ArgumentException("Đơn hàng chưa được chuẩn bị nên không thể chuyển sang trạng thái có thể nhận");
                 }
                 var subject = $"Đơn hàng {order.Code} của bạn đã sẵn sàng!";
 

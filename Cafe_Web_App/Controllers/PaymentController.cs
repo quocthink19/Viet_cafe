@@ -269,7 +269,7 @@ namespace Cafe_Web_App.Controllers
               </html>";
                 await _emailService.SendEmail(customer.User.Email, subject, body);
 
-                return Redirect($"http://localhost:5173/payment-success/topup?topUpCode={code}");
+                return Redirect($"https://luoncoffeeweb.vercel.app/payment-success/topup?topUpCode={code}");
             }
         }
 
