@@ -357,6 +357,11 @@ namespace Services.Services
             }
             if(newStatus == OrderStatus.CANCELLED)
             {
+                if (currentStatus != OrderStatus.NEW)
+                {
+                    throw new ArgumentException("Chỉ được hủy đơn hàng khi trạng thái là NEW.");
+                }
+
                 customer.Wallet += (decimal)order.FinalPrice;
 
                 var walletHistory = new WalletHistory
