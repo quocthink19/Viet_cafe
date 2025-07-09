@@ -369,7 +369,7 @@ namespace Services.Services
                     CustomerId = customer.Id,
                     AmountChanged = (decimal)order.FinalPrice,
                     RemainingAmount =(decimal)customer.Wallet,
-                    Description = $"Đơn hàng bij hủy hoàn tiền vào ví + {order.FinalPrice} VNĐ",
+                    Description = $"Đơn hàng bị hủy hoàn tiền vào ví + {order.FinalPrice} VNĐ",
                     TransactionDate = DateTime.Now,
                 };
 
