@@ -13,6 +13,7 @@ using System.Text;
 using Repository.UnitOfWork;
 using static QRCoder.PayloadGenerator;
 using static System.Net.WebRequestMethods;
+using Repository.Models.Enum;
 
 namespace Cafe_Web_App.Controllers
 {
@@ -141,30 +142,46 @@ namespace Cafe_Web_App.Controllers
         [HttpGet("cancel")]
         public async Task<ActionResult> CancelPayment([FromQuery(Name = "OrderCode")] long orderId)
         {
-            var payment = await _unitOfWork.PaymentRepo.GetByOrderId(orderId);
-            if (payment == null)
-            {
-                return BadRequest("không tìm thấy thanh toán");
-            }
             var order = await _unitOfWork.OrderRepo.GetById(orderId);
-            if (order == null)
+            if (order != null)
             {
-                return BadRequest("không tìm thấy đơn hàng");
+                // Hủy đơn hàng
+                var payment = await _unitOfWork.PaymentRepo.GetByOrderId(orderId);
+                if (payment == null) return BadRequest("Không tìm thấy thanh toán đơn hàng.");
+
+                if (order.Status != OrderStatus.CANCELLED)
+                {
+                    order.Status = OrderStatus.CANCELLED;
+                    await _unitOfWork.OrderRepo.UpdateAsync(order);
+                }
+
+                if (payment.Status != PaymentStatus.FAILED)
+                {
+                    payment.Status = PaymentStatus.FAILED;
+                    payment.Description = (payment.Description ?? "") + " - Cancel the payment.";
+                    await _unitOfWork.PaymentRepo.UpdateAsync(payment);
+                }
+
+                await _unitOfWork.SaveAsync();
+                return Redirect($"https://luoncoffeeweb.vercel.app/payment-cancel");
             }
-            order.Status = Repository.Models.Enum.OrderStatus.CANCELLED;
-            await _unitOfWork.OrderRepo.UpdateAsync(order);
-            await _unitOfWork.SaveAsync();
+            else
+            {
+                var topup = await _unitOfWork.TopUpRepo.GetTopUpById(orderId);
+                if (topup == null) return BadRequest("Không tìm thấy giao dịch nạp tiền này.");
 
+                if (topup.Status != PaymentStatus.FAILED)
+                {
+                    topup.Status = PaymentStatus.FAILED;
+                    topup.Description = (topup.Description ?? "") + " - Cancel topup.";
+                    await _unitOfWork.TopUpRepo.UpdateAsync(topup);
+                    await _unitOfWork.SaveAsync();
+                }
 
-            payment.Status = Repository.Models.Enum.PaymentStatus.FAILED;
-            payment.Description += "cancel the payment";
-            await _unitOfWork.PaymentRepo.UpdateAsync(payment);
-            await _unitOfWork.SaveAsync();
-
-            return Redirect($"https://luoncoffeeweb.vercel.app/payment-cancel");
-
+                return Redirect($"https://luoncoffeeweb.vercel.app/payment-cancel");
+            }
         }
-       
+
 
         [HttpGet("success")]
         public async Task<ActionResult> SuccessPayment([FromQuery(Name = "orderCode")] long code)
