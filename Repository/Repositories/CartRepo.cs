@@ -75,5 +75,12 @@ namespace Repository.Repositories
             var items = _context.CartItems.Where(ci => ci.CartId == cartId);
             _context.CartItems.RemoveRange(items);
         }
+
+        public async  Task<List<CartItem>> GetCartItemsByCartId(Guid cartId)
+        {
+            return await _context.CartItems
+             .Where(ci => ci.CartId == cartId)
+             .ToListAsync();
+        }
     }
 }
