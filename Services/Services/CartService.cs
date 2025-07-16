@@ -69,6 +69,7 @@ namespace Services.Services
                         Extra = 0,
                         Price = 0,
                     };
+
                     var toppingList = new List<CustomizeTopping>();
 
                     if (filteredToppings.Any())
@@ -79,6 +80,7 @@ namespace Services.Services
 
                             if (toppingEntity == null)
                                 continue;
+
                             extra += toppingEntity.Price * topping.Quantity;
 
                             toppingList.Add(new CustomizeTopping
@@ -94,13 +96,17 @@ namespace Services.Services
                     newCustomize.Extra = extra;
                     newCustomize.Price = product.Price + extra;
                     newCustomize.CustomizeToppings = toppingList;
+
                     await _unitOfWork.CustomizeRepo.AddAsync(newCustomize);
                     customizeToUse = newCustomize;
                 }
+
+                // In ra kiểm tra toppings (tùy chọn debug)
                 foreach (var ct in customizeToUse.CustomizeToppings)
                 {
                     Console.WriteLine($"check : {ct.ToppingId} - {ct.Topping?.Name}");
-                };
+                }
+
                 var cart = await GetCartByCustomerId(customerId);
                 var existingItem = await _unitOfWork.CartRepo.GetCartItem(cart.Id, customizeToUse.Id);
 
@@ -108,6 +114,8 @@ namespace Services.Services
                 {
                     existingItem.Quantity += customizeRequest.Quantity;
                     cart.TotalAmount += customizeToUse.Price * customizeRequest.Quantity;
+
+                    existingItem.Description = CustomizeHelper.BuildDescription(customizeToUse);
                 }
                 else
                 {
@@ -122,6 +130,7 @@ namespace Services.Services
                         Customize = customizeToUse,
                         Description = CustomizeHelper.BuildDescription(customizeToUse)
                     };
+
                     cart.TotalAmount += customizeToUse.Price * customizeRequest.Quantity;
                     await _unitOfWork.CartRepo.InsertCartItemAsync(newItem);
                 }
@@ -129,8 +138,10 @@ namespace Services.Services
                 await _unitOfWork.CartRepo.UpdateAsync(cart);
                 await _unitOfWork.SaveAsync();
                 await _unitOfWork.CommitAsync();
+
                 var updateCart = await _unitOfWork.CartRepo.GetCartById(cart.Id);
                 var res = _mapper.Map<CartResponse>(updateCart);
+
                 return res;
             }
             catch (Exception ex)
@@ -201,6 +212,16 @@ namespace Services.Services
             try
             {
                 var cart = await GetCartByCustomerId(customerId);
+
+         var cartItems = await _unitOfWork.CartRepo.GetCartItemsByCartId(cart.Id);
+
+                foreach (var item in cartItems)
+                {
+                    if (item.CustomizeId != Guid.Empty)
+                    {
+                        await _unitOfWork.CustomizeRepo.DeleteAsync(item.CustomizeId);
+                    }
+                }
 
                 await _unitOfWork.CartRepo.DeleteAllCartItems(cart.Id);
                 cart.TotalAmount = 0;

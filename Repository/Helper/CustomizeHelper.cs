@@ -27,9 +27,12 @@ namespace Repository.Helper
                 ? $"thêm {string.Join(", ", toppingList)}"
                 : "";
 
+            // Console đầy đủ
+            Console.WriteLine($"Product Name : {productName}    Size : {size}    Note : {note}    Toppings : {(toppingList != null ? string.Join(", ", toppingList) : "None")}");
+
             return $"{productName} size {size} {note} {toppings}";
         }
-        }
     }
+}
 
 

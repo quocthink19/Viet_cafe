@@ -10,6 +10,7 @@ namespace Repository.IRepository
     public interface ICartRepo : IRepository<Cart> 
     {
         Task<Cart> GetCartByCustomerId(Guid customerId);
+        Task<List<CartItem>> GetCartItemsByCartId(Guid cartId);
         Task<Cart?> GetCartById(Guid id);
         Task<CartItem> GetCartItem(Guid CartId, Guid CustomizeId);
         Task DeleteCartItem(CartItem item);
