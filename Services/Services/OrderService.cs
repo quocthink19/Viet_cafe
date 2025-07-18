@@ -45,6 +45,20 @@ namespace Services.Services
             {
                 promotion = await _promotionRepo.GetPromotionByCode(order.Code);
 
+                // check promtion 
+                var check = await _unitOfWork.PromotionUsedRepo.CheckExsit(promotion.Id, customerId);
+                if(check == true) {
+                    throw new ArgumentException("Bạn đã sử dụng mã giảm giá này rồi");
+                }
+
+                var promotionUsed = new PromotionUsed {
+                    CustomerId =  customerId,
+                    PromotionId = promotion.Id,
+                    UsedAt = DateTime.UtcNow,
+                };
+                await _unitOfWork.PromotionUsedRepo.AddAsync(promotionUsed);
+
+
                 if (promotion != null && promotion.DiscountPercent.HasValue)
                 {
                     discountPrice = cart.TotalAmount * (promotion.DiscountPercent.Value / 100);
@@ -163,6 +177,22 @@ namespace Services.Services
             if (!string.IsNullOrEmpty(order.Code))
             {
                 promotion = await _promotionRepo.GetPromotionByCode(order.Code);
+
+                // check promtion 
+                var check = await _unitOfWork.PromotionUsedRepo.CheckExsit(promotion.Id, customerId);
+                if (check == true)
+                {
+                    throw new ArgumentException("Bạn đã sử dụng mã giảm giá này rồi");
+                }
+
+                var promotionUsed = new PromotionUsed
+                {
+                    CustomerId = customerId,
+                    PromotionId = promotion.Id,
+                    UsedAt = DateTime.UtcNow,
+                };
+                await _unitOfWork.PromotionUsedRepo.AddAsync(promotionUsed);
+
 
                 if (promotion != null && promotion.DiscountPercent.HasValue)
                 {

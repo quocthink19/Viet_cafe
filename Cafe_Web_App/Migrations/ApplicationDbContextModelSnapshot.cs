@@ -454,6 +454,9 @@ namespace Cafe_Web_App.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Limit")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -466,6 +469,22 @@ namespace Cafe_Web_App.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Promotions");
+                });
+
+            modelBuilder.Entity("Repository.Models.PromotionUsed", b =>
+                {
+                    b.Property<Guid>("PromotionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PromotionId", "CustomerId");
+
+                    b.ToTable("PromotionUseds");
                 });
 
             modelBuilder.Entity("Repository.Models.Size", b =>
@@ -584,7 +603,8 @@ namespace Cafe_Web_App.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("AmountChanged")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -593,7 +613,8 @@ namespace Cafe_Web_App.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("RemainingAmount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<DateTime>("TransactionDate")
                         .HasColumnType("datetime2");

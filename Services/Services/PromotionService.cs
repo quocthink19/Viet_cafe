@@ -2,6 +2,7 @@
 using Repository.IRepository;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
+using Repository.UnitOfWork;
 using Services.IServices;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,12 @@ namespace Services.Services
     {
         private readonly IPromotionRepo _repo;
         private readonly IMapper _mapper;
-        public PromotionService(IPromotionRepo repo, IMapper mapper)
+        private readonly IUnitOfWork _unitOfWork;
+        public PromotionService(IPromotionRepo repo, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _repo = repo;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
         public async Task<Promotion> AddPromotion(PromotionRequest Request)
         {
@@ -41,9 +44,25 @@ namespace Services.Services
             return promotions;
         }
 
-        public async Task<Promotion> GetPromotionByCode(string code)
+        public async Task<Promotion> GetPromotionByCode(Guid customerId, string code)
         {
             var promotion = await _repo.GetPromotionByCode(code);
+
+            // check limit 
+            var limit = await _unitOfWork.PromotionUsedRepo.CountPromotionUsedAsync(promotion.Id);
+            if(promotion.Limit == limit)
+            {
+                throw new ArgumentException("Khuyến mãi này đã được sử dụng hết");
+            }
+
+            // check used
+            var checkExist = await _unitOfWork.PromotionUsedRepo.CheckExsit (promotion.Id, customerId);
+            if(checkExist)
+            {
+                throw new ArgumentException("Bạn đã sử dụng mã khuyến mãi này rồi");
+            }
+
+
             if (promotion == null)
             {
                 throw new ArgumentException("Không tìm thấy promotion");
