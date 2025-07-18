@@ -38,6 +38,7 @@ namespace Repository
         public DbSet<TopUp> TopUps { get; set; }
         public DbSet<Member> Members { get; set; }
         public DbSet<WalletHistory> WalletHistories { get; set; }
+        public DbSet<PromotionUsed> PromotionUseds { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -112,6 +113,9 @@ namespace Repository
             modelBuilder.Entity<TopUp>()
                .Property(t => t.Amount)
                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<PromotionUsed>()
+            .HasKey(pu => new { pu.PromotionId, pu.CustomerId });
         }
     }
 }

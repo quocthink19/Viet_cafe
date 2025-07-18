@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Repository.Models;
 using Repository.Models.DTOs.Request;
 using Repository.Models.DTOs.Response;
 using Services.IServices;
+using Services.Services;
+using System.Security.Claims;
 
 namespace Cafe_Web_App.Controllers
 {
@@ -11,8 +14,10 @@ namespace Cafe_Web_App.Controllers
     public class PromotionController : Controller
     {
         private readonly IPromotionService _service;
-      public PromotionController(IPromotionService service) {
-        _service = service;
+        private readonly ICustomerService _customerService;
+        public PromotionController(IPromotionService service, ICustomerService customerService) {
+            _service = service;
+            _customerService = customerService;
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Promotion>>> GetAll()
@@ -28,10 +33,12 @@ namespace Cafe_Web_App.Controllers
             var response = new TResponse<Promotion>("Lấy khuyến mãi thành công", promotion);
             return Ok(response);
         }
+        [Authorize]
         [HttpGet("get-by-code")]
         public async Task<ActionResult<Promotion>> GetPromotionByCode(string code)
         {
-            var promotion = await _service.GetPromotionByCode(code);
+            var customer = await GetCurrentCustomer();
+            var promotion = await _service.GetPromotionByCode(customer.Id,code);
             var response = new TResponse<Promotion>("Lấy mã khuyến mãi thành công", promotion);
             return Ok(response);
         }
@@ -54,6 +61,12 @@ namespace Cafe_Web_App.Controllers
         {
             await _service.DeletePromotion(Id);
             return Ok(new { message = "Xóa promtion thành công" });
+        }
+        private async Task<Customer?> GetCurrentCustomer()
+        {
+            var username = User.FindFirst(ClaimTypes.Name)?.Value;
+            if (string.IsNullOrEmpty(username)) return null;
+            return await _customerService.GetCustomerByUsername(username);
         }
     }
 }
