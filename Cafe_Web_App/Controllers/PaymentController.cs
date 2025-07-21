@@ -311,7 +311,6 @@ namespace Cafe_Web_App.Controllers
         }
 
 
-
         private async Task<Customer?> GetCurrentCustomer()
             {
                 var username = User.FindFirst(ClaimTypes.Name)?.Value;

@@ -178,7 +178,7 @@ namespace Repository.Repositories
             var skip = (filter.Page - 1) * filter.PageSize;
 
             var items = await query
-                .OrderByDescending(o => o.CreateAt)
+                .OrderBy(o => o.PickUpTime)
                 .Skip(skip)
                 .Take(filter.PageSize)
                 .ToListAsync();

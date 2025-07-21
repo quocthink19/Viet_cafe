@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.IRepository;
 using Repository.Models;
@@ -14,10 +15,11 @@ namespace Cafe_Web_App.Controllers
     public class CustomerController : Controller
     {
         private readonly ICustomerService _customerService;
-       // private readonly IUserService _userService;
-        public CustomerController(ICustomerService customerService, IUserService userService)
+        private readonly IMapper _mapper;
+        public CustomerController(ICustomerService customerService, IMapper mapper)
         {
             _customerService = customerService;
+            _mapper = mapper;
            
         }
         [HttpGet]
@@ -26,17 +28,21 @@ namespace Cafe_Web_App.Controllers
             try
             {
                 var customers = await _customerService.GetCustomers();
+
                 if (customers != null)
                 {
-                    var response = new TResponse<IEnumerable<Customer>>
-                    (
+                    var customerResponses = _mapper.Map<IEnumerable<CustomerResponse>>(customers);
+
+                    var response = new TResponse<IEnumerable<CustomerResponse>>(
                         "lấy danh sách khách hàng thành công",
-                        customers
+                        customerResponses
                     );
                     return Ok(response);
                 }
+
                 return BadRequest("lấy danh sách khách hàng thất bại");
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

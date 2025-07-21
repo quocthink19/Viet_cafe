@@ -53,6 +53,7 @@ namespace Services.Services
                 var newCustomer = new Customer
                 {
                     UserId = newUser.Id,
+                    FullName = newUser.Username,
                     MKH = mkh,
                     Verify = false,
                     Wallet = 0,
@@ -122,7 +123,7 @@ namespace Services.Services
 
         public async Task<IEnumerable<Customer>> GetCustomers()
         {
-            var customers = await _unitOfWork.CustomerRepo.GetAllAsync();
+            var customers = await _unitOfWork.CustomerRepo.GetAllCus();
             return customers;
         }
 

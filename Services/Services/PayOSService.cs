@@ -134,6 +134,7 @@ namespace Services.Services
                 Description = description,
                 Amount = amount,
                 CreatedAt = DateTime.UtcNow,
+                Wallet = (decimal)cus.Wallet + amount,
             };
 
             var payment = new Payment
