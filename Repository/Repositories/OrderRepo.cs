@@ -26,6 +26,7 @@ namespace Repository.Repositories
             return await _context.Orders
                 .Include(c => c.Customer)
                 .Include(o => o.OrderItems)
+                .OrderBy(o => o.PickUpTime)
                 .ToListAsync();
         }
 
