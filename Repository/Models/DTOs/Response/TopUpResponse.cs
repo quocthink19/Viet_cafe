@@ -14,6 +14,8 @@ namespace Repository.Models.DTOs.Response
         public decimal Amount { get; set; }
         public DateTime CreatedAt { get; set; }
         public string Status { get; set; }
+        public decimal Wallet { get; set; }
         public string Description { get; set; }
+
     }
 }

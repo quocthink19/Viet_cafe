@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Repositories
 {
-    public class CustomerRepo : Repository<Customer> , ICustomerRepo
+    public class CustomerRepo : Repository<Customer>, ICustomerRepo
     {
         private readonly ApplicationDbContext _context;
         public CustomerRepo(ApplicationDbContext context) : base(context) {
@@ -56,6 +56,13 @@ namespace Repository.Repositories
                .FirstOrDefaultAsync();
 
             return user;
+        }
+
+        public async Task<IEnumerable<Customer>> GetAllCus()
+        {
+           return await _context.Customers
+                .Include (c => c.User)
+                .ToArrayAsync();
         }
     }
 }

@@ -15,6 +15,7 @@ namespace Repository.Models
         public DateTime CreatedAt { get; set; }
         public PaymentStatus Status { get; set; } 
         public string Description { get; set; }
+        public decimal Wallet {  get; set; }
         public string? TransactionIdResponse { get; set; }
     }
 }

@@ -535,6 +535,9 @@ namespace Cafe_Web_App.Migrations
                     b.Property<string>("TransactionIdResponse")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Wallet")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.ToTable("TopUps");
