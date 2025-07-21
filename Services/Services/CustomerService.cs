@@ -53,7 +53,6 @@ namespace Services.Services
                 var newCustomer = new Customer
                 {
                     UserId = newUser.Id,
-                    FullName = newUser.Username,
                     MKH = mkh,
                     Verify = false,
                     Wallet = 0,
