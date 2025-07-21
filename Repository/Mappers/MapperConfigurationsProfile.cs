@@ -32,7 +32,8 @@ namespace Repository.Mappers
             
             CreateMap<Customize, CustomerResponse>();
             CreateMap<Customer, CustomerResponse>()
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username));
 
             CreateMap<CustomizeTopping, CustomizeToppingResponse>()
           .ForMember(dest => dest.Topping, opt => opt.MapFrom(src => src.Topping.Name))
